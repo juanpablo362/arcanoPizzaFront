@@ -1,0 +1,17 @@
+.header-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.header-nav a {
+  color: #333;
+  text-decoration: none;
+}
+
+.header-nav a:hover {
+  text-decoration: underline;
+}
+
+.header-nav a.active {
+  font-weight: 600;
+}

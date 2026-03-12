@@ -1,0 +1,19 @@
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sidebar-nav a {
+  color: #333;
+  text-decoration: none;
+  padding: 0.25rem 0;
+}
+
+.sidebar-nav a:hover {
+  text-decoration: underline;
+}
+
+.sidebar-nav a.active {
+  font-weight: 600;
+}
