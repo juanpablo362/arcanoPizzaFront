@@ -29,7 +29,7 @@
 .logo {
   font-weight: 800;
   font-size: 1.2rem;
-  color: var(--primary-red); /* Logo en rojo para resaltar */
+  color: var(--primary-red);
   padding-right: 30px;
   border-right: 1px solid var(--border-light);
 }
@@ -61,7 +61,7 @@
 
 .filter-btn {
   padding: 12px 30px;
-  border-radius: 50px; /* Forma de píldora */
+  border-radius: 50px;
   border: 1.5px solid var(--border-light);
   background-color: var(--white);
   color: var(--text-dark);
@@ -70,21 +70,18 @@
   transition: all 0.3s ease;
 }
 
-.filter-btn:hover {
-  border-color: var(--primary-red);
-  color: var(--primary-red);
-}
-
+/* Hover y Activo combinados con el nuevo color */
+.filter-btn:hover, 
 .filter-btn.active {
-  background-color: var(--primary-red);
-  border-color: var(--primary-red);
-  color: var(--white);
+  background-color: #EBEDF2;
+  border-color: #EBEDF2; 
+  color: var(--text-dark); 
 }
 
 /* --- GRID Y TARJETAS --- */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Responsivo automático */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 40px;
   max-width: 1000px;
   margin: 0 auto;
@@ -94,14 +91,14 @@
 .product-card {
   background-color: var(--white);
   border-radius: 16px;
-  overflow: hidden; /* Para que la imagen respete los bordes curvos */
-  box-shadow: 0 8px 20px rgba(0,0,0,0.06); /* Sombra suave */
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid var(--border-light);
 }
 
 .product-card:hover {
-  transform: translateY(-5px); /* Efecto de levantar al pasar el mouse */
+  transform: translateY(-5px);
   box-shadow: 0 12px 25px rgba(0,0,0,0.1);
 }
 

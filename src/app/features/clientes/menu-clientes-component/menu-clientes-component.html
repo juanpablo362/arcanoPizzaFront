@@ -13,35 +13,31 @@
   </nav>
 
   <div class="category-filters">
-    <button class="filter-btn active">Pizza Clásica</button>
-    <button class="filter-btn">Pizza Especiales</button>
-    <button class="filter-btn">Bebidas</button>
-    <button class="filter-btn">Extras</button>
+    @for (cat of categorias; track cat) {
+      <button 
+        class="filter-btn" 
+        [class.active]="categoriaActiva === cat"
+        (click)="seleccionarCategoria(cat)">
+        {{ cat }}
+      </button>
+    }
   </div>
 
   <div class="products-grid">
-    
-    <div class="product-card" (click)="abrirDetalle()">
-      <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Pizza Conjunto de cuatro lunas">
-      <div class="card-body">
-        <div class="card-header">
-          <h3 class="pizza-title">Conjuntos de cuatro lunas</h3>
-          <span class="pizza-price">$120.00 MXN</span>
+    @for (producto of productosFiltrados; track producto.id) {
+      <div class="product-card" (click)="abrirDetalle()" style="cursor: pointer;">
+        
+        <img [src]="producto.imagen" [alt]="'Pizza ' + producto.nombre">
+        
+        <div class="card-body">
+          <div class="card-header">
+            <h3 class="pizza-title">{{ producto.nombre }}</h3>
+            <span class="pizza-price">${{ producto.precio | number:'1.2-2' }} MXN</span>
+          </div>
+          <p class="pizza-desc">{{ producto.descripcion }}</p>
         </div>
-        <p class="pizza-desc">Mozzarella, gorgonzola, parmesano envejecido, provolone</p>
-      </div>
-    </div>
 
-    <div class="product-card" (click)="abrirDetalle()">
-      <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Pizza Ritual de fuego">
-      <div class="card-body">
-        <div class="card-header">
-          <h3 class="pizza-title">Ritual de fuego</h3>
-          <span class="pizza-price">$120.00 MXN</span>
-        </div>
-        <p class="pizza-desc">Pepperoni premium ahumado, mozzarella, salsa de tomate especiada</p>
       </div>
-    </div>
-
+    }
   </div>
 </div>

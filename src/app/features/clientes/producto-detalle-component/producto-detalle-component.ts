@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Esto soluciona el error NG8004 del pipe 'number'
+import { Router, RouterLink} from '@angular/router';
 
 interface PizzaSize {
   name: string;
@@ -10,12 +11,15 @@ interface PizzaSize {
 @Component({
   selector: 'app-producto-detalle',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   // Aquí ajusté los nombres para que coincidan con tus archivos reales y solucionar el error NG2008
   templateUrl: './producto-detalle-component.html', 
   styleUrls: ['./producto-detalle-component.css'] 
 })
 export class ProductoDetalleComponent {
+  
+  private router = inject(Router);
+
   productName = 'Conjuntos de cuatro lunas';
   basePrice = 110.00;
   description = 'Mozzarella, gorgonzola, parmesano envejecido, provolone';
@@ -54,5 +58,9 @@ export class ProductoDetalleComponent {
 
   get total(): number {
     return this.selectedSize.price * this.quantity;
+  }
+
+  irAlMenu() {
+    this.router.navigate(['/menu-clientes-component']);
   }
 }
