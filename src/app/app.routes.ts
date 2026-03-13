@@ -8,6 +8,7 @@ export const routes: Routes = [
     component: MainLayout,
     children: [
       { path: '', redirectTo: 'extras', pathMatch: 'full' },
+
       {
         path: 'extras',
         loadChildren: () =>
@@ -20,7 +21,7 @@ export const routes: Routes = [
             (m) => m.PEDIDOS_ROUTES
           ),
         canActivate: [authGuard],
-      },
+      },     
     ],
   },
   {
@@ -28,5 +29,38 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
-  { path: '**', redirectTo: 'extras' },
+  
+//   {
+//   path: '',
+//   children: [
+//     {
+//       path: 'menu-clientes-component',
+//       loadChildren: () => import('./features/clientes/menu-clientes-component/menu-clientes-component.routes')
+//       .then(m => m.MENU_CLIENTES_ROUTES)
+//     },
+//   ]
+// },
+    
+//   //{ path: '**', redirectTo: 'extras' },
+  
+// ];
+
+{
+    path: '',
+    children: [
+      {
+        path: 'menu-clientes-component',
+        loadChildren: () => import('./features/clientes/menu-clientes-component/menu-clientes-component.routes')
+        .then(m => m.MENU_CLIENTES_ROUTES)
+      },
+      // 👇 ¡AGREGA ESTE NUEVO BLOQUE AQUÍ! 👇
+      {
+        path: 'producto-detalle',
+        loadComponent: () => import('./features/clientes/producto-detalle-component/producto-detalle-component').then(m => m.ProductoDetalleComponent)
+      }
+    ]
+  },
+    
+  // { path: '**', redirectTo: 'extras' },
+  { path: '**', redirectTo: 'menu-clientes-component' },
 ];

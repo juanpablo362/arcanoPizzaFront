@@ -1,16 +1,47 @@
-<nav class="navbar">
-  <div class="logo">
-    LOGO
+<div class="page-container">
+  <nav class="navbar">
+    <div class="logo">LOGO</div>
+    <div class="nav-links">
+      <a href="#">Inicio</a>
+      <a href="#" class="active-link">Menú</a>
+      <a href="#">Promociones</a>
+      <a href="#">Contacto</a>
+    </div>
+    <div class="auth">
+      <a href="#">Iniciar sesión</a>
+    </div>
+  </nav>
+
+  <div class="category-filters">
+    <button class="filter-btn active">Pizza Clásica</button>
+    <button class="filter-btn">Pizza Especiales</button>
+    <button class="filter-btn">Bebidas</button>
+    <button class="filter-btn">Extras</button>
   </div>
 
-  <div class="nav-links">
-    <a routerLink="/inicio">Inicio</a>
-    <a routerLink="/menu">Menú</a>
-    <a routerLink="/promociones">Promociones</a>
-    <a routerLink="/contacto">Contacto</a>
-  </div>
+  <div class="products-grid">
+    
+    <div class="product-card" (click)="abrirDetalle()">
+      <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Pizza Conjunto de cuatro lunas">
+      <div class="card-body">
+        <div class="card-header">
+          <h3 class="pizza-title">Conjuntos de cuatro lunas</h3>
+          <span class="pizza-price">$120.00 MXN</span>
+        </div>
+        <p class="pizza-desc">Mozzarella, gorgonzola, parmesano envejecido, provolone</p>
+      </div>
+    </div>
 
-  <div class="auth">
-    <a routerLink="/login">Iniciar sesión</a>
+    <div class="product-card" (click)="abrirDetalle()">
+      <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Pizza Ritual de fuego">
+      <div class="card-body">
+        <div class="card-header">
+          <h3 class="pizza-title">Ritual de fuego</h3>
+          <span class="pizza-price">$120.00 MXN</span>
+        </div>
+        <p class="pizza-desc">Pepperoni premium ahumado, mozzarella, salsa de tomate especiada</p>
+      </div>
+    </div>
+
   </div>
-</nav>
+</div>
