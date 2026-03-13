@@ -12,66 +12,70 @@
     </div>
   </nav>
 
+  @if (producto) {
+    <div class="detail-container">
+      
+      <div class="image-wrapper">
+        <img [src]="producto.imagen" [alt]="producto.nombre">
+      </div>
 
-<div class="detail-container">
-  
-  <div class="image-wrapper">
-    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Pizza">
-  </div>
+      <div class="section-block">
+        <h1 class="product-title">{{ producto.nombre }}</h1>
+        <p class="product-price">${{ (selectedSize ? selectedSize.price : producto.precio) | number:'1.2-2' }} MXN</p>
+      </div>
 
-  <div class="section-block">
-    <h1 class="product-title">{{ productName }}</h1>
-    <p class="product-price">${{ basePrice | number:'1.2-2' }} MXN</p>
-  </div>
+      <div class="section-block">
+        <h3 class="section-title">Descripcion</h3>
+        <p class="description-text">{{ producto.descripcion }}</p>
+      </div>
 
-  <div class="section-block">
-    <h3 class="section-title">Descripcion</h3>
-    <p class="description-text">{{ description }}</p>
-  </div>
+      <div class="section-block">
+        <h3 class="section-title">Ingredientes</h3>
+        <ul class="ingredients-list">
+          @for (item of producto.ingredientes; track item) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      </div>
 
-  <div class="section-block">
-    <h3 class="section-title">Ingredientes</h3>
-    <ul class="ingredients-list">
-      @for (item of ingredients; track item) {
-        <li>{{ item }}</li>
-      }
-    </ul>
-  </div>
-
-  <div class="section-block">
-    <h3 class="section-title">Tamaño</h3>
-    <div class="sizes-container">
-      @for (size of sizes; track size.name) {
-        <div class="size-column" (click)="selectSize(size)">
-          <div class="size-circle" [class.active-border]="selectedSize === size">
-            {{ size.cm }}
-          </div>
-          <div class="size-pill" [class.active-border]="selectedSize === size">
-            {{ size.name }} ${{ size.price }}
+      @if (producto.tamanos && producto.tamanos.length > 0) {
+        <div class="section-block">
+          <h3 class="section-title">Tamaño</h3>
+          <div class="sizes-container">
+            @for (size of producto.tamanos; track size.name) {
+              <div class="size-column" (click)="selectSize(size)">
+                <div class="size-circle" [class.active-border]="selectedSize === size">
+                  {{ size.cm }}
+                </div>
+                <div class="size-pill" [class.active-border]="selectedSize === size">
+                  {{ size.name }} ${{ size.price }}
+                </div>
+              </div>
+            }
           </div>
         </div>
       }
-    </div>
-  </div>
 
-  <div class="section-block">
-    <h3 class="section-title">Cantidad</h3>
-    <div class="quantity-controls">
-      <button class="qty-btn" (click)="decreaseQuantity()">-</button>
-      <span class="qty-number">{{ quantity }}</span>
-      <button class="qty-btn" (click)="increaseQuantity()">+</button>
-    </div>
-  </div>
+      <div class="section-block">
+        <h3 class="section-title">Cantidad</h3>
+        <div class="quantity-controls">
+          <button class="qty-btn" (click)="decreaseQuantity()">-</button>
+          <span class="qty-number">{{ quantity }}</span>
+          <button class="qty-btn" (click)="increaseQuantity()">+</button>
+        </div>
+      </div>
 
-  <div class="detail-footer">
-    <div class="total-wrapper">
-      <h3 class="section-title">Total</h3>
-      <p class="product-price">${{ total | number:'1.2-2' }} MXN</p>
-    </div>
-    
-    <button class="add-to-cart-btn">
-      + Agregar al carrito
-    </button>
-  </div>
+      <div class="detail-footer">
+        <div class="total-wrapper">
+          <h3 class="section-title">Total</h3>
+          <p class="product-price">${{ total | number:'1.2-2' }} MXN</p>
+        </div>
+        
+        <button class="add-to-cart-btn">
+          + Agregar al carrito
+        </button>
+      </div>
 
+    </div>
+  }
 </div>

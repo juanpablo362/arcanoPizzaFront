@@ -1,48 +1,39 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Esto soluciona el error NG8004 del pipe 'number'
-import { Router, RouterLink} from '@angular/router';
-
-interface PizzaSize {
-  name: string;
-  cm: string;
-  price: number;
-}
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common'; 
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-producto-detalle',
   standalone: true,
-  imports: [CommonModule, RouterLink],
-  // Aquí ajusté los nombres para que coincidan con tus archivos reales y solucionar el error NG2008
+  imports: [CommonModule], // Quité RouterLink porque usamos (click)="irAlMenu()"
   templateUrl: './producto-detalle-component.html', 
   styleUrls: ['./producto-detalle-component.css'] 
 })
-export class ProductoDetalleComponent {
+export class ProductoDetalleComponent implements OnInit {
   
   private router = inject(Router);
 
-  productName = 'Conjuntos de cuatro lunas';
-  basePrice = 110.00;
-  description = 'Mozzarella, gorgonzola, parmesano envejecido, provolone';
-  
-  ingredients: string[] = [
-    'Mozzarella.',
-    'Gorgonzola dolce.',
-    'Parmesano Reggiano.',
-    'Provolone ahumado.',
-    'Miel de trufa.'
-  ];
-
-  sizes: PizzaSize[] = [
-    { name: 'Individual', cm: '30 cm', price: 70 },
-    { name: 'Mediana', cm: '35 cm', price: 90 },
-    { name: 'Grande', cm: '40 cm', price: 110 },
-    { name: 'Familiar', cm: '45 cm', price: 130 }
-  ];
-
-  selectedSize: PizzaSize = this.sizes[0]; 
+  producto: any = null; // Guardará el producto recibido
+  selectedSize: any = null; 
   quantity: number = 1;
 
-  selectSize(size: PizzaSize) {
+  ngOnInit() {
+    // 1. Recibimos el producto desde la vista anterior
+    this.producto = history.state.producto;
+
+    // 2. Seguridad: Si el usuario recarga la página de golpe, lo regresamos al menú
+    if (!this.producto) {
+      this.router.navigate(['/menu-clientes-component']);
+      return;
+    }
+
+    // 3. Si el producto tiene tamaños (es pizza), pre-seleccionamos el primero (Individual)
+    if (this.producto.tamanos && this.producto.tamanos.length > 0) {
+      this.selectedSize = this.producto.tamanos[0];
+    }
+  }
+
+  selectSize(size: any) {
     this.selectedSize = size;
   }
 
@@ -57,7 +48,9 @@ export class ProductoDetalleComponent {
   }
 
   get total(): number {
-    return this.selectedSize.price * this.quantity;
+    // Si tiene un tamaño seleccionado, usa su precio. Si no (bebidas), usa el precio normal.
+    const precioBase = this.selectedSize ? this.selectedSize.price : this.producto.precio;
+    return precioBase * this.quantity;
   }
 
   irAlMenu() {
