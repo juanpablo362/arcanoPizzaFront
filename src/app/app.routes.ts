@@ -2,8 +2,18 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { MainLayout } from './layouts/main-layout/main-layout';
 import { MenuClientesComponent } from './features/clientes/menu-clientes-component/menu-clientes-component';
+import { ProductoDetalleComponent } from './features/clientes/producto-detalle-component/producto-detalle-component';
+import { PromocionesComponent } from './features/clientes/promociones-component/promociones-component';
 
 export const routes: Routes = [
+
+  // 👇 --- 0. RUTA MAESTRA POR DEFECTO (Añadida aquí al inicio) --- 👇
+  // {
+  //   path: '',
+  //   redirectTo: 'menu-clientes-component',
+  //   pathMatch: 'full'
+  // },
+  
   // --- 1. RUTAS ESPECÍFICAS PRIMERO (Angular las encuentra rápido) ---
   {
     path: 'menu-clientes-component',
@@ -12,6 +22,14 @@ export const routes: Routes = [
   {
     path: 'producto-detalle',
     loadComponent: () => import('./features/clientes/producto-detalle-component/producto-detalle-component').then(m => m.ProductoDetalleComponent)
+  },
+  {
+    path: 'promociones',
+    loadComponent: () => import('./features/clientes/promociones-component/promociones-component').then(m => m.PromocionesComponent)
+  },
+  { 
+    path: 'carrito-compra', 
+    loadComponent: () => import('./features/clientes/carrito-compra-component/carrito-compra-component').then(m => m.CarritoCompraComponent)
   },
 
   // --- 2. RUTAS DE AUTENTICACIÓN ---
@@ -34,10 +52,10 @@ export const routes: Routes = [
         path: 'pedidos',
         loadChildren: () => import('./features/pedidos/pedidos.routes').then((m) => m.PEDIDOS_ROUTES),
         canActivate: [authGuard],
-      },     
+      },
     ],
   },
-    
+
   // --- 4. RUTA COMODÍN ---
   { path: '**', redirectTo: 'menu-clientes-component' },
 ];
