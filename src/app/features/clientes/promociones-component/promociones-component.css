@@ -1,38 +1,46 @@
-/* Variables generales */
-:root {
-  --primary-red: #E63946;
-  --bg-color: #F8F9FA;
-  --text-dark: #2B2D42;
-  --text-muted: #6C757D;
-  --white: #FFFFFF;
-  --border-light: #E0E0E0;
-  --gold-price: #B8860B;
+/* =========================================
+   TEMA "HECHIZO DE MEDIANOCHE" (Modo Arcano)
+   ========================================= */
+:host {
+  /* Colores Mágicos */
+  --bg-deep: #0B0B12;        /* La oscuridad del vacío */
+  --bg-mystic: #1A1025;      /* Un morado ultra oscuro para el brillo de fondo */
+  --card-dark: #151522;      /* Fondo de las tarjetas (Gris/Azulado muy oscuro) */
+  --magic-purple: #8A2BE2;   /* Morado brillante de energía */
+  --magic-glow: rgba(138, 43, 226, 0.5); /* Aura mágica para sombras */
+  --gold-runes: #FFD700;     /* Dorado brillante para precios y detalles */
+  --text-light: #EAEAEA;     /* Blanco suave para que no lastime la vista */
+  --text-muted: #A0A0B0;     /* Gris fantasma para descripciones */
 }
 
+/* --- FONDO MÁGICO (Gradiente Radial) --- */
 .page-container {
-  background-color: var(--bg-color);
-  min-height: 100vh;
+  background: radial-gradient(circle at top center, var(--bg-mystic), var(--bg-deep));
+  min-height: 101vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding-bottom: 60px;
+  color: var(--text-light); 
 }
 
-/* --- NAVEGACIÓN --- */
+/* --- NAVEGACIÓN (Cristal Oscuro) --- */
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 3rem;
-  background-color: var(--white);
-  border-bottom: 1px solid var(--border-light);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  background-color: rgba(11, 11, 18, 0.85); 
+  backdrop-filter: blur(10px); 
+  border-bottom: 1px solid rgba(138, 43, 226, 0.3); 
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .logo {
-  font-weight: 800;
-  font-size: 1.2rem;
-  color: var(--primary-red);
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: var(--gold-runes);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); 
   padding-right: 30px;
-  border-right: 1px solid var(--border-light);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .nav-links {
@@ -42,13 +50,14 @@
 
 .nav-links a, .auth a {
   text-decoration: none;
-  color: var(--text-dark);
+  color: var(--text-light);
   font-weight: 500;
-  transition: color 0.3s;
+  transition: all 0.3s;
 }
 
 .nav-links a:hover, .auth a:hover, .active-link {
-  color: var(--primary-red);
+  color: var(--magic-purple);
+  text-shadow: 0 0 8px var(--magic-glow); 
 }
 
 /* --- ENCABEZADO PROMOCIONES --- */
@@ -60,13 +69,14 @@
 
 .page-title {
   text-align: center;
-  color: var(--text-dark);
-  font-size: 1.8rem;
-  font-weight: 500;
+  color: var(--text-light);
+  font-size: 2rem;
+  font-weight: 700;
   margin-bottom: 30px;
+  text-shadow: 0 0 15px rgba(255,255,255,0.1); /* Ligero resplandor en el título */
 }
 
-/* --- LISTA Y TARJETAS COMPACTAS (Bajas) --- */
+/* --- LISTA Y TARJETAS COMPACTAS --- */
 .promociones-list {
   display: flex;
   flex-direction: column;
@@ -75,42 +85,44 @@
 
 .promo-card {
   display: flex;
-  background-color: var(--white);
-  border-radius: 10px;
+  background-color: var(--card-dark);
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid var(--border-light);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  max-height: 140px; /* Obliga a que la tarjeta sea baja */
-  position: relative; /* Necesario para que la etiqueta se posicione correctamente */
+  border: 1px solid rgba(255, 255, 255, 0.05); /* Borde casi invisible */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  transition: all 0.4s ease;
+  max-height: 140px; 
+  position: relative; 
 }
 
+/* La magia ocurre al pasar el mouse (Igual que en el Menú) */
 .promo-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transform: translateY(-5px) scale(1.01);
+  border-color: var(--magic-purple); 
+  box-shadow: 0 15px 35px var(--magic-glow); 
 }
 
-/* 👇 ETIQUETA DE DESCUENTO (Superior Derecha y Roja) 👇 */
+/* 👇 ETIQUETA DE DESCUENTO (Mágica y Brillante) 👇 */
 .discount-badge {
   position: absolute;
   top: 10px;
-  right: 10px; /* Movida a la derecha */
-  background-color: var(--primary-red); /* Color rojo */
-  color: var(--white);
-  padding: 4px 10px;
+  right: 10px; 
+  background-color: var(--magic-purple); 
+  color: #ffffff;
+  padding: 5px 12px;
   border-radius: 15px;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   gap: 4px;
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 0 15px var(--magic-glow); /* Aura de la etiqueta */
 }
 
 .discount-badge svg {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
 }
 
 /* Lado Izquierdo: Imagen */
@@ -123,11 +135,17 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0.9; /* Oscurece la foto un poco para encajar en el tema */
+  transition: opacity 0.3s ease;
+}
+
+.promo-card:hover .promo-image-container img {
+  opacity: 1; /* Despierta la foto al pasar el mouse */
 }
 
 /* Lado Derecho: Detalles */
 .promo-details {
-  padding: 12px 20px; 
+  padding: 12px 25px; 
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -135,17 +153,17 @@
 }
 
 .promo-title {
-  margin: 0 0 2px 0; 
-  font-size: 1.15rem; 
-  color: var(--text-dark);
+  margin: 0 0 4px 0; 
+  font-size: 1.25rem; 
+  color: var(--text-light); /* Letras blancas para contraste */
   font-weight: 700;
 }
 
 .promo-desc {
-  margin: 0 0 6px 0; 
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  line-height: 1.2; 
+  margin: 0 0 8px 0; 
+  color: var(--text-muted); /* Gris fantasma */
+  font-size: 0.9rem;
+  line-height: 1.3; 
   white-space: nowrap; 
   overflow: hidden;
   text-overflow: ellipsis;
@@ -156,7 +174,7 @@
   align-items: center;
   gap: 6px;
   color: var(--text-muted);
-  font-size: 0.8rem; 
+  font-size: 0.85rem; 
   margin: 0;
 }
 
@@ -177,26 +195,28 @@
 .price-left {
   display: flex;
   align-items: baseline; 
-  gap: 8px;
+  gap: 10px;
 }
 
 .old-price {
   text-decoration: line-through;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .new-price {
-  color: var(--gold-price);
-  font-size: 1.5rem; 
+  color: var(--gold-runes); /* Precio en Oro Arcano */
+  font-size: 1.6rem; 
   font-weight: 800;
   line-height: 1;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.3); /* Pequeño brillo en el precio */
 }
 
 .savings-text {
-  color: var(--primary-red);
-  font-size: 0.85rem; 
-  font-weight: 600;
+  color: var(--magic-purple);
+  font-size: 0.9rem; 
+  font-weight: 700;
+  text-shadow: 0 0 5px rgba(138, 43, 226, 0.4);
 }
 
 /* --- RESPONSIVE --- */
@@ -208,7 +228,7 @@
   
   .promo-image-container {
     width: 100%;
-    height: 140px; 
+    height: 180px; 
   }
   
   .promo-desc {

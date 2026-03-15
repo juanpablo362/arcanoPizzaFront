@@ -8,11 +8,11 @@ import { PromocionesComponent } from './features/clientes/promociones-component/
 export const routes: Routes = [
 
   // 👇 --- 0. RUTA MAESTRA POR DEFECTO (Añadida aquí al inicio) --- 👇
-  // {
-  //   path: '',
-  //   redirectTo: 'menu-clientes-component',
-  //   pathMatch: 'full'
-  // },
+  {
+    path: '',
+    redirectTo: 'menu-clientes-component',
+    pathMatch: 'full'
+  },
   
   // --- 1. RUTAS ESPECÍFICAS PRIMERO (Angular las encuentra rápido) ---
   {
@@ -30,6 +30,10 @@ export const routes: Routes = [
   { 
     path: 'carrito-compra', 
     loadComponent: () => import('./features/clientes/carrito-compra-component/carrito-compra-component').then(m => m.CarritoCompraComponent)
+  },
+  { 
+    path: 'contacto', 
+    loadComponent: () => import('./features/clientes/contacto-component/contacto-component').then(m => m.ContactoComponent)
   },
 
   // --- 2. RUTAS DE AUTENTICACIÓN ---
