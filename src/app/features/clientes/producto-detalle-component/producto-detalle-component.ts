@@ -1,20 +1,20 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-producto-detalle',
   standalone: true,
   imports: [CommonModule], // Quité RouterLink porque usamos (click)="irAlMenu()"
-  templateUrl: './producto-detalle-component.html', 
-  styleUrls: ['./producto-detalle-component.css'] 
+  templateUrl: './producto-detalle-component.html',
+  styleUrls: ['./producto-detalle-component.css']
 })
 export class ProductoDetalleComponent implements OnInit {
-  
+
   private router = inject(Router);
 
   producto: any = null; // Guardará el producto recibido
-  selectedSize: any = null; 
+  selectedSize: any = null;
   quantity: number = 1;
 
   ngOnInit() {
@@ -55,5 +55,9 @@ export class ProductoDetalleComponent implements OnInit {
 
   irAlMenu() {
     this.router.navigate(['/menu-clientes-component']);
+  }
+
+irAPromociones() {
+    this.router.navigate(['/promociones']);
   }
 }

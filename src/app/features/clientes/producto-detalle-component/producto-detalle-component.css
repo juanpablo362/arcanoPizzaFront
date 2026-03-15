@@ -1,41 +1,44 @@
-:root {
-  --primary-red: #E63946; /* Color de acento para la selección */
-  --text-main: #333333;
-  --text-muted: #555555;
-  --border-color: #666666; /* Color del borde de los botones como en la imagen */
-  --bg-color: #FFFFFF;
-  --bg-color: #F8F9FA;
-  --text-dark: #2B2D42;
-  --text-muted: #6C757D;
-  --border-light: #E0E0E0;
+/* =========================================
+   TEMA "HECHIZO DE MEDIANOCHE" (Modo Arcano)
+   ========================================= */
+:host {
+  --bg-deep: #0B0B12;        
+  --bg-mystic: #1A1025;      
+  --card-dark: #151522;      
+  --magic-purple: #8A2BE2;   
+  --magic-glow: rgba(138, 43, 226, 0.5); 
+  --gold-runes: #FFD700;     
+  --text-light: #EAEAEA;     
+  --text-muted: #A0A0B0;     
 }
-
-/* Menu */
 
 .page-container {
-  background-color: var(--bg-color);
-  min-height: 100vh;
+  background: radial-gradient(circle at top center, var(--bg-mystic), var(--bg-deep));
+  min-height: 101vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding-bottom: 50px;
+  color: var(--text-light);
 }
 
-/* --- NAVEGACIÓN --- */
+/* --- NAVEGACIÓN (Cristal Oscuro) --- */
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 3rem;
-  background-color: var(--white);
-  border-bottom: 1px solid var(--border-light);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  background-color: rgba(11, 11, 18, 0.85); 
+  backdrop-filter: blur(10px); 
+  border-bottom: 1px solid rgba(138, 43, 226, 0.3); 
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .logo {
-  font-weight: 800;
-  font-size: 1.2rem;
-  color: var(--primary-red);
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: var(--gold-runes);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); 
   padding-right: 30px;
-  border-right: 1px solid var(--border-light);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .nav-links {
@@ -45,26 +48,22 @@
 
 .nav-links a, .auth a {
   text-decoration: none;
-  color: var(--text-dark);
+  color: var(--text-light);
   font-weight: 500;
-  transition: color 0.3s;
+  transition: all 0.3s;
 }
 
 .nav-links a:hover, .auth a:hover, .active-link {
-  color: var(--primary-red);
+  color: var(--magic-purple);
+  text-shadow: 0 0 8px var(--magic-glow); 
 }
 
-
-
-
-
+/* --- CONTENEDOR DE DETALLES --- */
 .detail-container {
   max-width: 650px;
   margin: 0 auto;
   padding: 30px 20px;
-  font-family: Arial, Helvetica, sans-serif; /* Tipografía limpia */
-  color: var(--text-main);
-  background-color: var(--bg-color);
+  background-color: transparent; /* Deja ver el fondo mágico */
 }
 
 /* --- Imagen --- */
@@ -74,6 +73,8 @@
   object-fit: cover;
   border-radius: 12px;
   margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* --- Bloques de Sección --- */
@@ -82,39 +83,44 @@
 }
 
 .product-title {
-  font-size: 1.2rem;
-  font-weight: normal;
+  font-size: 1.5rem;
+  font-weight: 700;
   margin: 0 0 5px 0;
+  color: var(--text-light);
 }
 
 .product-price {
-  font-size: 0.95rem;
-  color: var(--text-muted);
+  font-size: 1.15rem;
+  color: var(--gold-runes);
+  font-weight: 800;
   margin: 0;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
 }
 
 .section-title {
   font-size: 1.05rem;
-  font-weight: normal;
+  font-weight: 600;
   margin: 0 0 10px 0;
+  color: var(--text-light);
 }
 
 .description-text {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--text-muted);
   margin: 0;
+  line-height: 1.5;
 }
 
 /* --- Lista de Ingredientes --- */
 .ingredients-list {
-  font-size: 0.9rem;
-  color: var(--text-main);
+  font-size: 0.95rem;
+  color: var(--text-muted);
   padding-left: 20px;
   margin: 0;
   line-height: 1.5;
 }
 
-/* --- Selector de Tamaños --- */
+/* --- Selector de Tamaños (Runas) --- */
 .sizes-container {
   display: flex;
   gap: 20px;
@@ -129,33 +135,34 @@
   cursor: pointer;
 }
 
-.size-circle {
-  width: 65px;
-  height: 65px;
+.size-circle, .size-pill {
   border-radius: 50%;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: var(--card-dark);
+  color: var(--text-light);
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 0.85rem;
-  transition: all 0.2s ease;
-  background-color: var(--bg-color);
+  transition: all 0.3s ease;
+}
+
+.size-circle {
+  width: 65px;
+  height: 65px;
 }
 
 .size-pill {
   padding: 8px 15px;
   border-radius: 20px;
-  border: 1px solid var(--border-color);
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-  background-color: var(--bg-color);
 }
 
-/* Clase dinámica cuando el tamaño está seleccionado */
+/* Magia al seleccionar tamaño */
 .active-border {
-  border-color: var(--primary-red) !important;
-  color: var(--primary-red);
-  box-shadow: 0 0 5px rgba(230, 57, 70, 0.2); /* Ligero resplandor */
+  border-color: var(--magic-purple) !important;
+  color: #ffffff;
+  background-color: rgba(138, 43, 226, 0.15) !important;
+  box-shadow: 0 0 15px var(--magic-glow);
 }
 
 /* --- Selector de Cantidad --- */
@@ -168,14 +175,21 @@
 .qty-btn {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   cursor: pointer;
-  color: var(--text-main);
+  color: var(--text-light);
   padding: 0 10px;
+  transition: color 0.3s;
+}
+
+.qty-btn:hover {
+  color: var(--magic-purple);
+  text-shadow: 0 0 10px var(--magic-glow);
 }
 
 .qty-number {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 /* --- Footer (Total y Botón de Carrito) --- */
@@ -184,25 +198,24 @@
   justify-content: space-between;
   align-items: flex-end;
   margin-top: 40px;
-}
-
-.total-wrapper .section-title {
-  margin-bottom: 5px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .add-to-cart-btn {
-  padding: 10px 20px;
+  padding: 12px 25px;
   border-radius: 25px;
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-color);
-  color: var(--text-main);
-  font-size: 0.9rem;
+  border: 1px solid var(--magic-purple);
+  background-color: transparent;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .add-to-cart-btn:hover {
-  background-color: var(--primary-red);
-  color: white;
-  border-color: var(--primary-red);
+  background-color: var(--magic-purple);
+  color: #ffffff;
+  box-shadow: 0 0 20px var(--magic-glow);
 }

@@ -123,4 +123,9 @@ export class MenuClientesComponent {
   abrirDetalle(productoSeleccionado: Producto) {
     this.router.navigate(['/producto-detalle'], { state: { producto: productoSeleccionado } });
   }
+
+
+  irAPromociones() {
+    this.router.navigate(['/promociones']);
+  }
 }
