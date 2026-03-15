@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 export interface Promocion {
   id: number;
@@ -18,7 +19,7 @@ export interface Promocion {
 @Component({
   selector: 'app-promociones-component',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './promociones-component.html',
   styleUrl: './promociones-component.css',
 })
