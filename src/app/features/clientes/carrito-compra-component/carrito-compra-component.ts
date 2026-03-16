@@ -1,8 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { CarritoService, ItemCarrito } from './carrito-compra.service'; // Confirma que esta ruta esté bien en tu proyecto
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { CarritoService, ItemCarrito } from './carrito-compra.service';
 
 @Component({
   selector: 'app-carrito-compra-component',
@@ -48,5 +47,11 @@ export class CarritoCompraComponent implements OnInit {
     this.subtotal = this.carritoItems.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
     this.iva = this.subtotal * 0.16;
     this.total = this.subtotal + this.iva;
+  }
+
+  // --- NUEVA FUNCIÓN ---
+irAlPago() {
+    console.log('¡Botón presionado! Viajando a la pasarela...');
+    this.router.navigate(['/pago']);
   }
 }

@@ -1,0 +1,100 @@
+<div class="payment-container">
+  
+  <div class="order-summary">
+    <h2 class="summary-title">Resumen de tu pedido</h2>
+    <div class="summary-details">
+      <p class="summary-text">Total a pagar:</p>
+      <p class="summary-total">${{ totalAPagar | number:'1.2-2' }} MXN</p>
+    </div>
+    <div class="secure-badge">
+      🔒 Pago 100% seguro y encriptado
+    </div>
+  </div>
+
+  <div class="payment-form-card">
+    <h2 class="form-title">Detalles de pago</h2>
+    <p class="form-subtitle">Ingresa los datos de tu tarjeta de crédito o débito</p>
+
+    <form (ngSubmit)="procesarPago()">
+      
+      <div class="input-group">
+        <label for="cardName">Nombre del titular</label>
+        <input 
+          type="text" 
+          id="cardName" 
+          placeholder="Ej. Juan Pérez" 
+          [(ngModel)]="nombreTitular" 
+          name="cardName"
+          required>
+      </div>
+
+      <div class="input-group">
+        <label for="cardNumber">Número de tarjeta</label>
+        <input 
+          type="text" 
+          id="cardNumber" 
+          placeholder="0000 0000 0000 0000" 
+          maxlength="16"
+          [ngModel]="numeroTarjeta" 
+          (ngModelChange)="formatearTarjeta($event)"
+          (keypress)="permitirSoloNumeros($event)"
+          name="cardNumber"
+          required>
+      </div>
+
+      <div class="row-group">
+        
+        <div class="input-group">
+          <label for="expiry">Fecha de exp. (MM/AA)</label>
+          <input 
+            type="text" 
+            id="expiry" 
+            placeholder="MM/AA" 
+            maxlength="5"
+            [ngModel]="fechaExpiracion" 
+            (ngModelChange)="formatearFecha($event)"
+            (keypress)="permitirSoloNumeros($event)"
+            name="expiry"
+            required>
+        </div>
+
+        <div class="input-group">
+          <label for="cvv">Código CVV</label>
+          <div class="password-wrapper">
+            
+            <input 
+              [type]="mostrarCvv ? 'text' : 'password'" 
+              id="cvv" 
+              placeholder="123" 
+              maxlength="3"
+              [ngModel]="cvv" 
+              (ngModelChange)="formatearCvv($event)"
+              (keypress)="permitirSoloNumeros($event)"
+              name="cvv"
+              required>
+              
+            <button type="button" class="toggle-password-btn" (click)="toggleCvv()">
+              @if (!mostrarCvv) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              }
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="pay-btn">
+        Pagar ${{ totalAPagar | number:'1.2-2' }}
+      </button>
+
+    </form>
+  </div>
+</div>
