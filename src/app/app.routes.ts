@@ -41,6 +41,10 @@ export const routes: Routes = [
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
+   { 
+    path: 'pedidos-empleado', 
+    loadComponent: () => import('./features/empleado/pedidos-component/pedidos-component').then(m => m.PedidosComponent)
+  },
 
   // --- 3. RUTAS CON LAYOUT (Al poner este path: '' después, ya no bloquea a las de arriba) ---
   {
