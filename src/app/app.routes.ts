@@ -13,7 +13,7 @@ export const routes: Routes = [
     redirectTo: 'menu-clientes-component',
     pathMatch: 'full'
   },
-  
+
   // --- 1. RUTAS ESPECÍFICAS PRIMERO (Angular las encuentra rápido) ---
   {
     path: 'menu-clientes-component',
@@ -27,13 +27,17 @@ export const routes: Routes = [
     path: 'promociones',
     loadComponent: () => import('./features/clientes/promociones-component/promociones-component').then(m => m.PromocionesComponent)
   },
-  { 
-    path: 'carrito-compra', 
+  {
+    path: 'carrito-compra',
     loadComponent: () => import('./features/clientes/carrito-compra-component/carrito-compra-component').then(m => m.CarritoCompraComponent)
   },
-  { 
-    path: 'contacto', 
+  {
+    path: 'contacto',
     loadComponent: () => import('./features/clientes/contacto-component/contacto-component').then(m => m.ContactoComponent)
+  },
+  {
+    path: 'pago',
+    loadComponent: () => import('./features/clientes/payment-component/payment-component').then(m => m.PaymentComponent)
   },
 
   // --- 2. RUTAS DE AUTENTICACIÓN ---
