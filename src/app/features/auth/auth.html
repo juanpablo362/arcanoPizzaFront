@@ -21,6 +21,13 @@
         <h2 class="auth-title">Arcano Pizza</h2>
         <p class="auth-subtitle">Portal de acceso místico</p>
 
+        @if (apiError()) {
+          <div class="alert alert-danger auth-alert mb-3" role="alert">{{ apiError() }}</div>
+        }
+        @if (registerSuccess()) {
+          <div class="alert alert-success auth-alert mb-3" role="alert">{{ registerSuccess() }}</div>
+        }
+
         <!-- Tabs -->
         <div class="auth-tabs mb-4">
           <button
@@ -49,9 +56,9 @@
               Accede a tu cuenta para realizar pedidos
             </p>
 
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
               <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
+                <label for="email" class="form-label">Correo</label>
                 <input
                   type="email"
                   id="email"
@@ -61,7 +68,7 @@
                   autocomplete="email"
                 />
                 @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-                  <div class="auth-error">Introduce un email válido</div>
+                  <div class="auth-error">Introduce un correo válido</div>
                 }
               </div>
               <div class="mb-4">
@@ -92,7 +99,87 @@
         @if (activeTab() === 'register') {
           <div class="auth-card">
             <h3 class="auth-card-title">Registrarse</h3>
-            <p class="auth-card-subtitle">Próximamente</p>
+            <p class="auth-card-subtitle">Crea tu cuenta para pedir cuando quieras</p>
+
+            <form [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()">
+              <div class="mb-3">
+                <label for="reg-nombre" class="form-label">Nombre de usuario</label>
+                <input
+                  type="text"
+                  id="reg-nombre"
+                  class="form-control auth-input"
+                  formControlName="nombreUsuario"
+                  placeholder="Tu nombre de usuario"
+                  autocomplete="username"
+                />
+                @if (registerForm.get('nombreUsuario')?.invalid && registerForm.get('nombreUsuario')?.touched) {
+                  <div class="auth-error">Introduce al menos 2 caracteres</div>
+                }
+              </div>
+              <div class="mb-3">
+                <label for="reg-email" class="form-label">Correo</label>
+                <input
+                  type="email"
+                  id="reg-email"
+                  class="form-control auth-input"
+                  formControlName="correo"
+                  placeholder="tu&#64;email.com"
+                  autocomplete="email"
+                />
+                @if (registerForm.get('correo')?.invalid && registerForm.get('correo')?.touched) {
+                  <div class="auth-error">Introduce un correo válido</div>
+                }
+              </div>
+              <div class="mb-3">
+                <label for="reg-telefono" class="form-label">Teléfono (opcional)</label>
+                <input
+                  type="tel"
+                  id="reg-telefono"
+                  class="form-control auth-input"
+                  formControlName="telefono"
+                  placeholder="Ej. 600123456"
+                  autocomplete="tel"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="reg-password" class="form-label">Contraseña</label>
+                <input
+                  type="password"
+                  id="reg-password"
+                  class="form-control auth-input"
+                  formControlName="password"
+                  placeholder="••••••••"
+                  autocomplete="new-password"
+                />
+                @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+                  <div class="auth-error">Mínimo 6 caracteres</div>
+                }
+              </div>
+              <div class="mb-4">
+                <label for="reg-confirm" class="form-label">Confirmar contraseña</label>
+                <input
+                  type="password"
+                  id="reg-confirm"
+                  class="form-control auth-input"
+                  formControlName="confirmPassword"
+                  placeholder="••••••••"
+                  autocomplete="new-password"
+                />
+                @if (
+                  registerForm.hasError('passwordMismatch') &&
+                  registerForm.get('confirmPassword')?.touched
+                ) {
+                  <div class="auth-error">Las contraseñas no coinciden</div>
+                }
+              </div>
+              <button
+                type="submit"
+                class="btn auth-btn w-100"
+                [disabled]="isSubmitting()"
+              >
+                Crear cuenta
+              </button>
+            </form>
           </div>
         }
 

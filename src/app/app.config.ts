@@ -11,6 +11,7 @@ import {
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
+import { authRefreshInterceptor } from './core/interceptors/auth-refresh-interceptor';
 import { errorInterceptor } from './core/interceptors/error-interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -19,7 +20,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideHttpClient(
-      withInterceptors([authInterceptor, errorInterceptor])
+      withInterceptors([
+        authInterceptor,
+        authRefreshInterceptor,
+        errorInterceptor,
+      ])
     ),
   ],
 };

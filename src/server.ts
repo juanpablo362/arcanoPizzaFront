@@ -4,6 +4,7 @@ import {
   isMainModule,
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import express from 'express';
 import { join } from 'node:path';
 
@@ -13,16 +14,22 @@ const app = express();
 const angularApp = new AngularNodeAppEngine();
 
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * Con `ng serve` y SSR, las peticiones a `/api` las gestiona Express antes que Angular.
+ * Sin esto, POST /api/... acaba en el motor SSR y devuelve 500.
+ * Alineado con proxy.conf.json; sobrescribe con API_PROXY_TARGET (p. ej. https://localhost:7030).
  */
+const apiProxyTarget =
+  process.env['API_PROXY_TARGET'] ?? 'http://localhost:5010';
+
+app.use(
+  '/api',
+  createProxyMiddleware({
+    target: apiProxyTarget,
+    changeOrigin: true,
+    secure: false,
+    followRedirects: true,
+  }),
+);
 
 /**
  * Serve static files from /browser

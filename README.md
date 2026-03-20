@@ -16,7 +16,65 @@ Abre el navegador en `http://localhost:4200/`. La aplicación se recarga al modi
 
 ### Proxy de la API
 
-Las peticiones a `/api` se redirigen a la API ArcanoPizza. Por defecto usa `localhost:52413`. Si la API corre en otro puerto (44338, 7030, 5010), edita `proxy.conf.json` y cambia el `target`.
+El front usa rutas **relativas** (`/api/...`). Con **SSR**, `ng serve` atiende el tráfico con **Express** ([`server.ts`](src/server.ts)): las peticiones a `/api` se **proxifican allí** al backend (`http://localhost:5010` por defecto). El `proxy.conf.json` sigue siendo útil para escenarios sin SSR; en SSR el origen del proxy en Node es `server.ts`.
+
+Variable de entorno opcional al ejecutar el servidor Node (`ng serve` o `serve:ssr`):
+
+- **`API_PROXY_TARGET`**: URL base de la API (ej. `https://localhost:7030` si solo tienes HTTPS). Si no se define, se usa `http://localhost:5010`.
+
+El navegador solo habla con `http://localhost:4200`, así **no se dispara CORS** por el origen de la API.
+
+| Archivo | Uso |
+|--------|-----|
+| [`proxy.conf.json`](proxy.conf.json) | Por defecto → `http://localhost:5010` (`followRedirects: true`: si la API redirige a HTTPS, el proxy lo resuelve y el navegador no ve CORS) |
+| [`proxy.conf.https.json`](proxy.conf.https.json) | API en HTTPS → `https://localhost:7030` (`secure: false` + `followRedirects: true`) |
+
+Solo HTTP:
+
+```bash
+ng serve
+```
+
+API en **HTTPS:7030** (certificado autofirmado):
+
+```bash
+ng serve --proxy-config proxy.conf.https.json
+```
+
+#### Redirección a `https://localhost:7030` y CORS
+
+Si el error menciona **`(redirected from 'http://localhost:4200/api/...')`** hacia `https://localhost:7030`, la API está respondiendo **302/307** (p. ej. `UseHttpsRedirection`). Sin `followRedirects`, el proxy reenvía ese redirect y el **XHR** lo sigue en el cliente → otro origen → CORS. Con **`followRedirects: true`** el proxy completa la cadena y el navegador solo ve la respuesta en `http://localhost:4200/api/...`.
+
+#### OPTIONS 405 sin pasar por el proxy
+
+Si ves **`OPTIONS`** a `7030` **sin** `4200` en la URL de la petición, la app está usando **URL absoluta** al backend; usa solo **`/api`** + proxy o habilita CORS en la API (`AddCors` / `UseCors`, origen `http://localhost:4200`).
+
+**Auth (JWT + refresh)** — cabecera en POST/PUT con body: `Content-Type: application/json`. El front usa:
+
+| Método | Ruta | Body (JSON) |
+|--------|------|---------------|
+| POST | `/api/auth/register` | `{ "nombreUsuario", "correo", "password", "telefono" }` (`telefono` puede ser `null`) |
+| POST | `/api/auth/login` | `{ "correo", "password" }` |
+| POST | `/api/auth/refresh` | `{ "refreshToken" }` (sin interceptores; lo gestiona `AuthService`) |
+| POST | `/api/auth/logout` | `{ "refreshToken" }` |
+
+Respuesta de **login** y **refresh** (resumen):
+
+```json
+{
+  "accessToken": "...",
+  "refreshToken": "...",
+  "expiresIn": 1800,
+  "usuario": {
+    "idUsuario": 1,
+    "nombreUsuario": "...",
+    "correo": "...",
+    "rol": "Cliente"
+  }
+}
+```
+
+Rutas con `[Authorize]`: cabecera `Authorization: Bearer <accessToken>`. El front guarda access y refresh (p. ej. en `localStorage`); ante **401** en peticiones protegidas, el interceptor intenta `/api/auth/refresh` y reintenta la petición. Si el registro no devuelve esta forma de respuesta, se muestra éxito y se invita a iniciar sesión.
 
 ## Arquitectura del proyecto
 
