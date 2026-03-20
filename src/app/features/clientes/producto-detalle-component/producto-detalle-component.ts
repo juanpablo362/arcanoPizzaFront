@@ -56,5 +56,7 @@ export class ProductoDetalleComponent implements OnInit {
 
     // Solo lo enviamos a la memoria global y listo. Sin alertas, sin cambiar de pantalla.
     this.carritoService.agregarAlCarrito(nuevoPedido);
+    // Después de agregar, regresamos al menú de clientes.
+    this.router.navigate(['/menu-clientes-component']);
   }
 }

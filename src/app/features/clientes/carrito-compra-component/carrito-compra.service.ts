@@ -17,7 +17,6 @@ export class CarritoService {
   constructor() { }
 
   obtenerCarrito() {
-    console.log('👀 La pantalla del carrito está leyendo los datos. Total de items:', this.items.length);
     return this.items;
   }
 
@@ -29,7 +28,6 @@ export class CarritoService {
     } else {
       this.items.push(nuevoItem);
     }
-    console.log('✅ Se agregó una pizza. La memoria ahora tiene:', this.items);
   }
 
   eliminarItem(id: string | number) {

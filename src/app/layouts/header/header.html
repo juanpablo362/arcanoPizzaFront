@@ -3,5 +3,11 @@
     Extras
   </a>
   <a routerLink="/pedidos" routerLinkActive="active">Pedidos</a>
-  <a routerLink="/auth" routerLinkActive="active">Auth</a>
+  @if (isLoggedIn()) {
+    <button type="button" class="logout-btn" (click)="logout()">
+      Cerrar sesión
+    </button>
+  } @else {
+    <a routerLink="/auth" routerLinkActive="active">Iniciar sesión</a>
+  }
 </nav>

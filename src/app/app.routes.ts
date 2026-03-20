@@ -17,26 +17,32 @@ export const routes: Routes = [
   // --- 1. RUTAS ESPECÍFICAS PRIMERO (Angular las encuentra rápido) ---
   {
     path: 'menu-clientes-component',
+    canActivate: [authGuard],
     loadChildren: () => import('./features/clientes/menu-clientes-component/menu-clientes-component.routes').then(m => m.MENU_CLIENTES_ROUTES)
   },
   {
     path: 'producto-detalle',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/clientes/producto-detalle-component/producto-detalle-component').then(m => m.ProductoDetalleComponent)
   },
   {
     path: 'promociones',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/clientes/promociones-component/promociones-component').then(m => m.PromocionesComponent)
   },
   {
     path: 'carrito-compra',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/clientes/carrito-compra-component/carrito-compra-component').then(m => m.CarritoCompraComponent)
   },
   {
     path: 'contacto',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/clientes/contacto-component/contacto-component').then(m => m.ContactoComponent)
   },
   {
     path: 'pago',
+    canActivate: [authGuard],
     loadComponent: () => import('./features/clientes/payment-component/payment-component').then(m => m.PaymentComponent)
   },
 

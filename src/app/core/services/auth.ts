@@ -37,6 +37,11 @@ export class AuthService extends ApiService {
   private readonly rawHttp = new HttpClient(inject(HttpBackend));
 
   private refreshInFlight$: Observable<void> | null = null;
+  /**
+   * Aumenta cada vez que invalidamos la sesión.
+   * Evita que una respuesta "vieja" de refresh re-aplique tokens después de logout/invalidación.
+   */
+  private sessionGeneration = 0;
 
   /** JWT de acceso ([Authorize] en la API) */
   readonly accessToken = signal<string | null>(null);
@@ -111,6 +116,7 @@ export class AuthService extends ApiService {
    * Usar cuando falle el refresh o no haya tokens.
    */
   invalidateSession(): void {
+    this.sessionGeneration++;
     this.accessToken.set(null);
     this.refreshToken.set(null);
     this.user.set(null);
@@ -166,10 +172,16 @@ export class AuthService extends ApiService {
     if (this.refreshInFlight$) {
       return this.refreshInFlight$;
     }
+    const currentGeneration = this.sessionGeneration;
     this.refreshInFlight$ = this.rawHttp
       .post<unknown>(`${this.baseUrl}/auth/refresh`, { refreshToken: rt })
       .pipe(
         tap((body) => {
+          // Si la sesión ya fue invalidada (logout / refresh fallido / etc),
+          // no re-aplicar tokens aunque la llamada a refresh haya concluido.
+          if (this.sessionGeneration !== currentGeneration) {
+            return;
+          }
           const session = parseAuthTokenResponse(body);
           if (!session) {
             throw new Error('Respuesta de refresh inválida');

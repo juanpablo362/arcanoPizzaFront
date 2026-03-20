@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/services/auth';
+import { CarritoService } from '../carrito-compra-component/carrito-compra.service';
 
 export interface Producto {
   id: number;
@@ -24,6 +26,10 @@ export interface Producto {
 })
 export class MenuClientesComponent {
   private router = inject(Router);
+  private readonly auth = inject(AuthService);
+  private readonly carritoService = inject(CarritoService);
+
+  readonly isLoggedIn = computed(() => this.auth.isAuthenticated());
 
   categorias: string[] = ['Pizza Clásica', 'Pizza Especiales', 'Bebidas', 'Extras'];
   categoriaActiva: string = 'Pizza Clásica';
@@ -57,5 +63,16 @@ export class MenuClientesComponent {
 
   abrirDetalle(productoSeleccionado: Producto) {
     this.router.navigate(['/producto-detalle'], { state: { producto: productoSeleccionado } });
+  }
+
+  logout(): void {
+    this.auth.logout();
+  }
+
+  carritoCantidad(): number {
+    return this.carritoService.obtenerCarrito().reduce(
+      (acc, item) => acc + item.cantidad,
+      0,
+    );
   }
 }

@@ -40,6 +40,20 @@ export class Auth {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
 
+  private navigateAfterAuth(): void {
+    const user = this.authService.user();
+    const rol = user?.rol;
+
+    // Regla de negocio: si eres cliente, vas al menú de clientes.
+    if (rol === 'Cliente') {
+      this.router.navigate(['/menu-clientes-component']);
+      return;
+    }
+
+    // Por defecto se mantiene el comportamiento anterior.
+    this.router.navigate(['/pedidos']);
+  }
+
   protected readonly activeTab = signal<'login' | 'register'>('login');
   protected readonly isSubmitting = signal(false);
   protected readonly apiError = signal<string | null>(null);
@@ -84,7 +98,7 @@ export class Auth {
       .login({ correo: email, password })
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
-        next: () => this.router.navigate(['/pedidos']),
+        next: () => this.navigateAfterAuth(),
         error: (err: unknown) => {
           this.apiError.set(
             err instanceof HttpErrorResponse
@@ -117,7 +131,7 @@ export class Auth {
       .subscribe({
         next: (result) => {
           if (result === 'authenticated') {
-            this.router.navigate(['/pedidos']);
+            this.navigateAfterAuth();
             return;
           }
           this.registerSuccess.set(

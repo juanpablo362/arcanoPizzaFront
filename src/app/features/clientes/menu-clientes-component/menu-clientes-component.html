@@ -2,14 +2,17 @@
   <nav class="navbar">
     <div class="logo">LOGO</div>
     <div class="nav-links">
-      <a routerLink="/" style="cursor: pointer;" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
       <a routerLink="/menu-clientes-component" style="cursor: pointer;" routerLinkActive="active-link">Menú</a>
       <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
       <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
       <a routerLink="/carrito-compra" style="cursor: pointer;" routerLinkActive="active-link">Carrito</a>
     </div>
     <div class="auth">
-      <a style="cursor: pointer;">Iniciar sesión</a>
+      @if (isLoggedIn()) {
+        <a style="cursor: pointer;" (click)="logout()">Cerrar sesión</a>
+      } @else {
+        <a routerLink="/auth" style="cursor: pointer;">Iniciar sesión</a>
+      }
     </div>
   </nav>
 
@@ -35,4 +38,13 @@
     </div>
     }
   </div>
+
+  <a routerLink="/carrito-compra" class="cart-fab" aria-label="Abrir carrito">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="24" height="24">
+      <path d="M7 4h-2l-1 0v2h1l2.2 10.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L22 8H6" fill="currentColor"/>
+      <circle cx="10" cy="20" r="1.6"/>
+      <circle cx="18" cy="20" r="1.6"/>
+    </svg>
+    <span class="cart-badge">{{ carritoCantidad() }}</span>
+  </a>
 </div>

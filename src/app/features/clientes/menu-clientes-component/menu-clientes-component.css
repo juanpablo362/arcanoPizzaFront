@@ -167,3 +167,48 @@
   font-size: 0.95rem;
   line-height: 1.5;
 }
+
+/* --- BOTÓN FLOTANTE DE CARRITO --- */
+.cart-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(138, 43, 226, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 18px rgba(138, 43, 226, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: pointer;
+  text-decoration: none;
+  color: #ffffff;
+  position: fixed;
+}
+
+.cart-fab svg {
+  width: 26px;
+  height: 26px;
+  color: #ffffff;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #5a1bb8;
+  font-weight: 900;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(90, 27, 184, 0.35);
+}
