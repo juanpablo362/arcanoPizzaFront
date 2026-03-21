@@ -112,6 +112,8 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.8);
   transition: all 0.4s ease;
   border: 1px solid rgba(255, 255, 255, 0.05); /* Borde casi invisible */
+  display: flex;
+  flex-direction: column;
 }
 
 /* La magia ocurre al pasar el mouse */
@@ -135,6 +137,9 @@
 
 .card-body {
   padding: 25px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .card-header {
@@ -166,4 +171,5 @@
   color: var(--text-muted); /* Gris fantasma */
   font-size: 0.95rem;
   line-height: 1.5;
+  flex-grow: 1; /* Empuja el botón al fondo de la tarjeta si decides usarlo */
 }

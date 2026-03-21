@@ -1,12 +1,13 @@
 <div class="page-container">
+  
   <nav class="navbar">
     <div class="logo">LOGO</div>
     <div class="nav-links">
-      <a routerLink="/" style="cursor: pointer;" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
-      <a routerLink="/menu-clientes-component" style="cursor: pointer;" routerLinkActive="active-link">Menú</a>
-      <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
-      <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
-      <a routerLink="/carrito-compra" style="cursor: pointer;" routerLinkActive="active-link">Carrito</a>
+      <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
+      <a routerLink="/menu-clientes-component" routerLinkActive="active-link">Menú</a>
+      <a routerLink="/promociones" routerLinkActive="active-link">Promociones</a>
+      <a routerLink="/contacto" routerLinkActive="active-link">Contacto</a>
+      <a routerLink="/carrito-compra" routerLinkActive="active-link">Carrito</a>
     </div>
     <div class="auth">
       <a style="cursor: pointer;">Iniciar sesión</a>
@@ -14,25 +15,53 @@
   </nav>
 
   <div class="category-filters">
-    @for (cat of categorias; track cat) {
-    <button class="filter-btn" [class.active]="categoriaActiva === cat" (click)="seleccionarCategoria(cat)">
-      {{ cat }}
-    </button>
+    @if (cargando) {
+      <p style="color: var(--text-muted); font-style: italic;">Invocando las runas...</p>
+    } @else {
+      @for (cat of categorias; track cat) {
+        <button 
+          class="filter-btn" 
+          [class.active]="categoriaActiva === cat" 
+          (click)="seleccionarCategoria(cat)">
+          {{ cat }}
+        </button>
+      }
     }
   </div>
 
   <div class="products-grid">
     @for (producto of productosFiltrados; track producto.id) {
-    <div class="product-card" (click)="abrirDetalle(producto)" style="cursor: pointer;">
-      <img [src]="producto.imagen" [alt]="'Pizza ' + producto.nombre">
-      <div class="card-body">
-        <div class="card-header">
-          <h3 class="pizza-title">{{ producto.nombre }}</h3>
-          <span class="pizza-price">${{ producto.precio | number:'1.2-2' }} MXN</span>
+      <div class="product-card" (click)="abrirDetalle(producto)" style="cursor: pointer;">
+        
+        <img [src]="producto.imagenURL || 'assets/img/pizza-placeholder.jpg'" [alt]="producto.nombre">
+
+        <div class="card-body">
+          <div class="card-header">
+            <h3 class="pizza-title">{{ producto.nombre }}</h3>
+            <span class="pizza-price">${{ producto.precio | number:'1.2-2' }}</span>
+          </div>
+          <p class="pizza-desc">{{ producto.descripcion }}</p>
+          
+          <div style="margin-top: 20px; text-align: center;">
+             <button class="filter-btn" style="width: 100%; padding: 8px;">Ver detalles</button>
+          </div>
+
         </div>
-        <p class="pizza-desc">{{ producto.descripcion }}</p>
       </div>
-    </div>
+    } @empty {
+      
+      <div style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+        @if (cargando) {
+          <p style="color: var(--magic-purple); font-size: 1.2rem; text-shadow: 0 0 10px var(--magic-glow);">
+            ✨ Canalizando la magia oscura...
+          </p>
+        } @else {
+          <p style="color: var(--text-muted);">
+            El grimorio no tiene hechizos para la categoría "{{ categoriaActiva }}".
+          </p>
+        }
+      </div>
+
     }
   </div>
 </div>
