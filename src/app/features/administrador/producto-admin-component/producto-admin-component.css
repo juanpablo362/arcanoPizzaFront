@@ -1,0 +1,8 @@
+.text-purple { color: purple; }
+
+.avatar { font-weight: bold; }
+
+.btn-group .btn.active {
+  background-color: #0d6efd;
+  color: white;
+}

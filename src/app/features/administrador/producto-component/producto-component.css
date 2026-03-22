@@ -1,0 +1,31 @@
+/* Bordes suaves y sombras para las cards */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Botones redondeados */
+.btn {
+  border-radius: 20px;
+}
+
+/* Badges más pequeñas y estilizadas */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.35em 0.6em;
+}
+
+/* Separación entre productos */
+.border-top {
+  border-color: #dee2e6 !important;
+}
+
+/* Iconos un poco más grandes */
+.bi {
+  font-size: 1.2rem;
+}
+
+/* Hover sobre botones de acción */
+.btn-outline-secondary:hover {
+  background-color: #e2e6ea;
+}

@@ -1,0 +1,73 @@
+<div class="container-fluid p-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="logo border p-2">LOGO</div>
+    <div class="user d-flex align-items-center">
+      <i class="bi bi-person-circle me-2"></i>
+      Juan Mendoza
+      <button class="btn btn-outline-secondary btn-sm ms-2"><i class="bi bi-box-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- Navigation Buttons -->
+  <div class="mb-4">
+    <button class="btn btn-outline-primary me-2">Dashboard</button>
+    <button class="btn btn-outline-primary me-2">Productos</button>
+    <button class="btn btn-primary">Usuarios</button>
+  </div>
+
+  <!-- Resumen -->
+  <div class="mb-4 d-flex gap-3">
+    <div class="card p-3 flex-fill text-center">
+      <div>Total Usuarios</div>
+      <div class="fs-4 fw-bold">{{ totalUsuarios }}</div>
+    </div>
+    <div class="card p-3 flex-fill text-center text-success">
+      <div>Empleados</div>
+      <div class="fs-4 fw-bold">{{ totalEmpleados }}</div>
+    </div>
+    <div class="card p-3 flex-fill text-center text-danger">
+      <div>Administradores</div>
+      <div class="fs-4 fw-bold">{{ totalAdministradores }}</div>
+    </div>
+    <div class="card p-3 flex-fill text-center text-purple">
+      <div>Usuarios Activos</div>
+      <div class="fs-4 fw-bold">{{ totalActivos }}</div>
+    </div>
+    <button class="btn btn-outline-primary ms-auto">+ Nuevo Usuario</button>
+  </div>
+
+  <!-- Lista de Usuarios -->
+  <div class="card p-3">
+    <!-- Filtros -->
+    <div class="mb-3 btn-group" role="group">
+      <button class="btn btn-outline-primary" [class.active]="filtro==='Todos'" (click)="filtro='Todos'">Todos</button>
+      <button class="btn btn-outline-primary" [class.active]="filtro==='Empleados'" (click)="filtro='Empleados'">Empleados</button>
+      <button class="btn btn-outline-primary" [class.active]="filtro==='Administradores'" (click)="filtro='Administradores'">Administradores</button>
+    </div>
+
+    <!-- Usuarios -->
+    <div *ngFor="let usuario of usuariosFiltrados()" class="d-flex align-items-center justify-content-between p-2 border-top">
+      <div class="d-flex align-items-center gap-3">
+        <div class="avatar rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
+          {{ usuario.nombre.split(' ').map(n => n[0]).join('') }}
+        </div>
+        <div>
+          <div>
+            {{ usuario.nombre }}
+            <span class="badge bg-success" *ngIf="usuario.tipo==='Empleado'">Empleado</span>
+            <span class="badge bg-danger" *ngIf="usuario.tipo==='Administrador'">Administrador</span>
+            <span class="badge bg-success" *ngIf="usuario.activo">Activo</span>
+          </div>
+          <div class="text-muted">{{ usuario.email }} • {{ usuario.telefono }}</div>
+          <div class="text-muted small">Miembro desde: {{ usuario.fechaMiembro }}</div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm" (click)="desactivarUsuario(usuario)">Desactivar</button>
+        <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-outline-danger btn-sm" (click)="eliminarUsuario(usuario)"><i class="bi bi-trash"></i></button>
+      </div>
+    </div>
+  </div>
+</div>

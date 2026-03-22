@@ -7,14 +7,14 @@ import { PromocionesComponent } from './features/clientes/promociones-component/
 
 export const routes: Routes = [
 
-  // 👇 --- 0. RUTA MAESTRA POR DEFECTO (Añadida aquí al inicio) --- 👇
+  // 👇 --- 0. RUTA MAESTRA POR DEFECTO --- 👇
   {
     path: '',
     redirectTo: 'menu-clientes-component',
     pathMatch: 'full'
   },
 
-  // --- 1. RUTAS ESPECÍFICAS PRIMERO (Angular las encuentra rápido) ---
+  // --- 1. RUTAS ESPECÍFICAS PRIMERO ---
   {
     path: 'menu-clientes-component',
     loadChildren: () => import('./features/clientes/menu-clientes-component/menu-clientes-component.routes').then(m => m.MENU_CLIENTES_ROUTES)
@@ -26,6 +26,18 @@ export const routes: Routes = [
   {
     path: 'promociones',
     loadComponent: () => import('./features/clientes/promociones-component/promociones-component').then(m => m.PromocionesComponent)
+  },
+  {
+    path: 'dashboard', // NUEVA RUTA
+    loadComponent: () => import('./features/administrador/dashboard-component/dashboard-component').then(m => m.DashboardComponent)
+  },
+  {
+  path: 'productos',
+  loadComponent: () => import('./features/administrador/producto-component/producto-component').then(m => m.ProductoComponent)
+  },
+   {
+  path: 'admin',
+  loadComponent: () => import('./features/administrador/producto-admin-component/producto-admin-component').then(m => m.ProductoAdminComponent)
   },
   {
     path: 'carrito-compra',
@@ -46,7 +58,7 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
 
-  // --- 3. RUTAS CON LAYOUT (Al poner este path: '' después, ya no bloquea a las de arriba) ---
+  // --- 3. RUTAS CON LAYOUT ---
   {
     path: '',
     component: MainLayout,
