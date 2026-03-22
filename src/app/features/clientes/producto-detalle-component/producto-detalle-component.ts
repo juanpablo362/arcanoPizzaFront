@@ -28,6 +28,12 @@ export class ProductoDetalleComponent implements OnInit {
       return;
     }
 
+    // 👻 EXORCIZANDO A LA MOZZARELLA 👻
+    // Si los ingredientes vienen como texto, los partimos por la coma para hacer una lista real
+    if (typeof this.producto.ingredientes === 'string') {
+      this.producto.ingredientes = this.producto.ingredientes.split(',');
+    }
+
     if (this.producto.tamanos && this.producto.tamanos.length > 0) {
       this.selectedSize = this.producto.tamanos[0];
     }
@@ -38,23 +44,31 @@ export class ProductoDetalleComponent implements OnInit {
   decreaseQuantity() { if (this.quantity > 1) this.quantity--; }
 
   get total(): number {
-    const precioBase = this.selectedSize ? this.selectedSize.price : this.producto.precio;
+    // Usamos precioBase si no hay precio de tamaño
+    const precioBase = this.selectedSize ? this.selectedSize.price : (this.producto.precioBase || this.producto.precio);
     return precioBase * this.quantity;
   }
   
   agregarAlCarrito() {
-    const precioFinal = this.selectedSize ? this.selectedSize.price : this.producto.precio;
+    const precioFinal = this.selectedSize ? this.selectedSize.price : (this.producto.precioBase || this.producto.precio);
     const nombreFinal = this.selectedSize ? `${this.producto.nombre} (${this.selectedSize.name})` : this.producto.nombre;
 
+    // 🕵️‍♂️ SOLUCIÓN DEL NaN 🕵️‍♂️
+    // Rescatamos el número puro, sin textos extra.
+    const idLimpio = this.producto.idProducto || this.producto.id;
+
     const nuevoPedido: ItemCarrito = {
-      id: `${this.producto.id}-${this.selectedSize ? this.selectedSize.name : 'unico'}`,
+      id: idLimpio, // 👈 Ahora viaja como un número puro (ej. 5)
       nombre: nombreFinal,
       precio: precioFinal,
       cantidad: this.quantity,
-      imagen: this.producto.imagen
+      imagen: this.producto.imagenURL || this.producto.imagen
     };
 
-    // Solo lo enviamos a la memoria global y listo. Sin alertas, sin cambiar de pantalla.
+    // Solo lo enviamos a la memoria global
     this.carritoService.agregarAlCarrito(nuevoPedido);
+    
+    // (Opcional) Un mensajito para saber que sí funcionó
+    alert('¡Pizza agregada al carrito con éxito!'); 
   }
 }

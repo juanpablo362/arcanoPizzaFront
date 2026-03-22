@@ -12,7 +12,6 @@ import { CarritoService, ItemCarrito } from './carrito-compra.service';
 })
 export class CarritoCompraComponent implements OnInit {
   
-  private router = inject(Router);
   private carritoService = inject(CarritoService);
 
   carritoItems: ItemCarrito[] = [];
@@ -49,9 +48,9 @@ export class CarritoCompraComponent implements OnInit {
     this.total = this.subtotal + this.iva;
   }
 
-  // --- NUEVA FUNCIÓN ---
-irAlPago() {
-    console.log('¡Botón presionado! Viajando a la pasarela...');
-    this.router.navigate(['/pago']);
+  // --- FUNCIÓN ACTUALIZADA ---
+  irAlPago() {
+    console.log('Iniciando conexión con Stripe...');
+    this.carritoService.procesarPagoEnStripe();
   }
 }
