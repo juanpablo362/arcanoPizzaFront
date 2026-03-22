@@ -58,7 +58,7 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
 
-  // --- 3. RUTAS CON LAYOUT ---
+  // --- 3. RUTAS CON LAYOUT --
   {
     path: '',
     component: MainLayout,
