@@ -219,3 +219,26 @@
   color: #ffffff;
   box-shadow: 0 0 20px var(--magic-glow);
 }
+
+.toast-notification {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background-color: var(--magic-purple, #8A2BE2);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(138, 43, 226, 0.6);
+  z-index: 1000;
+  /* Animación para que entre deslizándose desde abajo */
+  animation: slideInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(150px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

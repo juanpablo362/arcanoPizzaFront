@@ -1,5 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface ItemCarrito {
   id: string | number;
@@ -15,31 +16,64 @@ export interface ItemCarrito {
 
 export class CarritoService {
   private items: ItemCarrito[] = [];
-  
-  // 👈 Inyectamos el cliente HTTP para poder hablar con .NET
-  private http = inject(HttpClient); 
+  private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
+  private readonly STORAGE_KEY = 'arcano_carrito';
 
-  constructor() { }
+  constructor() {
+    this.cargarDesdeMemoria();
+  }
 
-  obtenerCarrito() {
+  /**
+   * Verifica si la ejecución ocurre en el cliente (Navegador) para evitar errores SSR.
+   */
+  private isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
+
+  private cargarDesdeMemoria(): void {
+    if (this.isBrowser()) {
+      const memoria = localStorage.getItem(this.STORAGE_KEY);
+      if (memoria) {
+        this.items = JSON.parse(memoria);
+      }
+    }
+  }
+
+  private guardarEnMemoria(): void {
+    if (this.isBrowser()) {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.items));
+    }
+  }
+
+  obtenerCarrito(): ItemCarrito[] {
     return this.items;
   }
 
-  agregarAlCarrito(nuevoItem: ItemCarrito) {
+  agregarAlCarrito(nuevoItem: ItemCarrito): void {
     const itemExistente = this.items.find(item => item.id === nuevoItem.id);
     if (itemExistente) {
       itemExistente.cantidad += nuevoItem.cantidad;
     } else {
       this.items.push(nuevoItem);
     }
+    this.guardarEnMemoria();
   }
 
-  eliminarItem(id: string | number) {
+  eliminarItem(id: string | number): void {
     this.items = this.items.filter(item => item.id !== id);
+    this.guardarEnMemoria();
+  }
+
+  vaciarCarrito(): void {
+    this.items = [];
+    if (this.isBrowser()) {
+      localStorage.removeItem(this.STORAGE_KEY);
+    }
   }
 
   // 🚀 ESTA ES LA CONEXIÓN ESTRELLA CON .NET
-procesarPagoEnStripe() {
+  procesarPagoEnStripe() {
     if (this.items.length === 0) {
       alert('Tu carrito está vacío. ¡Agrega unas pizzas primero!');
       return;
@@ -51,7 +85,7 @@ procesarPagoEnStripe() {
       const idReal = item.id || (item as any).idProducto || (item as any).IdProducto;
 
       return {
-        productoId: Number(idReal), 
+        productoId: Number(idReal),
         cantidad: item.cantidad
       };
     });
@@ -59,7 +93,7 @@ procesarPagoEnStripe() {
     console.log('Enviando datos CORREGIDOS a la API:', datosParaLaApi);
 
     // 2. Hacemos la llamada a tu API
-    this.http.post<{url: string}>('https://localhost:7030/api/pagos/crear-sesion', datosParaLaApi)
+    this.http.post<{ url: string }>('https://localhost:7030/api/pagos/crear-sesion', datosParaLaApi)
       .subscribe({
         next: (respuesta) => {
           window.location.href = respuesta.url;
