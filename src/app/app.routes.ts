@@ -28,6 +28,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/clientes/carrito-compra-component/carrito-compra-component').then(m => m.CarritoCompraComponent)
   },
   {
+    path: 'pago-exito',
+    loadChildren: () => import('./features/clientes/pago-exito/pago-exito.routes').then(m => m.PAGO_EXITO_ROUTES)
+  },
+  {
+    path: 'pago-cancelado',
+    loadChildren: () => import('./features/clientes/pago-cancelado/pago-cancelado.routes').then(m => m.PAGO_CANCELADO_ROUTES)
+  },
+  {
     path: 'contacto',
     loadComponent: () => import('./features/clientes/contacto-component/contacto-component').then(m => m.ContactoComponent)
   },
