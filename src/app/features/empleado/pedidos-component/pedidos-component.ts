@@ -21,6 +21,9 @@ interface Pedido {
   articulos: Articulo[];
   total: number;
 }
+
+type TipoFiltro = 'Todos' | 'Nuevo' | 'Preparando' | 'Listo' | 'En Ruta';
+
 @Component({
   selector: 'app-pedidos-component',
   standalone: true,
@@ -29,7 +32,8 @@ interface Pedido {
   styleUrl: './pedidos-component.css',
 })
 export class PedidosComponent implements OnInit {
-  filtroActual: string = 'Todos';
+  
+  filtroActual: TipoFiltro = 'Todos';
 
   pedidos: Pedido[] = [
     {
@@ -71,6 +75,41 @@ export class PedidosComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
+
+// 1. GETTER MAGICO: Angular usará esto para pintar la lista basándose en el filtro
+  get pedidosFiltrados(): Pedido[] {
+    if (this.filtroActual === 'Todos') {
+      return this.pedidos;
+    }
+    return this.pedidos.filter(pedido => pedido.estado === this.filtroActual);
+  }
+
+  // 2. MÉTODO PARA CAMBIAR DE PESTAÑA
+  cambiarFiltro(nuevoFiltro: TipoFiltro) {
+    this.filtroActual = nuevoFiltro;
+  }
+
+  // 3. MÉTODO PARA AVANZAR EL ESTADO DEL PEDIDO
+  cambiarEstadoPedido(pedido: Pedido) {
+    if (pedido.estado === 'Nuevo') {
+      pedido.estado = 'Preparando';
+    } else if (pedido.estado === 'Preparando') {
+      pedido.estado = 'Listo';
+    } else if (pedido.estado === 'Listo') {
+      pedido.estado = 'En Ruta';
+    }
+    // NOTA: Cuando conectes esto a tu base de datos (ej. PostgreSQL), 
+    // aquí llamarías a tu servicio HTTP: this.pedidoService.actualizarEstado(pedido.id, pedido.estado).subscribe(...)
+  }
+
+  // 4. MÉTODO PARA CONTAR PEDIDOS (Para las tarjetas superiores)
+  obtenerConteo(estado?: TipoFiltro): number {
+    if (!estado || estado === 'Todos') {
+      return this.pedidos.length;
+    }
+    return this.pedidos.filter(pedido => pedido.estado === estado).length;
+  }
+
 
   // Método para obtener el color del badge de estado
   getColorEstado(estado?: string): string {

@@ -13,28 +13,28 @@
     <div class="card">
       <span class="title">Nuevos Pedidos</span>
       <div class="card-body">
-        <span class="number blue">1</span>
+        <span class="number blue">{{ obtenerConteo('Nuevo') }}</span>
         <span class="icon">📦</span>
       </div>
     </div>
     <div class="card">
       <span class="title">En Preparación</span>
       <div class="card-body">
-        <span class="number yellow">1</span>
+        <span class="number yellow">{{ obtenerConteo('Preparando') }}</span>
         <span class="icon">🍳</span>
       </div>
     </div>
     <div class="card">
       <span class="title">Listos</span>
       <div class="card-body">
-        <span class="number green">1</span>
+        <span class="number green">{{ obtenerConteo('Listo') }}</span>
         <span class="icon">✔️</span>
       </div>
     </div>
     <div class="card">
       <span class="title">En Ruta</span>
       <div class="card-body">
-        <span class="number purple">1</span>
+        <span class="number purple">{{ obtenerConteo('En Ruta') }}</span>
         <span class="icon">🚚</span>
       </div>
     </div>
@@ -44,57 +44,77 @@
     <h1>Gestión de Pedidos</h1>
     <p>Administra y actualiza el estado de los pedidos en tiempo real</p>
     
-    <div class="filters">
-      <button class="filter-pill active">Todos (4)</button>
-      <button class="filter-pill">Nuevos (1)</button>
-      <button class="filter-pill">Preparando (1)</button>
-      <button class="filter-pill">Listos (1)</button>
-      <button class="filter-pill">En Ruta (1)</button>
+   <div class="filters">
+      <button class="filter-pill" [class.active]="filtroActual === 'Todos'" (click)="cambiarFiltro('Todos')">
+        Todos ({{ obtenerConteo('Todos') }})
+      </button>
+      <button class="filter-pill" [class.active]="filtroActual === 'Nuevo'" (click)="cambiarFiltro('Nuevo')">
+        Nuevos ({{ obtenerConteo('Nuevo') }})
+      </button>
+      <button class="filter-pill" [class.active]="filtroActual === 'Preparando'" (click)="cambiarFiltro('Preparando')">
+        Preparando ({{ obtenerConteo('Preparando') }})
+      </button>
+      <button class="filter-pill" [class.active]="filtroActual === 'Listo'" (click)="cambiarFiltro('Listo')">
+        Listos ({{ obtenerConteo('Listo') }})
+      </button>
+      <button class="filter-pill" [class.active]="filtroActual === 'En Ruta'" (click)="cambiarFiltro('En Ruta')">
+        En Ruta ({{ obtenerConteo('En Ruta') }})
+      </button>
     </div>
   </section>
 
   <section class="orders-list">
-    <div class="order-card" *ngFor="let pedido of pedidos">
-      
-      <div class="order-header">
-        <h3>Pedido #{{ pedido.id }}</h3>
-        <span class="badge" [style.backgroundColor]="getColorEstado(pedido.estado)">{{ pedido.estado }}</span>
-        <span class="badge red" *ngIf="pedido.urgente">🚨 Urgente</span>
-      </div>
-      <div class="order-times">
-        <small>⏱️ Recibido: {{ pedido.horaRecibido }} - Entrega estimada: {{ pedido.horaEntrega }}</small>
-      </div>
-
-      <div class="order-details">
+    
+    @for (pedido of pedidosFiltrados; track pedido.id) {
+      <div class="order-card">
         
-        <div class="customer-info">
-          <h4>Cliente:</h4>
-          <p>{{ pedido.cliente.nombre }}</p>
-          <p>📞 {{ pedido.cliente.telefono }}</p>
-          <p>📍 {{ pedido.cliente.direccion }}</p>
+        <div class="order-header">
+          <h3>Pedido #{{ pedido.id }}</h3>
+          <span class="badge" [style.backgroundColor]="getColorEstado(pedido.estado)">{{ pedido.estado }}</span>
+          @if (pedido.urgente) {
+            <span class="badge red">🚨 Urgente</span>
+          }
+        </div>
+        
+        <div class="order-times">
+          <small>⏱️ Recibido: {{ pedido.horaRecibido }} - Entrega estimada: {{ pedido.horaEntrega }}</small>
         </div>
 
-        <div class="items-info">
-          <h4>Artículos:</h4>
-          <ul>
-            <li *ngFor="let articulo of pedido.articulos">
-              {{ articulo.cantidad }}x {{ articulo.nombre }}
-              <br>
-              <small class="note" *ngIf="articulo.nota">Nota: {{ articulo.nota }}</small>
-            </li>
-          </ul>
-          <div class="total-row">
-            <strong>Total:</strong>
-            <strong class="price">${{ pedido.total }}</strong>
+        <div class="order-details">
+          <div class="customer-info">
+            <h4>Cliente:</h4>
+            <p>{{ pedido.cliente.nombre }}</p>
+            <p>📞 {{ pedido.cliente.telefono }}</p>
+            <p>📍 {{ pedido.cliente.direccion }}</p>
+          </div>
+
+          <div class="items-info">
+            <h4>Artículos:</h4>
+            <ul>
+              @for (articulo of pedido.articulos; track articulo.nombre) {
+                <li>
+                  {{ articulo.cantidad }}x {{ articulo.nombre }}
+                  <br>
+                  @if (articulo.nota) {
+                    <small class="note">Nota: {{ articulo.nota }}</small>
+                  }
+                </li>
+              }
+            </ul>
+            <div class="total-row">
+              <strong>Total:</strong>
+              <strong class="price">${{ pedido.total }}</strong>
+            </div>
           </div>
         </div>
+
+        <button class="action-btn" [ngClass]="pedido.estado?.toLowerCase() || ''" (click)="cambiarEstadoPedido(pedido)">
+          {{ getTextoBoton(pedido.estado) }}
+        </button>
+
       </div>
-
-      <button class="action-btn" [ngClass]="pedido.estado?.toLowerCase()">
-        {{ getTextoBoton(pedido.estado) }}
-      </button>
-
-    </div>
+    }
+    
   </section>
 
 </div>
