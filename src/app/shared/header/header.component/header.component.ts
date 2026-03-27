@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-header',
@@ -9,5 +10,10 @@ import { RouterModule } from '@angular/router';
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
+export class HeaderComponent {
+  readonly auth = inject(AuthService);
 
-export class HeaderComponent {}
+  logout(): void {
+    this.auth.logout();
+  }
+}

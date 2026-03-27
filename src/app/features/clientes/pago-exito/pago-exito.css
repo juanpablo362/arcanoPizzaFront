@@ -34,6 +34,12 @@ p {
   line-height: 1.5;
 }
 
+p.status {
+  margin-bottom: 12px;
+  font-weight: 500;
+  color: #333;
+}
+
 .btn-primary {
   background-color: var(--magic-purple, #8A2BE2);
   color: white;

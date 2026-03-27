@@ -8,8 +8,8 @@
   --magic-purple: #8A2BE2;   
   --magic-glow: rgba(138, 43, 226, 0.5); 
   --gold-runes: #FFD700;     
-  --text-light: #EAEAEA;     
-  --text-muted: #A0A0B0;     
+  --text-light: var(--arcano-text);     
+  --text-muted: var(--arcano-text-muted);     
 }
 
 .page-container {
@@ -155,6 +155,15 @@
 .size-pill {
   padding: 8px 15px;
   border-radius: 20px;
+}
+
+.size-detalle {
+  margin: 0;
+  max-width: 140px;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+  text-align: center;
 }
 
 /* Magia al seleccionar tamaño */

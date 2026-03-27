@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from './api';
 
 export interface Promocion {
   idPromocion: number;
@@ -22,9 +23,7 @@ export interface Promocion {
 })
 export class PromocionesService {
   private http = inject(HttpClient);
-  
-  // ⚠️ Asegúrate de que el puerto (5000) sea el de tu API de .NET
-  private apiUrl = 'https://localhost:7030/api/Promociones'; 
+  private apiUrl = `${API_BASE_URL}/Promociones`;
 
   obtenerPromocionesActivas(): Observable<Promocion[]> {
     return this.http.get<Promocion[]>(this.apiUrl);

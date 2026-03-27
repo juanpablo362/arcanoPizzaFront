@@ -8,7 +8,7 @@ import { Producto } from '../../shared/models/producto.model';
 })
 export class ProductoService extends ApiService { // Heredamos de tu clase base
 
-  // Llama a GET https://localhost:7030/api/Productos
+  // GET {API_BASE_URL}/Productos
   obtenerTodos(): Observable<Producto[]> {
     // Usamos this.http y this.baseUrl que ya vienen configurados desde ApiService
     return this.http.get<Producto[]>(`${this.baseUrl}/Productos`);

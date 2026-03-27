@@ -1,1 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Legibilidad sobre fondos morado/negro (contraste alto) */
+:root {
+  --arcano-text: #f3f1fa;
+  --arcano-text-soft: #e8e4f2;
+  --arcano-text-muted: #d0c9e4;
+}
+
+.nav-btn-link {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  padding: 0;
+}

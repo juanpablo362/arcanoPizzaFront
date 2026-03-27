@@ -1,18 +1,5 @@
 <div class="page-container">
-  <nav class="navbar">
-    <div class="logo">LOGO</div>
-    <div class="nav-links">
-      <a routerLink="/" style="cursor: pointer;" routerLinkActive="active-link"
-        [routerLinkActiveOptions]="{exact: true}">Inicio</a>
-      <a routerLink="/menu-clientes-component" style="cursor: pointer;" routerLinkActive="active-link">Menú</a>
-      <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
-      <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
-      <a routerLink="/carrito-compra" style="cursor: pointer;" routerLinkActive="active-link">Carrito</a>
-    </div>
-    <div class="auth">
-      <a style="cursor: pointer;">Iniciar sesión</a>
-    </div>
-  </nav>
+  <app-cliente-top-nav />
 
   <div class="promociones-wrapper">
     <h1 class="page-title">Conjuros y Promociones</h1>

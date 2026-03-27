@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { PromocionesService, Promocion } from '../../../core/services/promociones.service';
+import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-top-nav.component';
 
 @Component({
   selector: 'app-promociones-component',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ClienteTopNavComponent],
   templateUrl: './promociones-component.html',
   styleUrl: './promociones-component.css',
 })

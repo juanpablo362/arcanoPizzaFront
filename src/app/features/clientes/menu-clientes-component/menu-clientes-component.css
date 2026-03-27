@@ -9,8 +9,8 @@
   --magic-purple: #8A2BE2;   /* Morado brillante de energía */
   --magic-glow: rgba(138, 43, 226, 0.5); /* Aura mágica para sombras */
   --gold-runes: #FFD700;     /* Dorado brillante para precios y detalles */
-  --text-light: #EAEAEA;     /* Blanco suave para que no lastime la vista */
-  --text-muted: #A0A0B0;     /* Gris fantasma para descripciones */
+  --text-light: var(--arcano-text);
+  --text-muted: var(--arcano-text-muted);
 }
 
 /* --- FONDO MÁGICO (Gradiente Radial) --- */

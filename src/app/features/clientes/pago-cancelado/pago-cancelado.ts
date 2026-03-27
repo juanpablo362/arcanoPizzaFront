@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, afterNextRender, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
@@ -10,20 +10,21 @@ import { Router } from '@angular/router';
   templateUrl: './pago-cancelado.html',
   styleUrl: './pago-cancelado.css',
 })
-export class PagoCancelado implements OnInit, OnDestroy {
-  
-  private router = inject(Router);
-  private timeoutId: any;
+export class PagoCancelado implements OnDestroy {
+  private readonly router = inject(Router);
 
-  ngOnInit() {
-    // Redirigimos de vuelta al carrito en 4 segundos para que intente pagar de nuevo
-    this.timeoutId = setTimeout(() => {
-      this.router.navigate(['/carrito-compra']);
-    }, 4000);
+  private timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  constructor() {
+    afterNextRender(() => {
+      this.timeoutId = setTimeout(() => {
+        void this.router.navigate(['/carrito-compra']);
+      }, 4000);
+    });
   }
 
-  ngOnDestroy() {
-    if (this.timeoutId) {
+  ngOnDestroy(): void {
+    if (this.timeoutId !== undefined) {
       clearTimeout(this.timeoutId);
     }
   }

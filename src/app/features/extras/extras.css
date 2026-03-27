@@ -1,0 +1,33 @@
+:host {
+  display: block;
+  --bg-deep: #0b0b12;
+  --bg-mystic: #1a1025;
+  --gold-runes: #ffd700;
+  --text-light: var(--arcano-text);
+  --text-muted: var(--arcano-text-muted);
+}
+
+.page-container {
+  background: radial-gradient(circle at top center, var(--bg-mystic), var(--bg-deep));
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-light);
+  padding-bottom: 3rem;
+}
+
+.extras-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  color: var(--gold-runes);
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.35);
+}
+
+p {
+  color: var(--text-muted);
+  margin: 0;
+}

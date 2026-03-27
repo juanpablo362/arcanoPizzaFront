@@ -13,7 +13,6 @@
   </a>
 
   <div class="nav-links">
-    <a routerLink="/" style="cursor: pointer;" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
     <a routerLink="/menu-clientes-component" style="cursor: pointer;" routerLinkActive="active-link">Menú</a>
     <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
     <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
@@ -21,6 +20,11 @@
   </div>
 
   <div class="auth">
-    <a style="cursor: pointer;">Iniciar sesión</a>
+    @if (auth.isAuthenticated()) {
+      <a routerLink="/pedidos" style="cursor: pointer;">Pedidos</a>
+      <button type="button" class="nav-btn-link" (click)="logout()">Salir</button>
+    } @else {
+      <a routerLink="/auth" style="cursor: pointer;">Iniciar sesión</a>
+    }
   </div>
 </nav>

@@ -3,7 +3,7 @@
   <header class="auth-header">
     <div class="container">
       <div class="d-flex align-items-center justify-content-between py-3">
-        <a routerLink="/" class="d-flex align-items-center gap-2 text-decoration-none">
+        <a routerLink="/menu-clientes-component" class="d-flex align-items-center gap-2 text-decoration-none">
           <span class="auth-logo-icon">✦</span>
           <div>
             <h1 class="auth-brand mb-0">Arcano Pizza</h1>
@@ -18,7 +18,15 @@
   <main class="auth-main">
     <div class="container">
       <div class="auth-content">
-        <h2 class="auth-title">Arcano Pizza</h2>
+        <div class="auth-hero-logo-wrap">
+          <img
+            src="/img/arcanologo.png"
+            alt="Arcano Pizza"
+            class="auth-hero-logo"
+            width="200"
+            height="60"
+          />
+        </div>
         <p class="auth-subtitle">Portal de acceso místico</p>
 
         <!-- Tabs -->
@@ -92,11 +100,90 @@
         @if (activeTab() === 'register') {
           <div class="auth-card">
             <h3 class="auth-card-title">Registrarse</h3>
-            <p class="auth-card-subtitle">Próximamente</p>
+            <p class="auth-card-subtitle">
+              Creá tu cuenta para pedir y seguir tus órdenes
+            </p>
+
+            <form [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()">
+              <div class="mb-3">
+                <label for="reg-nombre" class="form-label">Nombre de usuario</label>
+                <input
+                  type="text"
+                  id="reg-nombre"
+                  class="form-control auth-input"
+                  formControlName="nombreUsuario"
+                  placeholder="Cómo te llamamos"
+                  autocomplete="username"
+                />
+                @if (
+                  registerForm.get('nombreUsuario')?.invalid && registerForm.get('nombreUsuario')?.touched
+                ) {
+                  <div class="auth-error">Entre 2 y 80 caracteres</div>
+                }
+              </div>
+              <div class="mb-3">
+                <label for="reg-email" class="form-label">Email</label>
+                <input
+                  type="email"
+                  id="reg-email"
+                  class="form-control auth-input"
+                  formControlName="email"
+                  placeholder="tu&#64;email.com"
+                  autocomplete="email"
+                />
+                @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+                  <div class="auth-error">Introduce un email válido</div>
+                }
+              </div>
+              <div class="mb-3">
+                <label for="reg-password" class="form-label">Contraseña</label>
+                <input
+                  type="password"
+                  id="reg-password"
+                  class="form-control auth-input"
+                  formControlName="password"
+                  placeholder="••••••••"
+                  autocomplete="new-password"
+                />
+                @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+                  <div class="auth-error">Mínimo 6 caracteres</div>
+                }
+              </div>
+              <div class="mb-4">
+                <label for="reg-confirm" class="form-label">Confirmar contraseña</label>
+                <input
+                  type="password"
+                  id="reg-confirm"
+                  class="form-control auth-input"
+                  formControlName="confirmPassword"
+                  placeholder="Repetí la contraseña"
+                  autocomplete="new-password"
+                />
+                @if (
+                  registerForm.get('confirmPassword')?.invalid &&
+                  registerForm.get('confirmPassword')?.touched
+                ) {
+                  <div class="auth-error">Requerida</div>
+                }
+                @if (
+                  registerForm.hasError('passwordsMismatch') &&
+                  registerForm.get('confirmPassword')?.touched
+                ) {
+                  <div class="auth-error">Las contraseñas no coinciden</div>
+                }
+              </div>
+              <button
+                type="submit"
+                class="btn auth-btn w-100"
+                [disabled]="isSubmitting()"
+              >
+                Crear cuenta
+              </button>
+            </form>
           </div>
         }
 
-        <a routerLink="/" class="auth-back-link">← Volver al inicio</a>
+        <a routerLink="/menu-clientes-component" class="auth-back-link">← Ir al menú</a>
       </div>
     </div>
   </main>

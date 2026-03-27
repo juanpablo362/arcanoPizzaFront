@@ -1,8 +1,16 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  afterNextRender,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CarritoService } from '../carrito-compra-component/carrito-compra.service';
-import { Router } from '@angular/router';
+import { PagosService } from '../../../core/services/pagos.service';
 
 @Component({
   selector: 'app-pago-exito',
@@ -10,28 +18,59 @@ import { Router } from '@angular/router';
   imports: [CommonModule, RouterModule],
   templateUrl: './pago-exito.html',
   styleUrl: './pago-exito.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
+export class PagoExito implements OnDestroy {
+  private readonly carritoService = inject(CarritoService);
+  private readonly pagosService = inject(PagosService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
-export class PagoExito implements OnInit, OnDestroy {
-  
-  private carritoService = inject(CarritoService);
-  private router = inject(Router);
-  
-  private timeoutId: any;
+  private timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-  ngOnInit() {
-    // 1. Vaciamos el carrito
-    this.carritoService.vaciarCarrito(); 
+  protected readonly confirmando = signal(false);
+  protected readonly pedidoRegistradoId = signal<number | null>(null);
 
-    // 2. Iniciamos la cuenta regresiva de 4 segundos (4000 milisegundos)
-    this.timeoutId = setTimeout(() => {
-      this.router.navigate(['/menu-clientes-component']);
-    }, 4000);
+  constructor() {
+    afterNextRender(() => {
+      const sessionId =
+        this.route.snapshot.queryParamMap.get('session_id') ??
+        this.route.snapshot.queryParamMap.get('sessionId');
+
+      const finalizarYRedirigir = () => {
+        this.carritoService.vaciarCarrito();
+        this.timeoutId = setTimeout(() => {
+          void this.router.navigate(['/menu-clientes-component']);
+        }, 4000);
+      };
+
+      if (!sessionId) {
+        console.warn(
+          '[PagoExito] Falta session_id en la URL. El API debe definir success_url con ?session_id={CHECKOUT_SESSION_ID}',
+        );
+        finalizarYRedirigir();
+        return;
+      }
+
+      this.confirmando.set(true);
+      this.pagosService.confirmarSesionCheckout(sessionId).subscribe({
+        next: (pedido) => {
+          console.log('[PagoExito] Pedido guardado', pedido.idPedido);
+          this.pedidoRegistradoId.set(pedido.idPedido);
+          this.confirmando.set(false);
+          finalizarYRedirigir();
+        },
+        error: (err) => {
+          console.error('[PagoExito] Error al confirmar sesión / crear pedido en el servidor', err);
+          this.confirmando.set(false);
+          finalizarYRedirigir();
+        },
+      });
+    });
   }
 
-  ngOnDestroy() {
-    // 3. Limpieza: Si el usuario se va antes de los 4 segundos, cancelamos el temporizador
-    if (this.timeoutId) {
+  ngOnDestroy(): void {
+    if (this.timeoutId !== undefined) {
       clearTimeout(this.timeoutId);
     }
   }

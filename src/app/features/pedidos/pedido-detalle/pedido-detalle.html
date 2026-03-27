@@ -1,0 +1,72 @@
+<div class="page-container">
+  <app-cliente-top-nav />
+  <div class="detalle-inner">
+    <a routerLink=".." class="back">← Volver a pedidos</a>
+
+    @if (loading()) {
+      <p class="muted">Cargando…</p>
+    } @else if (error()) {
+      <div class="alert-error">{{ error() }}</div>
+    } @else if (pedido(); as p) {
+      <header class="detalle-header">
+        <h1>Pedido #{{ p.idPedido }}</h1>
+        <p class="meta">
+          <span class="estado">{{ p.estado }}</span>
+          @if (p.timeStamp) {
+            <span>{{ p.timeStamp | date: 'medium' }}</span>
+          }
+        </p>
+      </header>
+
+      <section class="totales card">
+        <h2>Totales</h2>
+        <dl>
+          <div><dt>Subtotal</dt><dd>{{ p.subtotal | currency: 'MXN' : 'symbol' : '1.2-2' }}</dd></div>
+          <div><dt>Descuento</dt><dd>−{{ p.descuentoTotal | currency: 'MXN' : 'symbol' : '1.2-2' }}</dd></div>
+          <div><dt>Impuestos (IVA)</dt><dd>{{ p.impuestos | currency: 'MXN' : 'symbol' : '1.2-2' }}</dd></div>
+          <div class="total-row"><dt>Total</dt><dd>{{ p.total | currency: 'MXN' : 'symbol' : '1.2-2' }}</dd></div>
+        </dl>
+        @if (p.promocionTitulo) {
+          <p class="promo">Promoción: {{ p.promocionTitulo }}</p>
+        }
+        <p class="entrega"><strong>Entrega:</strong> {{ p.tipoEntrega }}</p>
+        <p class="pago"><strong>Pago:</strong> {{ metodoPagoEtiqueta(p.metodoPago) }}</p>
+      </section>
+
+      <section class="direccion card">
+        <h2>Dirección</h2>
+        <p>
+          {{ p.direccion.calle }}, {{ p.direccion.colonia }} · CP {{ p.direccion.codigoPostal }}
+        </p>
+      </section>
+
+      <section class="lineas card">
+        <h2>Productos</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Tamaño</th>
+                <th class="num">Cant.</th>
+                <th class="num">P. unit.</th>
+                <th class="num">Importe</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (line of p.lineas; track line.idPedidoItem) {
+                <tr>
+                  <td>{{ line.productoNombre }}</td>
+                  <td>{{ line.tamanoNombre ?? '—' }}</td>
+                  <td class="num">{{ line.cantidad }}</td>
+                  <td class="num">{{ line.precioUnitario | currency: 'MXN' : 'symbol' : '1.2-2' }}</td>
+                  <td class="num">{{ line.cantidad * line.precioUnitario | currency: 'MXN' : 'symbol' : '1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+  </div>
+</div>

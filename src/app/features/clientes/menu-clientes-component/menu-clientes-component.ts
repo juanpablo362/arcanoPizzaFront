@@ -5,13 +5,14 @@ import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 
 import { ProductoService } from '../../../core/services/producto.service';
+import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-top-nav.component';
 import { Producto } from '../../../shared/models/producto.model';
 
 
 @Component({
   selector: 'app-menu-clientes-component',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ClienteTopNavComponent],
   templateUrl: './menu-clientes-component.html',
   styleUrl: './menu-clientes-component.css',
 })
@@ -28,12 +29,6 @@ export class MenuClientesComponent implements OnInit {
 
   // 👉 Bandera maestra para saber si estamos esperando datos
   cargando: boolean = true;
-
-  tamanosPizza = [
-    { name: 'Individual', cm: '30 cm', price: 70 },
-    { name: 'Mediana', cm: '35 cm', price: 90 },
-    { name: 'Grande', cm: '40 cm', price: 120 }
-  ];
 
   ngOnInit(): void {
     this.cargarProductos();

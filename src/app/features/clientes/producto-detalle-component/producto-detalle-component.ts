@@ -2,11 +2,14 @@ import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { CarritoService, ItemCarrito } from '../carrito-compra-component/carrito-compra.service';
+import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-top-nav.component';
+import type { TamanoPizzaOpcion } from '../../../shared/models/tamano-pizza';
+import { enriquecerProductoConTamanos } from '../../../shared/models/tamano-pizza';
 
 @Component({
   selector: 'app-producto-detalle',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ClienteTopNavComponent],
   templateUrl: './producto-detalle-component.html',
   styleUrls: ['./producto-detalle-component.css']
 })
@@ -16,7 +19,7 @@ export class ProductoDetalleComponent implements OnInit {
   private carritoService = inject(CarritoService);
 
   producto: any = null;
-  selectedSize: any = null;
+  selectedSize: TamanoPizzaOpcion | null = null;
   quantity: number = 1;
   mostrarToast: boolean = false;
   
@@ -29,6 +32,8 @@ export class ProductoDetalleComponent implements OnInit {
       this.router.navigate(['/menu-clientes-component']);
       return;
     }
+
+    this.producto = enriquecerProductoConTamanos(this.producto);
 
     // Parseo seguro de ingredientes
     if (typeof this.producto.ingredientes === 'string') {
@@ -47,8 +52,8 @@ export class ProductoDetalleComponent implements OnInit {
     }
   }
 
-  selectSize(size: any): void { 
-    this.selectedSize = size; 
+  selectSize(size: TamanoPizzaOpcion): void {
+    this.selectedSize = size;
   }
 
   increaseQuantity(): void { 
@@ -65,16 +70,24 @@ export class ProductoDetalleComponent implements OnInit {
   }
   
   agregarAlCarrito(): void {
-    const precioFinal = this.selectedSize ? this.selectedSize.price : (this.producto.precioBase || this.producto.precio);
-    const nombreFinal = this.selectedSize ? `${this.producto.nombre} (${this.selectedSize.name})` : this.producto.nombre;
+    const precioFinal = this.selectedSize
+      ? this.selectedSize.price
+      : this.producto.precioBase || this.producto.precio;
+    const nombreFinal = this.selectedSize
+      ? `${this.producto.nombre} (${this.selectedSize.name})`
+      : this.producto.nombre;
     const idLimpio = this.producto.idProducto || this.producto.id;
+    const tamanoPizzaId = this.selectedSize?.tamanoPizzaId ?? null;
+    const lineKey = `${idLimpio}__${tamanoPizzaId === null ? 'sintamano' : tamanoPizzaId}`;
 
     const nuevoPedido: ItemCarrito = {
+      lineKey,
       id: idLimpio,
+      tamanoPizzaId,
       nombre: nombreFinal,
       precio: precioFinal,
       cantidad: this.quantity,
-      imagen: this.producto.imagenURL || this.producto.imagen
+      imagen: this.producto.imagenURL || this.producto.imagen,
     };
 
     this.carritoService.agregarAlCarrito(nuevoPedido);

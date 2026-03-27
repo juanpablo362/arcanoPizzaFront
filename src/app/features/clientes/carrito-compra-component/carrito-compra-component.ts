@@ -2,17 +2,18 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { CarritoService, ItemCarrito } from './carrito-compra.service';
+import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-top-nav.component';
 
 @Component({
   selector: 'app-carrito-compra-component',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ClienteTopNavComponent],
   templateUrl: './carrito-compra-component.html',
   styleUrl: './carrito-compra-component.css',
 })
 export class CarritoCompraComponent implements OnInit {
-  
-  private carritoService = inject(CarritoService);
+  private readonly carritoService = inject(CarritoService);
+  private readonly router = inject(Router);
 
   carritoItems: ItemCarrito[] = [];
   subtotal: number = 0;
@@ -36,8 +37,8 @@ export class CarritoCompraComponent implements OnInit {
     }
   }
 
-  eliminarProducto(id: string | number) {
-    this.carritoService.eliminarItem(id);
+  eliminarProducto(lineKey: string) {
+    this.carritoService.eliminarItem(lineKey);
     this.carritoItems = this.carritoService.obtenerCarrito();
     this.calcularTotales();
   }
@@ -48,9 +49,9 @@ export class CarritoCompraComponent implements OnInit {
     this.total = this.subtotal + this.iva;
   }
 
-  // --- FUNCIÓN ACTUALIZADA ---
   irAlPago() {
-    console.log('Iniciando conexión con Stripe...');
-    this.carritoService.procesarPagoEnStripe();
+    void this.router.navigate(['/pedidos/nuevo'], {
+      queryParams: { pago: 'stripe' },
+    });
   }
 }
