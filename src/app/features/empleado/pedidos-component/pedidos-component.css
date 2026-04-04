@@ -5,7 +5,6 @@
   min-height: 100vh;
 }
 
-/* Navegación */
 .top-nav {
   display: flex;
   justify-content: space-between;
@@ -24,7 +23,6 @@
   align-items: center;
 }
 
-/* Tarjetas de Resumen */
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -59,7 +57,6 @@
 .green { color: #198754; }
 .purple { color: #6f42c1; }
 
-/* Título y Filtros */
 .header-section h1 { margin-bottom: 5px; font-size: 1.5em; }
 .header-section p { color: #6c757d; margin-bottom: 20px; }
 
@@ -76,14 +73,15 @@
   background-color: #e9ecef;
   cursor: pointer;
   font-weight: 500;
+  transition: all 0.2s;
 }
 
 .filter-pill.active {
   background-color: white;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-weight: bold;
 }
 
-/* Tarjetas de Pedidos */
 .order-card {
   background: white;
   padding: 20px;
@@ -144,7 +142,7 @@
 }
 .price { color: #198754; font-size: 1.1em; }
 
-/* Botón de Acción */
+/* Botón de Acción y Animaciones */
 .action-btn {
   width: 100%;
   padding: 12px;
@@ -153,9 +151,39 @@
   color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background-color: #6c757d; /* Gris por defecto */
 }
 
-.action-btn:hover { opacity: 0.9; }
-.action-btn.preparando { background-color: #198754; } /* Botón verde para "Marcar como Listo" */
-.action-btn.nuevo { background-color: #ffc107; color: #000; } /* Botón amarillo para "Iniciar Preparación" */
+.action-btn:hover:not(:disabled) { 
+  opacity: 0.9; 
+}
+
+.action-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: scale(0.99);
+}
+
+.action-btn.preparando { background-color: #198754; } /* Verde */
+.action-btn.pendiente { background-color: #ffc107; color: #000; } /* Amarillo */
+
+/* Spinner CSS */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: inherit; /* Toma el color del texto del botón */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
