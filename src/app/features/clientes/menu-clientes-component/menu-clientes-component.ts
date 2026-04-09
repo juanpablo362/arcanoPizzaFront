@@ -7,12 +7,13 @@ import { RouterModule } from '@angular/router';
 import { ProductoService } from '../../../core/services/producto.service';
 import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-top-nav.component';
 import { Producto } from '../../../shared/models/producto.model';
+import { ArcanoLoader } from '../../../shared/arcano-loader/arcano-loader';
 
 
 @Component({
   selector: 'app-menu-clientes-component',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ClienteTopNavComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ClienteTopNavComponent, ArcanoLoader],
   templateUrl: './menu-clientes-component.html',
   styleUrl: './menu-clientes-component.css',
 })

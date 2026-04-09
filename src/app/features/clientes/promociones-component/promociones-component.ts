@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { PromocionesService, Promocion } from '../../../core/services/promociones.service';
 import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-top-nav.component';
+import { ArcanoLoader } from '../../../shared/arcano-loader/arcano-loader';
 
 @Component({
   selector: 'app-promociones-component',
   standalone: true,
-  imports: [CommonModule, RouterModule, ClienteTopNavComponent],
+  imports: [CommonModule, RouterModule, ClienteTopNavComponent, ArcanoLoader],
   templateUrl: './promociones-component.html',
   styleUrl: './promociones-component.css',
 })

@@ -86,16 +86,21 @@ a:hover .auth-tagline {
 }
 
 .auth-hero-logo-wrap {
-  margin: 0.75rem 0 0.5rem;
+  /* Aumentamos el margen vertical para dar más aire al logo más grande */
+  margin: 1.5rem 0 1rem; 
   display: flex;
   justify-content: center;
 }
 
 .auth-hero-logo {
   display: block;
-  height: 56px;
-  width: auto;
-  max-width: min(240px, 85vw);
+  /* --- CAMBIOS CLAVE AQUÍ --- */
+  /* Aumentamos la altura considerablemente (antes 56px) */
+  height: 120px; 
+  width: auto; /* Mantiene la proporción */
+  /* Aumentamos el ancho máximo permitido (antes 240px) */
+  max-width: min(400px, 90vw); 
+  /* --------------------------- */
   object-fit: contain;
   filter: drop-shadow(0 0 14px rgba(138, 43, 226, 0.4))
     drop-shadow(0 0 20px rgba(212, 175, 55, 0.15));

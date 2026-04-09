@@ -3,7 +3,7 @@
 
   <div class="category-filters">
     @if (cargando) {
-      <p style="color: var(--text-muted); font-style: italic;">Invocando las runas...</p>
+
     } @else {
       @for (cat of categorias; track cat) {
         <button 
@@ -39,13 +39,9 @@
       
       <div style="grid-column: 1 / -1; text-align: center; padding: 50px;">
         @if (cargando) {
-          <p style="color: var(--magic-purple); font-size: 1.2rem; text-shadow: 0 0 10px var(--magic-glow);">
-            ✨ Canalizando la magia oscura...
-          </p>
+          <app-arcano-loader></app-arcano-loader>
         } @else {
-          <p style="color: var(--text-muted);">
-            El grimorio no tiene hechizos para la categoría "{{ categoriaActiva }}".
-          </p>
+          <app-arcano-loader></app-arcano-loader>
         }
       </div>
 
