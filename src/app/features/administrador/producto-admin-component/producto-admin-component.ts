@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { UsuarioService } from '../../../core/services/usuario';
+
 
 interface Usuario {
+  id?: number;
   nombre: string;
   email: string;
   telefono: string;
@@ -19,16 +22,32 @@ interface Usuario {
   templateUrl: './producto-admin-component.html',
   styleUrls: ['./producto-admin-component.css'],
 })
-export class ProductoAdminComponent {
-  // Botones de filtro
+export class ProductoAdminComponent implements OnInit {
+
+  private usuarioService = inject(UsuarioService);
+
+  usuarios: Usuario[] = [];
+
   filtro: 'Todos' | 'Empleados' | 'Administradores' = 'Todos';
 
-  // Datos de ejemplo
-  usuarios: Usuario[] = [
-    { nombre: 'Juan Pérez', email: 'juan.perez@arcanopizza.com', telefono: '(555) 345-6789', tipo: 'Empleado', activo: true, fechaMiembro: '1/11/2025' },
-    { nombre: 'Ana Martínez', email: 'ana.martinez@arcanopizza.com', telefono: '(555) 456-7890', tipo: 'Empleado', activo: true, fechaMiembro: '15/10/2025' },
-    { nombre: 'Luis Torres', email: 'luis.torres@arcanopizza.com', telefono: '(555) 567-8901', tipo: 'Administrador', activo: true, fechaMiembro: '1/8/2025' }
-  ];
+  nuevoUsuario = {
+    nombre: '',
+    email: '',
+    telefono: '',
+    tipo: 'Empleado'
+  };
+
+  usuarioEdit: any = {};
+
+  ngOnInit() {
+    this.cargarUsuarios();
+  }
+
+  cargarUsuarios() {
+    this.usuarioService.obtenerUsuarios().subscribe(data => {
+      this.usuarios = data;
+    });
+  }
 
   get totalUsuarios() {
     return this.usuarios.length;
@@ -48,16 +67,54 @@ export class ProductoAdminComponent {
 
   usuariosFiltrados() {
     if (this.filtro === 'Todos') return this.usuarios;
-    if (this.filtro === 'Empleados') return this.usuarios.filter(u => u.tipo === 'Empleado');
-    if (this.filtro === 'Administradores') return this.usuarios.filter(u => u.tipo === 'Administrador');
-    return this.usuarios;
+    return this.usuarios.filter(u => u.tipo === this.filtro.slice(0, -1));
   }
 
-  desactivarUsuario(usuario: Usuario) {
-    usuario.activo = !usuario.activo;
+  // ===== MODALES =====
+
+  abrirModalUsuario() {
+    new (window as any).bootstrap.Modal(document.getElementById('modalUsuario')).show();
   }
 
-  eliminarUsuario(usuario: Usuario) {
-    this.usuarios = this.usuarios.filter(u => u !== usuario);
+  cerrarModalUsuario() {
+    (window as any).bootstrap.Modal.getInstance(document.getElementById('modalUsuario')).hide();
+  }
+
+  abrirEditar(usuario: any) {
+    this.usuarioEdit = { ...usuario };
+    new (window as any).bootstrap.Modal(document.getElementById('modalEditarUsuario')).show();
+  }
+
+  cerrarEditar() {
+    (window as any).bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario')).hide();
+  }
+
+  // ===== CRUD =====
+
+  crearUsuario() {
+    this.usuarioService.crearUsuario(this.nuevoUsuario).subscribe(() => {
+      this.cargarUsuarios();
+      this.cerrarModalUsuario();
+    });
+  }
+
+  guardarCambios() {
+    this.usuarioService.actualizarUsuario(this.usuarioEdit.id, this.usuarioEdit)
+      .subscribe(() => {
+        this.cargarUsuarios();
+        this.cerrarEditar();
+      });
+  }
+
+  eliminarUsuario(usuario: any) {
+    this.usuarioService.eliminarUsuario(usuario.id).subscribe(() => {
+      this.cargarUsuarios();
+    });
+  }
+
+  desactivarUsuario(usuario: any) {
+    this.usuarioService.toggleUsuario(usuario.id).subscribe(() => {
+      this.cargarUsuarios();
+    });
   }
 }

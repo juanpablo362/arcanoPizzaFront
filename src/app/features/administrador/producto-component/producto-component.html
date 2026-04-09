@@ -16,13 +16,17 @@
     <button class="btn btn-outline-secondary">Usuarios</button>
   </div>
 
-  <!-- Título y botón -->
+  <!-- Título + botón -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
       <h4>Gestión de Productos</h4>
       <small class="text-muted">Administra el menú de pizzas y productos</small>
     </div>
-    <button class="btn btn-outline-primary">+ Nuevo Producto</button>
+
+    <!-- 🔥 BOTÓN AQUÍ -->
+    <button class="btn btn-outline-primary" (click)="abrirProducto()">
+      + Nuevo Producto
+    </button>
   </div>
 
   <!-- Estadísticas -->
@@ -30,59 +34,93 @@
     <div class="col-md-4 mb-2">
       <div class="card p-3 text-center">
         <div>Total de Productos</div>
-        <h5>{{ totalProductos }}</h5>
+        <h5>{{ productos.length }}</h5>
       </div>
     </div>
+
     <div class="col-md-4 mb-2">
       <div class="card p-3 text-center">
-        <div>Productos Disponibles</div>
-        <h5>{{ productosDisponibles }}</h5>
+        <div>Disponibles</div>
+        <h5>{{ productos.filter(p => p.disponible).length }}</h5>
       </div>
     </div>
+
     <div class="col-md-4 mb-2">
       <div class="card p-3 text-center">
-        <div>Productos No Disponibles</div>
-        <h5>{{ productosNoDisponibles }}</h5>
+        <div>No disponibles</div>
+        <h5>{{ productos.filter(p => !p.disponible).length }}</h5>
       </div>
     </div>
   </div>
 
-  <!-- Filtro de categorías -->
-  <div class="card p-3 mb-3">
-    <div class="btn-group mb-3" role="group">
-      <button
-        *ngFor="let cat of categorias"
-        type="button"
-        class="btn"
-        [ngClass]="categoriaSeleccionada === cat ? 'btn-secondary' : 'btn-light'"
-        (click)="seleccionarCategoria(cat)">
-        {{ cat }}
-      </button>
-    </div>
+  <!-- Lista -->
+  <div class="card p-3">
 
-    <!-- Lista de productos -->
-    <div *ngFor="let producto of productosFiltrados" class="d-flex align-items-center border-top py-3">
-      <img [src]="producto.imagen" class="me-3 rounded" alt="producto" style="width: 80px; height: 80px; object-fit: cover;">
+    <div *ngFor="let producto of productos" class="d-flex align-items-center border-top py-3">
+
+      <img [src]="producto.imagen || 'https://via.placeholder.com/80'"
+           class="me-3 rounded"
+           style="width: 80px; height: 80px; object-fit: cover;">
+
       <div class="flex-grow-1">
         <strong>{{ producto.nombre }}</strong>
-        <span class="badge bg-secondary ms-1">{{ producto.categoria }}</span>
-        <span class="badge bg-success ms-1" *ngIf="producto.disponible">Disponible</span>
+
+        <span class="badge bg-success ms-2" *ngIf="producto.activo">
+          Disponible
+        </span>
+
         <div class="text-muted">{{ producto.descripcion }}</div>
-        <small class="text-muted">Ingredientes: {{ producto.ingredientes }}</small>
       </div>
-      <div class="text-danger fw-bold ms-3">${{ producto.precio }}</div>
+
+      <div class="text-danger fw-bold ms-3">
+        ${{ producto.precioBase }}
+      </div>
+
       <div class="ms-3 d-flex flex-column">
-        <button class="btn btn-sm btn-outline-secondary mb-1" (click)="ocultar(producto)">
-          <i class="bi bi-eye-slash"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-secondary mb-1" (click)="editar(producto)">
-          <i class="bi bi-pencil"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-danger" (click)="eliminar(producto)">
+        <button class="btn btn-sm btn-outline-danger"
+                (click)="eliminar(producto)">
           <i class="bi bi-trash"></i>
         </button>
       </div>
+
     </div>
+
   </div>
 
+</div>
+
+<!-- 🔥 MODAL -->
+<div class="modal fade" id="modalProducto">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+
+      <h5>Nuevo Producto</h5>
+
+      <input class="form-control mb-2"
+             placeholder="Nombre"
+             [(ngModel)]="nuevoProducto.nombre">
+
+      <input class="form-control mb-2"
+             type="number"
+             placeholder="Precio"
+             [(ngModel)]="nuevoProducto.precio">
+
+      <textarea class="form-control mb-2"
+                placeholder="Descripción"
+                [(ngModel)]="nuevoProducto.descripcion"></textarea>
+
+      <div class="text-end">
+        <button class="btn btn-secondary me-2"
+                (click)="cerrarProducto()">
+          Cancelar
+        </button>
+
+        <button class="btn btn-danger"
+                (click)="crearProducto()">
+          Crear
+        </button>
+      </div>
+
+    </div>
+  </div>
 </div>

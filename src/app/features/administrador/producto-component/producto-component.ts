@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+
+import { ProductoService } from '../../../core/services/producto';
 
 interface Producto {
   nombre: string;
@@ -20,47 +22,56 @@ interface Producto {
   templateUrl: './producto-component.html',
   styleUrls: ['./producto-component.css'],
 })
-export class ProductoComponent {
+export class ProductoComponent implements OnInit {
+
+  // 🔥 Nombre usuario para header
   usuario = 'Juan Mendoza';
 
-  totalProductos = 5;
-  productosDisponibles = 4;
-  productosNoDisponibles = 1;
+  private productoService = inject(ProductoService);
 
-  categorias = ['Todo', 'Clásicas', 'Especiales', 'Bebidas', 'Extras'];
-  categoriaSeleccionada = 'Todo';
+  productos: any[] = [];
 
-  productos: Producto[] = [
-    {
-      nombre: 'Pepperoni Clásica',
-      categoria: 'Clásicas',
-      descripcion: 'Salsa de tomate, mozzarella y generosas rodajas de pepperoni',
-      ingredientes: 'Salsa de tomate, Mozzarella, Pepperoni',
-      precio: 12.99,
-      disponible: true,
-      imagen: 'https://via.placeholder.com/80',
-    },
-    {
-      nombre: 'Pepperoni Clásica',
-      categoria: 'Clásicas',
-      descripcion: 'Salsa de tomate, mozzarella y generosas rodajas de pepperoni',
-      ingredientes: 'Salsa de tomate, Mozzarella, Pepperoni',
-      precio: 12.99,
-      disponible: true,
-      imagen: 'https://via.placeholder.com/80',
-    },
-  ];
+  nuevoProducto = {
+    nombre: '',
+    descripcion: '',
+    precio: 0
+  };
 
-  get productosFiltrados() {
-    if (this.categoriaSeleccionada === 'Todo') return this.productos;
-    return this.productos.filter(p => p.categoria === this.categoriaSeleccionada);
+  ngOnInit() {
+    this.cargarProductos();
   }
 
-  seleccionarCategoria(cat: string) {
-    this.categoriaSeleccionada = cat;
+  cargarProductos() {
+    this.productoService.obtenerProductos()
+      .subscribe((data: any[]) => {
+        this.productos = data;
+      });
   }
 
-  editar(producto: Producto) { console.log('Editar', producto); }
-  eliminar(producto: Producto) { console.log('Eliminar', producto); }
-  ocultar(producto: Producto) { console.log('Ocultar', producto); }
+  abrirProducto() {
+    new (window as any).bootstrap.Modal(
+      document.getElementById('modalProducto')
+    ).show();
+  }
+
+  cerrarProducto() {
+    (window as any).bootstrap.Modal
+      .getInstance(document.getElementById('modalProducto'))
+      .hide();
+  }
+
+  crearProducto() {
+    this.productoService.crearProducto(this.nuevoProducto)
+      .subscribe(() => {
+        this.cargarProductos();
+        this.cerrarProducto();
+      });
+  }
+
+  eliminar(producto: any) {
+    this.productoService.eliminarProducto(producto.idProducto)
+      .subscribe(() => {
+        this.cargarProductos();
+      });
+  }
 }
