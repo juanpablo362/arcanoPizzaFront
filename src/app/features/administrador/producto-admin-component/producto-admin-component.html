@@ -11,11 +11,11 @@
   </div>
 
   <!-- Navigation -->
-  <div class="mb-4">
-    <button class="btn btn-outline-primary me-2">Dashboard</button>
-    <button class="btn btn-outline-primary me-2">Productos</button>
-    <button class="btn btn-primary">Usuarios</button>
-  </div>
+<div class="mb-4">
+  <button class="btn btn-outline-primary me-2" routerLink="/dashboard">Dashboard</button>
+  <button class="btn btn-outline-primary me-2" routerLink="/productos">Productos</button>
+  <button class="btn btn-outline-primary" routerLink="/admin">Usuarios</button>
+</div>
 
   <!-- Resumen -->
   <div class="mb-4 d-flex gap-3">
@@ -69,6 +69,7 @@
 
 </div>
 
+
 <!-- MODAL NUEVO -->
 <div class="modal fade" id="modalUsuario">
   <div class="modal-dialog">
@@ -76,9 +77,9 @@
 
       <h5>Nuevo Usuario</h5>
 
-      <input class="form-control mb-2" placeholder="Nombre" [(ngModel)]="nuevoUsuario.nombre">
-      <input class="form-control mb-2" placeholder="Correo" [(ngModel)]="nuevoUsuario.email">
-      <input class="form-control mb-2" placeholder="Teléfono" [(ngModel)]="nuevoUsuario.telefono">
+      <input class="form-control mb-2" [(ngModel)]="nuevoUsuario.nombre">
+      <input class="form-control mb-2" [(ngModel)]="nuevoUsuario.email">
+      <input class="form-control mb-2" [(ngModel)]="nuevoUsuario.telefono">
 
       <select class="form-control mb-3" [(ngModel)]="nuevoUsuario.tipo">
         <option>Empleado</option>
@@ -86,7 +87,7 @@
       </select>
 
       <div class="text-end">
-        <button class="btn btn-secondary me-2" (click)="cerrarModalUsuario()">Cancelar</button>
+        <button class="btn btn-secondary" (click)="cerrarModalUsuario()">Cancelar</button>
         <button class="btn btn-danger" (click)="crearUsuario()">Crear</button>
       </div>
 
@@ -94,24 +95,18 @@
   </div>
 </div>
 
-<!-- MODAL EDITAR -->
+<!-- MODAL EDIT -->
 <div class="modal fade" id="modalEditarUsuario">
   <div class="modal-dialog">
     <div class="modal-content p-3">
 
-      <h5>Editar Usuario</h5>
+      <h5>Editar</h5>
 
       <input class="form-control mb-2" [(ngModel)]="usuarioEdit.nombre">
       <input class="form-control mb-2" [(ngModel)]="usuarioEdit.email">
-      <input class="form-control mb-2" [(ngModel)]="usuarioEdit.telefono">
-
-      <select class="form-control mb-3" [(ngModel)]="usuarioEdit.tipo">
-        <option>Empleado</option>
-        <option>Administrador</option>
-      </select>
 
       <div class="text-end">
-        <button class="btn btn-secondary me-2" (click)="cerrarEditar()">Cancelar</button>
+        <button class="btn btn-secondary" (click)="cerrarEditar()">Cancelar</button>
         <button class="btn btn-danger" (click)="guardarCambios()">Guardar</button>
       </div>
 

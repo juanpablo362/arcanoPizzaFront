@@ -1,7 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 import { ProductoService } from '../../../core/services/producto';
 
@@ -24,10 +25,10 @@ interface Producto {
 })
 export class ProductoComponent implements OnInit {
 
-  // 🔥 Nombre usuario para header
-  usuario = 'Juan Mendoza';
+ private productoService = inject(ProductoService);
+  private router = inject(Router);
 
-  private productoService = inject(ProductoService);
+  usuario = 'Administrador'; // 🔥 FIX
 
   productos: any[] = [];
 
@@ -39,39 +40,41 @@ export class ProductoComponent implements OnInit {
 
   ngOnInit() {
     this.cargarProductos();
+
+    // 🔥 recarga automática
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.cargarProductos();
+      });
   }
 
   cargarProductos() {
-    this.productoService.obtenerProductos()
-      .subscribe((data: any[]) => {
-        this.productos = data;
-      });
+    this.productoService.obtenerProductos().subscribe(data => {
+      this.productos = data;
+    });
   }
 
   abrirProducto() {
-    new (window as any).bootstrap.Modal(
-      document.getElementById('modalProducto')
-    ).show();
+    new (window as any).bootstrap.Modal(document.getElementById('modalProducto')).show();
   }
 
   cerrarProducto() {
-    (window as any).bootstrap.Modal
-      .getInstance(document.getElementById('modalProducto'))
-      .hide();
+    (window as any).bootstrap.Modal.getInstance(document.getElementById('modalProducto')).hide();
   }
 
   crearProducto() {
-    this.productoService.crearProducto(this.nuevoProducto)
-      .subscribe(() => {
-        this.cargarProductos();
-        this.cerrarProducto();
-      });
+    this.productoService.crearProducto(this.nuevoProducto).subscribe(() => {
+      this.cargarProductos();
+      this.cerrarProducto();
+    });
   }
 
   eliminar(producto: any) {
-    this.productoService.eliminarProducto(producto.idProducto)
-      .subscribe(() => {
-        this.cargarProductos();
-      });
+    if (!confirm('¿Eliminar producto?')) return;
+
+    this.productoService.eliminarProducto(producto.idProducto).subscribe(() => {
+      this.cargarProductos();
+    });
   }
 }

@@ -10,11 +10,11 @@
   </div>
 
   <!-- Navegación -->
-  <div class="mb-4">
-    <button class="btn btn-outline-secondary me-2">Dashboard</button>
-    <button class="btn btn-secondary me-2">Productos</button>
-    <button class="btn btn-outline-secondary">Usuarios</button>
-  </div>
+<div class="mb-4">
+  <button class="btn btn-outline-primary me-2" routerLink="/dashboard">Dashboard</button>
+  <button class="btn btn-outline-primary me-2" routerLink="/productos">Productos</button>
+  <button class="btn btn-outline-primary" routerLink="/admin">Usuarios</button>
+</div>
 
   <!-- Título + botón -->
   <div class="d-flex justify-content-between align-items-center mb-4">
@@ -89,36 +89,20 @@
 
 </div>
 
-<!-- 🔥 MODAL -->
+<!-- MODAL -->
 <div class="modal fade" id="modalProducto">
   <div class="modal-dialog">
     <div class="modal-content p-3">
 
       <h5>Nuevo Producto</h5>
 
-      <input class="form-control mb-2"
-             placeholder="Nombre"
-             [(ngModel)]="nuevoProducto.nombre">
-
-      <input class="form-control mb-2"
-             type="number"
-             placeholder="Precio"
-             [(ngModel)]="nuevoProducto.precio">
-
-      <textarea class="form-control mb-2"
-                placeholder="Descripción"
-                [(ngModel)]="nuevoProducto.descripcion"></textarea>
+      <input class="form-control mb-2" [(ngModel)]="nuevoProducto.nombre">
+      <input class="form-control mb-2" type="number" [(ngModel)]="nuevoProducto.precio">
+      <textarea class="form-control mb-2" [(ngModel)]="nuevoProducto.descripcion"></textarea>
 
       <div class="text-end">
-        <button class="btn btn-secondary me-2"
-                (click)="cerrarProducto()">
-          Cancelar
-        </button>
-
-        <button class="btn btn-danger"
-                (click)="crearProducto()">
-          Crear
-        </button>
+        <button class="btn btn-secondary" (click)="cerrarProducto()">Cancelar</button>
+        <button class="btn btn-danger" (click)="crearProducto()">Crear</button>
       </div>
 
     </div>

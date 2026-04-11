@@ -1,7 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { UsuarioService } from '../../../core/services/usuario';
 
 
@@ -25,8 +26,9 @@ interface Usuario {
 export class ProductoAdminComponent implements OnInit {
 
   private usuarioService = inject(UsuarioService);
+  private router = inject(Router);
 
-  usuarios: Usuario[] = [];
+  usuarios: any[] = [];
 
   filtro: 'Todos' | 'Empleados' | 'Administradores' = 'Todos';
 
@@ -41,6 +43,12 @@ export class ProductoAdminComponent implements OnInit {
 
   ngOnInit() {
     this.cargarUsuarios();
+
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.cargarUsuarios();
+      });
   }
 
   cargarUsuarios() {
@@ -49,6 +57,7 @@ export class ProductoAdminComponent implements OnInit {
     });
   }
 
+  // 🔥 ESTADÍSTICAS (SOLUCIÓN)
   get totalUsuarios() {
     return this.usuarios.length;
   }
@@ -107,6 +116,8 @@ export class ProductoAdminComponent implements OnInit {
   }
 
   eliminarUsuario(usuario: any) {
+    if (!confirm('¿Eliminar usuario?')) return;
+
     this.usuarioService.eliminarUsuario(usuario.id).subscribe(() => {
       this.cargarUsuarios();
     });
