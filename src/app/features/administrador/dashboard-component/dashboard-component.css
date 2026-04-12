@@ -48,7 +48,9 @@ h4.mb-0 {
   letter-spacing: 0.5px;
 }
 
-/* Barras de progreso */
+/* ==========================================
+   Barras de progreso
+========================================== */
 .progress {
   background-color: #f0f0f0;
   border-radius: 10px;
