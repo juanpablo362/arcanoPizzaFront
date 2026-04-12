@@ -2,6 +2,7 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 import { UsuarioService } from '../../../core/services/usuario'; 
 import { ProductoService } from '../../../core/services/producto';
@@ -17,6 +18,13 @@ interface PedidosHora {
   cantidad: number;
 }
 
+interface DashboardData {
+  ventasHoy: number;
+  pedidosActivos: number;
+  productosVendidos: ProductoVendido[];
+  pedidosPorHora: PedidosHora[];
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -27,53 +35,74 @@ interface PedidosHora {
 export class DashboardComponent implements OnInit {
   private usuarioService = inject(UsuarioService);
   private productoService = inject(ProductoService);
+  private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
 
   fechaHoy: string = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  private readonly apiUrl = 'http://localhost:5010/api/admin/dashboard';
 
-  // Variables Dinámicas Reales
+  // Totales de base
   totalUsuariosAPI: number = 0;
   totalProductosAPI: number = 0;
   productosActivosAPI: number = 0;
 
-  // 🔥 Variables en 0 (Esperando futura conexión a API de Ventas/Pedidos)
+  // Métricas de ventas inicializadas para evitar errores de .length
   ventasHoy: number = 0;
   pedidosActivos: number = 0;
-
-  // 🔥 Arreglos limpios (Sin datos falsos)
   productosVendidos: ProductoVendido[] = [];
   pedidosPorHora: PedidosHora[] = [];
 
   ngOnInit() {
-    this.cargarDatosReales();
+    this.cargarTotalesBasicos();
+    this.cargarMetricasVentas();
   }
 
-  cargarDatosReales() {
+  cargarTotalesBasicos() {
     this.usuarioService.obtenerUsuarios().subscribe({
       next: (usuarios) => {
-        this.totalUsuariosAPI = usuarios.length;
+        this.totalUsuariosAPI = usuarios?.length || 0;
         this.cdr.detectChanges();
       }
     });
 
     this.productoService.obtenerProductos().subscribe({
       next: (productos) => {
-        this.totalProductosAPI = productos.length;
-        this.productosActivosAPI = productos.filter((p: any) => p.activo).length;
+        this.totalProductosAPI = productos?.length || 0;
+        this.productosActivosAPI = productos?.filter((p: any) => p.activo).length || 0;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  cargarMetricasVentas() {
+    this.http.get<DashboardData>(this.apiUrl).subscribe({
+      next: (data) => {
+        if (data) {
+          this.ventasHoy = data.ventasHoy || 0;
+          this.pedidosActivos = data.pedidosActivos || 0;
+          this.productosVendidos = data.productosVendidos || [];
+          this.pedidosPorHora = data.pedidosPorHora || [];
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al cargar métricas:', err);
+        this.productosVendidos = [];
+        this.pedidosPorHora = [];
         this.cdr.detectChanges();
       }
     });
   }
 
   calcularPorcentaje(producto: ProductoVendido): number {
-    if (this.productosVendidos.length === 0) return 0;
+    if (!this.productosVendidos || this.productosVendidos.length === 0) return 0;
     const max = Math.max(...this.productosVendidos.map(p => p.vendidos));
-    return (producto.vendidos / max) * 100;
+    return max > 0 ? (producto.vendidos / max) * 100 : 0;
   }
 
   calcularPorcentajePedidos(pedido: PedidosHora): number {
-    if (this.pedidosPorHora.length === 0) return 0;
+    if (!this.pedidosPorHora || this.pedidosPorHora.length === 0) return 0;
     const max = Math.max(...this.pedidosPorHora.map(p => p.cantidad));
-    return (pedido.cantidad / max) * 100;
+    return max > 0 ? (pedido.cantidad / max) * 100 : 0;
   }
 }

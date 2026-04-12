@@ -1,10 +1,8 @@
 <div class="container-fluid p-4">
-
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="logo border p-2 fw-bold">ARCANO PIZZA</div>
     <div class="user d-flex align-items-center">
-      <i class="bi bi-person-circle me-2 fs-4"></i>
-      Administrador
+      <i class="bi bi-person-circle me-2 fs-4"></i> Administrador
       <button class="btn btn-outline-secondary btn-sm ms-3"><i class="bi bi-box-arrow-right"></i> Salir</button>
     </div>
   </div>
@@ -16,7 +14,7 @@
   </div>
 
   <div class="mb-4">
-    <h4 class="mb-0">Dashboard General</h4>
+    <h4 class="mb-0 text-capitalize">Dashboard General</h4>
     <small class="text-muted text-capitalize">Resumen del negocio - {{ fechaHoy }}</small>
   </div>
 
@@ -42,37 +40,35 @@
     <div class="col-md-3 mb-3">
       <div class="card p-3 h-100 shadow-sm border-0">
         <div class="text-muted small fw-bold text-uppercase">Usuarios Registrados</div>
-        <h3 class="mb-0 text-purple">{{ totalUsuariosAPI }}</h3>
+        <h3 class="mb-0 text-purple" style="color: #6f42c1;">{{ totalUsuariosAPI }}</h3>
       </div>
     </div>
   </div>
 
   <div class="row">
-    
     <div class="col-md-6 mb-4">
       <div class="card p-4 h-100 shadow-sm border-0">
         <h5 class="fw-bold mb-1">Productos Más Vendidos</h5>
         <small class="text-muted mb-4 d-block">Ventas del día de hoy</small>
         
-        <ng-container *ngIf="productosVendidos.length > 0; else sinProductos">
+        <ng-container *ngIf="productosVendidos && productosVendidos.length > 0; else sinProductos">
           <div *ngFor="let producto of productosVendidos" class="mb-4">
             <div class="d-flex justify-content-between align-items-end mb-1">
               <span class="fw-medium">{{ producto.nombre }} <small class="text-muted">({{ producto.vendidos }} vendidas)</small></span>
               <span class="text-success fw-bold">${{ producto.total | number:'1.2-2' }}</span>
             </div>
-            <div class="progress" style="height: 8px; border-radius: 10px;">
+            <div class="progress" style="height: 8px; border-radius: 10px; background-color: #f0f0f0;">
               <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="calcularPorcentaje(producto)"></div>
             </div>
           </div>
         </ng-container>
 
         <ng-template #sinProductos>
-          <div class="text-center p-4 text-muted mt-3">
-            <i class="bi bi-bar-chart fs-1 d-block mb-2 text-light-gray"></i>
+          <div class="text-center p-5 text-muted">
+            <i class="bi bi-bar-chart fs-1 d-block mb-2"></i>
             Aún no hay datos de ventas registrados para hoy.
           </div>
         </ng-template>
-
       </div>
     </div>
 
@@ -81,27 +77,25 @@
         <h5 class="fw-bold mb-1">Pedidos por Hora</h5>
         <small class="text-muted mb-4 d-block">Actividad en tiempo real</small>
         
-        <ng-container *ngIf="pedidosPorHora.length > 0; else sinPedidos">
+        <ng-container *ngIf="pedidosPorHora && pedidosPorHora.length > 0; else sinPedidos">
           <div *ngFor="let pedido of pedidosPorHora" class="mb-4">
             <div class="d-flex justify-content-between align-items-end mb-1">
               <span class="fw-medium text-muted"><i class="bi bi-clock me-1"></i> {{ pedido.hora }}</span>
               <span class="fw-bold">{{ pedido.cantidad }} pedidos</span>
             </div>
-            <div class="progress" style="height: 8px; border-radius: 10px;">
+            <div class="progress" style="height: 8px; border-radius: 10px; background-color: #f0f0f0;">
               <div class="progress-bar bg-info" role="progressbar" [style.width.%]="calcularPorcentajePedidos(pedido)"></div>
             </div>
           </div>
         </ng-container>
 
         <ng-template #sinPedidos>
-          <div class="text-center p-4 text-muted mt-3">
-            <i class="bi bi-graph-up fs-1 d-block mb-2 text-light-gray"></i>
+          <div class="text-center p-5 text-muted">
+            <i class="bi bi-graph-up fs-1 d-block mb-2"></i>
             Esperando información de nuevos pedidos.
           </div>
         </ng-template>
-
       </div>
     </div>
-
   </div>
 </div>
