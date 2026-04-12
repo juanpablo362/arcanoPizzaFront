@@ -70,44 +70,116 @@
 </div>
 
 
-<!-- MODAL NUEVO -->
 <div class="modal fade" id="modalUsuario">
-  <div class="modal-dialog">
-    <div class="modal-content p-3">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content p-4 rounded-4">
 
-      <h5>Nuevo Usuario</h5>
+      <!-- HEADER -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <h5 class="fw-bold mb-0">Nuevo Usuario</h5>
+          <small class="text-muted">Agrega un nuevo usuario al sistema</small>
+        </div>
+        <button class="btn-close" (click)="cerrarModalUsuario()"></button>
+      </div>
 
-      <input class="form-control mb-2" [(ngModel)]="nuevoUsuario.nombre">
-      <input class="form-control mb-2" [(ngModel)]="nuevoUsuario.email">
-      <input class="form-control mb-2" [(ngModel)]="nuevoUsuario.telefono">
+      <div class="row mt-3">
 
-      <select class="form-control mb-3" [(ngModel)]="nuevoUsuario.tipo">
-        <option>Empleado</option>
-        <option>Administrador</option>
-      </select>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Nombre Completo</label>
+          <input class="form-control rounded-3"
+                 placeholder="Juan Pérez"
+                 [(ngModel)]="nuevoUsuario.nombre">
+        </div>
 
-      <div class="text-end">
-        <button class="btn btn-secondary" (click)="cerrarModalUsuario()">Cancelar</button>
-        <button class="btn btn-danger" (click)="crearUsuario()">Crear</button>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Correo Electrónico</label>
+          <input class="form-control rounded-3"
+                 placeholder="correo@ejemplo.com"
+                 [(ngModel)]="nuevoUsuario.email">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Teléfono</label>
+          <input class="form-control rounded-3"
+                 placeholder="(555) 123-4567"
+                 [(ngModel)]="nuevoUsuario.telefono">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Rol</label>
+          <select class="form-select rounded-3"
+                  [(ngModel)]="nuevoUsuario.tipo">
+            <option>Cliente</option>
+            <option>Empleado</option>
+            <option>Administrador</option>
+          </select>
+        </div>
+
+        <div class="col-12 mb-3">
+          <label class="form-label fw-semibold">Contraseña</label>
+          <input type="password"
+                 class="form-control rounded-3"
+                 placeholder="********">
+        </div>
+
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button class="btn btn-light border" (click)="cerrarModalUsuario()">Cancelar</button>
+        <button class="btn btn-danger px-4" (click)="crearUsuario()">Crear Usuario</button>
       </div>
 
     </div>
   </div>
 </div>
 
-<!-- MODAL EDIT -->
 <div class="modal fade" id="modalEditarUsuario">
-  <div class="modal-dialog">
-    <div class="modal-content p-3">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content p-4 rounded-4">
 
-      <h5>Editar</h5>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <h5 class="fw-bold mb-0">Editar Usuario</h5>
+          <small class="text-muted">Modifica los detalles del usuario</small>
+        </div>
+        <button class="btn-close" (click)="cerrarEditar()"></button>
+      </div>
 
-      <input class="form-control mb-2" [(ngModel)]="usuarioEdit.nombre">
-      <input class="form-control mb-2" [(ngModel)]="usuarioEdit.email">
+      <div class="row mt-3">
 
-      <div class="text-end">
-        <button class="btn btn-secondary" (click)="cerrarEditar()">Cancelar</button>
-        <button class="btn btn-danger" (click)="guardarCambios()">Guardar</button>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Nombre Completo</label>
+          <input class="form-control rounded-3"
+                 [(ngModel)]="usuarioEdit.nombre">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Correo Electrónico</label>
+          <input class="form-control rounded-3"
+                 [(ngModel)]="usuarioEdit.email">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Teléfono</label>
+          <input class="form-control rounded-3"
+                 [(ngModel)]="usuarioEdit.telefono">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Rol</label>
+          <select class="form-select rounded-3"
+                  [(ngModel)]="usuarioEdit.tipo">
+            <option>Empleado</option>
+            <option>Administrador</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button class="btn btn-light border" (click)="cerrarEditar()">Cancelar</button>
+        <button class="btn btn-danger px-4" (click)="guardarCambios()">Guardar Cambios</button>
       </div>
 
     </div>

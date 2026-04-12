@@ -1,1 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
+.modal-content {
+  border-radius: 16px;
+}
+
+.form-control, .form-select {
+  padding: 10px;
+  font-size: 14px;
+}
+
+.btn-danger {
+  background-color: #e50914;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #c40812;
+}

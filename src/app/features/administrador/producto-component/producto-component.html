@@ -89,20 +89,74 @@
 
 </div>
 
-<!-- MODAL -->
+
+<!-- MODAL NUEVO PRODUCTO -->
 <div class="modal fade" id="modalProducto">
-  <div class="modal-dialog">
-    <div class="modal-content p-3">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content p-4 rounded-4">
 
-      <h5>Nuevo Producto</h5>
+      <!-- HEADER -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <h5 class="fw-bold mb-0">Nuevo Producto</h5>
+          <small class="text-muted">Agrega un nuevo producto al menú</small>
+        </div>
+        <button class="btn-close" (click)="cerrarProducto()"></button>
+      </div>
 
-      <input class="form-control mb-2" [(ngModel)]="nuevoProducto.nombre">
-      <input class="form-control mb-2" type="number" [(ngModel)]="nuevoProducto.precio">
-      <textarea class="form-control mb-2" [(ngModel)]="nuevoProducto.descripcion"></textarea>
+      <!-- FORM -->
+      <div class="row mt-3">
 
-      <div class="text-end">
-        <button class="btn btn-secondary" (click)="cerrarProducto()">Cancelar</button>
-        <button class="btn btn-danger" (click)="crearProducto()">Crear</button>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Nombre del Producto</label>
+          <input class="form-control rounded-3"
+                 placeholder="Ej: Pizza Especial"
+                 [(ngModel)]="nuevoProducto.nombre">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-semibold">Precio</label>
+          <input type="number"
+                 class="form-control rounded-3"
+                 placeholder="12.99"
+                 [(ngModel)]="nuevoProducto.precio">
+        </div>
+
+        <div class="col-12 mb-3">
+          <label class="form-label fw-semibold">Categoría</label>
+          <select class="form-select rounded-3">
+            <option>Clásicas</option>
+            <option>Especiales</option>
+          </select>
+        </div>
+
+        <div class="col-12 mb-3">
+          <label class="form-label fw-semibold">Descripción</label>
+          <textarea class="form-control rounded-3"
+                    placeholder="Describe el producto..."
+                    [(ngModel)]="nuevoProducto.descripcion"></textarea>
+        </div>
+
+        <div class="col-12 mb-3">
+          <label class="form-label fw-semibold">Ingredientes</label>
+          <input class="form-control rounded-3"
+                 placeholder="Mozzarella, Tomate, Albahaca..."
+                 [(ngModel)]="nuevoProducto.ingredientes">
+        </div>
+
+        <div class="col-12 mb-3">
+          <label class="form-label fw-semibold">URL de la Imagen</label>
+          <input class="form-control rounded-3"
+                 placeholder="https://..."
+                 [(ngModel)]="nuevoProducto.imagen">
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button class="btn btn-light border" (click)="cerrarProducto()">Cancelar</button>
+        <button class="btn btn-danger px-4" (click)="crearProducto()">Crear Producto</button>
       </div>
 
     </div>

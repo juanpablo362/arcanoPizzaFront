@@ -32,11 +32,13 @@ export class ProductoComponent implements OnInit {
 
   productos: any[] = [];
 
-  nuevoProducto = {
-    nombre: '',
-    descripcion: '',
-    precio: 0
-  };
+ nuevoProducto = {
+  nombre: '',
+  descripcion: '',
+  precio: 0,
+  ingredientes: '',
+  imagen: ''
+};
 
   ngOnInit() {
     this.cargarProductos();
