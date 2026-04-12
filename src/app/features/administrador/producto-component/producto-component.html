@@ -3,8 +3,7 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="logo border p-2 fw-bold">ARCANO PIZZA</div>
     <div class="user d-flex align-items-center">
-      <i class="bi bi-person-circle me-2 fs-4"></i>
-      Administrador
+      <i class="bi bi-person-circle me-2 fs-4"></i> Administrador
       <button class="btn btn-outline-secondary btn-sm ms-3"><i class="bi bi-box-arrow-right"></i> Salir</button>
     </div>
   </div>
@@ -18,77 +17,77 @@
   <div class="d-flex justify-content-between align-items-end mb-4">
     <div>
       <h4 class="mb-0">Gestión de Productos</h4>
-      <small class="text-muted">Administra el menú de pizzas y extras</small>
+      <small class="text-muted">Filtrando por: <strong>{{ filtroActual }}</strong></small>
     </div>
     <button class="btn btn-primary d-flex align-items-center" (click)="abrirProducto()">
       <i class="bi bi-plus-lg me-2"></i> Nuevo Producto
     </button>
   </div>
 
-  <div class="row mb-4">
-    <div class="col-md-4 mb-2">
-      <div class="card p-3 text-center">
-        <div class="text-muted small fw-bold">TOTAL PRODUCTOS</div>
-        <h3 class="mb-0">{{ productos.length }}</h3>
+  <div class="row mb-4 g-3">
+    <div class="col-md-4">
+      <div class="card p-3 text-center card-filter shadow-sm" 
+           [class.card-active]="filtroActual === 'Todos'" (click)="setFiltro('Todos')">
+        <div class="text-muted small fw-bold text-uppercase">Total Productos</div>
+        <div class="fs-3 fw-bold mt-1">{{ productos.length }}</div>
       </div>
     </div>
-    <div class="col-md-4 mb-2">
-      <div class="card p-3 text-center text-success">
-        <div class="text-muted small fw-bold text-success">DISPONIBLES</div>
-        <h3 class="mb-0">{{ productos.filter(p => p.activo).length }}</h3>
+    <div class="col-md-4">
+      <div class="card p-3 text-center text-success card-filter shadow-sm" 
+           [class.card-active]="filtroActual === 'Disponibles'" (click)="setFiltro('Disponibles')">
+        <div class="text-muted small fw-bold text-success text-uppercase">Disponibles</div>
+        <div class="fs-3 fw-bold mt-1">{{ productos.filter(p => p.activo).length }}</div>
       </div>
     </div>
-    <div class="col-md-4 mb-2">
-      <div class="card p-3 text-center text-danger">
-        <div class="text-muted small fw-bold text-danger">NO DISPONIBLES</div>
-        <h3 class="mb-0">{{ productos.filter(p => !p.activo).length }}</h3>
+    <div class="col-md-4">
+      <div class="card p-3 text-center text-danger card-filter shadow-sm" 
+           [class.card-active]="filtroActual === 'Inactivos'" (click)="setFiltro('Inactivos')">
+        <div class="text-muted small fw-bold text-danger text-uppercase">No Disponibles</div>
+        <div class="fs-3 fw-bold mt-1">{{ productos.filter(p => !p.activo).length }}</div>
       </div>
-    </div>
-  </div>
-
-  <div class="card p-0 overflow-hidden">
-    <div *ngFor="let producto of productos" class="d-flex align-items-center justify-content-between border-top p-3 hover-bg-light">
-
-      <div class="flex-grow-1">
-        <strong class="fs-5">{{ producto.nombre }}</strong>
-        <span class="badge ms-2" [ngClass]="producto.activo ? 'bg-success' : 'bg-secondary'">
-          {{ producto.activo ? 'Disponible' : 'Agotado' }}
-        </span>
-        <div class="text-muted mt-1 small">{{ producto.descripcion || 'Sin descripción' }}</div>
-      </div>
-
-      <div class="fs-4 fw-bold text-success me-4">
-        ${{ producto.precioBase | number:'1.2-2' }}
-      </div>
-
-      <div class="d-flex gap-2">
-        <button class="btn btn-sm" [ngClass]="producto.activo ? 'btn-outline-warning' : 'btn-outline-success'" (click)="desactivarProducto(producto)" title="Activar/Desactivar">
-          <i class="bi" [ngClass]="producto.activo ? 'bi-eye-slash' : 'bi-eye'"></i>
-        </button>
-        
-        <button class="btn btn-sm btn-outline-secondary" (click)="abrirEditar(producto)" title="Editar">
-          <i class="bi bi-pencil"></i>
-        </button>
-
-        <button class="btn btn-sm btn-outline-danger" (click)="eliminar(producto)" title="Eliminar">
-          <i class="bi bi-trash"></i>
-        </button>
-      </div>
-
-    </div>
-
-    <div *ngIf="productos.length === 0" class="p-5 text-center text-muted">
-      <i class="bi bi-box-seam fs-1 d-block mb-2"></i>
-      No hay productos en el menú.
     </div>
   </div>
 
+  <div class="card p-0 shadow-sm">
+    <div class="custom-scroll-container">
+      
+      <div *ngFor="let producto of productosFiltrados" class="d-flex align-items-center justify-content-between border-top p-3 hover-bg-light">
+        <div class="flex-grow-1">
+          <strong class="fs-5">{{ producto.nombre }}</strong>
+          <span class="badge ms-2" [ngClass]="producto.activo ? 'bg-success' : 'bg-secondary'">
+            {{ producto.activo ? 'Disponible' : 'Agotado' }}
+          </span>
+          <div class="text-muted mt-1 small">{{ producto.descripcion || 'Sin descripción' }}</div>
+        </div>
+
+        <div class="fs-4 fw-bold text-success me-4">
+          ${{ producto.precioBase | number:'1.2-2' }}
+        </div>
+
+        <div class="d-flex gap-2 pe-2">
+          <button class="btn btn-sm" [ngClass]="producto.activo ? 'btn-outline-warning' : 'btn-outline-success'" (click)="desactivarProducto(producto)" title="Activar/Desactivar">
+            <i class="bi" [ngClass]="producto.activo ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" (click)="abrirEditar(producto)" title="Editar">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" (click)="eliminar(producto)" title="Eliminar">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="productosFiltrados.length === 0" class="p-5 text-center text-muted border-top">
+        <i class="bi bi-box-seam fs-1 d-block mb-2"></i> No se encontraron productos.
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <div class="modal fade" id="modalProducto">
   <div class="modal-dialog modal-lg">
     <div class="modal-content p-4 rounded-4">
-
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h5 class="fw-bold mb-0">Nuevo Producto</h5>
@@ -96,7 +95,6 @@
         </div>
         <button class="btn-close" (click)="cerrarProducto()"></button>
       </div>
-
       <div class="row g-3">
         <div class="col-md-8">
           <label class="form-label fw-semibold">Nombre del Producto</label>
@@ -111,12 +109,10 @@
           <textarea class="form-control" rows="3" placeholder="Ingredientes y detalles..." [(ngModel)]="nuevoProducto.descripcion"></textarea>
         </div>
       </div>
-
       <div class="d-flex justify-content-end gap-2 mt-4">
         <button class="btn btn-light border" (click)="cerrarProducto()">Cancelar</button>
         <button class="btn btn-primary px-4" (click)="crearProducto()">Guardar Producto</button>
       </div>
-
     </div>
   </div>
 </div>
@@ -124,7 +120,6 @@
 <div class="modal fade" id="modalEditarProducto">
   <div class="modal-dialog modal-lg">
     <div class="modal-content p-4 rounded-4">
-
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h5 class="fw-bold mb-0">Editar Producto</h5>
@@ -132,7 +127,6 @@
         </div>
         <button class="btn-close" (click)="cerrarEditar()"></button>
       </div>
-
       <div class="row g-3">
         <div class="col-md-8">
           <label class="form-label fw-semibold">Nombre del Producto</label>
@@ -157,12 +151,10 @@
            </div>
         </div>
       </div>
-
       <div class="d-flex justify-content-end gap-2 mt-4">
         <button class="btn btn-light border" (click)="cerrarEditar()">Cancelar</button>
         <button class="btn btn-primary px-4" (click)="guardarCambios()">Guardar Cambios</button>
       </div>
-
     </div>
   </div>
 </div>

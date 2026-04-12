@@ -15,64 +15,85 @@
     <button class="btn btn-primary" routerLink="/admin">Usuarios</button>
   </div>
 
-  <div class="mb-4 d-flex gap-3 flex-wrap">
-    <div class="card p-3 flex-fill text-center">
-      <div class="text-muted small text-uppercase fw-bold">Total Usuarios</div>
-      <div class="fs-3 fw-bold">{{ totalUsuarios }}</div>
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <h4 class="mb-0">Gestión de Usuarios</h4>
+      <small class="text-muted">Filtrando por: <strong>{{ filtroActual }}</strong></small>
     </div>
-    <div class="card p-3 flex-fill text-center text-success">
-      <div class="text-muted small text-uppercase fw-bold">Empleados</div>
-      <div class="fs-3 fw-bold">{{ totalEmpleados }}</div>
-    </div>
-    <div class="card p-3 flex-fill text-center text-danger">
-      <div class="text-muted small text-uppercase fw-bold">Administradores</div>
-      <div class="fs-3 fw-bold">{{ totalAdministradores }}</div>
-    </div>
-    <div class="card p-3 flex-fill text-center text-purple">
-      <div class="text-muted small text-uppercase fw-bold">Activos</div>
-      <div class="fs-3 fw-bold">{{ totalActivos }}</div>
-    </div>
-
-    <button class="btn btn-primary ms-auto d-flex align-items-center" (click)="abrirModalUsuario()">
+    <button class="btn btn-primary d-flex align-items-center" (click)="abrirModalUsuario()">
       <i class="bi bi-plus-lg me-2"></i> Nuevo Usuario
     </button>
   </div>
 
-  <div class="card p-0 overflow-hidden">
-    <div *ngFor="let usuario of usuariosFiltrados()" class="d-flex justify-content-between align-items-center border-top p-3 hover-bg-light">
-      
-      <div>
-        <strong class="fs-5">{{ usuario.nombre }}</strong>
-        <span class="badge bg-success ms-2" *ngIf="usuario.tipo==='Empleado'">Empleado</span>
-        <span class="badge bg-danger ms-2" *ngIf="usuario.tipo==='Administrador'">Admin</span>
-        <span class="badge ms-2" [ngClass]="usuario.activo ? 'bg-primary' : 'bg-secondary'">
-          {{ usuario.activo ? 'Activo' : 'Inactivo' }}
-        </span>
-        <div class="text-muted mt-1"><i class="bi bi-envelope me-1"></i> {{ usuario.email }} | <i class="bi bi-telephone me-1"></i> {{ usuario.telefono || 'Sin teléfono' }}</div>
-      </div>
-
-      <div class="d-flex gap-2">
-        <button class="btn btn-sm" [ngClass]="usuario.activo ? 'btn-outline-warning' : 'btn-outline-success'" (click)="desactivarUsuario(usuario)">
-          <i class="bi" [ngClass]="usuario.activo ? 'bi-person-dash' : 'bi-person-check'"></i>
-        </button>
-        
-        <button class="btn btn-sm btn-outline-secondary" (click)="abrirEditar(usuario)">
-          <i class="bi bi-pencil"></i>
-        </button>
-
-        <button class="btn btn-sm btn-outline-danger" (click)="eliminarUsuario(usuario)">
-          <i class="bi bi-trash"></i>
-        </button>
-      </div>
-
+  <div class="mb-4 d-flex gap-3 flex-wrap">
+    <div class="card p-3 flex-fill text-center card-filter shadow-sm" 
+         [class.card-active]="filtroActual === 'Todos'" (click)="setFiltro('Todos')">
+      <div class="text-muted small text-uppercase fw-bold">Total Usuarios</div>
+      <div class="fs-3 fw-bold">{{ totalUsuarios }}</div>
     </div>
     
-    <div *ngIf="usuariosFiltrados().length === 0" class="p-5 text-center text-muted">
-      <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-      No se encontraron usuarios en esta categoría.
+    <div class="card p-3 flex-fill text-center text-success card-filter shadow-sm" 
+         [class.card-active]="filtroActual === 'Empleado'" (click)="setFiltro('Empleado')">
+      <div class="text-muted small text-uppercase fw-bold">Empleados</div>
+      <div class="fs-3 fw-bold">{{ totalEmpleados }}</div>
+    </div>
+    
+    <div class="card p-3 flex-fill text-center text-danger card-filter shadow-sm" 
+         [class.card-active]="filtroActual === 'Administrador'" (click)="setFiltro('Administrador')">
+      <div class="text-muted small text-uppercase fw-bold">Administradores</div>
+      <div class="fs-3 fw-bold">{{ totalAdministradores }}</div>
+    </div>
+    
+    <div class="card p-3 flex-fill text-center text-purple card-filter shadow-sm" 
+         [class.card-active]="filtroActual === 'Activos'" (click)="setFiltro('Activos')">
+      <div class="text-muted small text-uppercase fw-bold">Activos</div>
+      <div class="fs-3 fw-bold">{{ totalActivos }}</div>
     </div>
   </div>
 
+  <div class="card p-0 shadow-sm">
+    <div class="custom-scroll-container">
+      
+      <div *ngFor="let usuario of usuariosFiltrados()" class="d-flex justify-content-between align-items-center border-top p-3 hover-bg-light">
+        
+        <div>
+          <strong class="fs-5">{{ usuario.nombre }}</strong>
+          <span class="badge bg-success ms-2" *ngIf="usuario.tipo==='Empleado'">Empleado</span>
+          <span class="badge bg-danger ms-2" *ngIf="usuario.tipo==='Administrador'">Admin</span>
+          <span class="badge ms-2" [ngClass]="usuario.activo ? 'bg-primary' : 'bg-secondary'">
+            {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+          </span>
+          <div class="text-muted mt-1">
+            <i class="bi bi-envelope me-1"></i> {{ usuario.email }} | 
+            <i class="bi bi-telephone me-1"></i> {{ usuario.telefono || 'Sin teléfono' }}
+          </div>
+        </div>
+
+    <div class="d-flex gap-2 pe-2 align-items-center">
+      
+      <button class="btn btn-sm btn-action px-3 fw-medium" 
+              [ngClass]="usuario.activo ? 'text-action-blue' : 'text-action-green'" 
+              (click)="desactivarUsuario(usuario)">
+        {{ usuario.activo ? 'Desactivar' : 'Activar' }}
+      </button>
+      
+      <button class="btn btn-action btn-icon-only" (click)="abrirEditar(usuario)" title="Editar">
+        <img src="filename=image_6.png" alt="Editar" style="max-height: 1.2rem;">
+      </button>
+
+      <button class="btn btn-action btn-icon-only" (click)="eliminarUsuario(usuario)" title="Eliminar">
+        <img src="filename=image_7.png" alt="Eliminar" style="max-height: 1.2rem;">
+      </button>
+
+    </div>
+      </div>
+      
+      <div *ngIf="usuariosFiltrados().length === 0" class="p-5 text-center text-muted border-top">
+        <i class="bi bi-inbox fs-1 d-block mb-2"></i> No se encontraron usuarios en esta categoría.
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <div class="modal fade" id="modalUsuario">
@@ -85,7 +106,6 @@
         </div>
         <button class="btn-close" (click)="cerrarModalUsuario()"></button>
       </div>
-
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label fw-semibold">Nombre Completo</label>
@@ -107,7 +127,6 @@
           </select>
         </div>
       </div>
-
       <div class="d-flex justify-content-end gap-2 mt-4">
         <button class="btn btn-light border" (click)="cerrarModalUsuario()">Cancelar</button>
         <button class="btn btn-primary px-4" (click)="crearUsuario()">Crear Usuario</button>
@@ -122,11 +141,10 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h5 class="fw-bold mb-0">Editar Usuario</h5>
-          <small class="text-muted">Modifica los detalles de {{ usuarioEdit.nombre }}</small>
+          <small class="text-muted">Modificando: {{ usuarioEdit.nombre }}</small>
         </div>
         <button class="btn-close" (click)="cerrarEditar()"></button>
       </div>
-
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label fw-semibold">Nombre Completo</label>
@@ -154,7 +172,6 @@
            </div>
         </div>
       </div>
-
       <div class="d-flex justify-content-end gap-2 mt-4">
         <button class="btn btn-light border" (click)="cerrarEditar()">Cancelar</button>
         <button class="btn btn-primary px-4" (click)="guardarCambios()">Guardar Cambios</button>

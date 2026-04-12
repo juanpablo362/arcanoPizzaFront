@@ -1,38 +1,21 @@
-/* ==========================================
-   Efectos de interacción
-========================================== */
-.hover-bg-light { 
-  transition: background-color 0.2s ease-in-out; 
-}
+.hover-bg-light { transition: background-color 0.2s ease-in-out; }
+.hover-bg-light:hover { background-color: #f8f9fa; }
 
-.hover-bg-light:hover { 
-  background-color: #f8f9fa; 
-}
+/* Tarjetas Filtro */
+.card-filter { cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.card-filter:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.1) !important; background-color: #fcfcfc; }
+.card-active { border: 2px solid #0d6efd !important; background-color: #f0f7ff !important; transform: translateY(-2px); }
 
-/* ==========================================
-   Estilo unificado para Tarjetas (Cards)
-========================================== */
-.card {
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  border: 1px solid rgba(0,0,0,0.05);
-}
+/* Contenedor Scroll */
+.custom-scroll-container { max-height: 55vh; overflow-y: auto; scrollbar-gutter: stable; }
+.custom-scroll-container::-webkit-scrollbar { width: 8px; }
+.custom-scroll-container::-webkit-scrollbar-track { background: transparent; margin: 10px 0; }
+.custom-scroll-container::-webkit-scrollbar-thumb { background-color: #dee2e6; border-radius: 10px; }
+.custom-scroll-container::-webkit-scrollbar-thumb:hover { background-color: #adb5bd; }
 
-/* Suavizar las líneas divisorias */
-.border-top {
-  border-color: #f0f0f0 !important;
-}
-
-/* ==========================================
-   Ajustes tipográficos y visuales
-========================================== */
-.badge {
-  font-size: 0.8rem;
-  padding: 0.4em 0.6em;
-  font-weight: 500;
-}
-
-/* Tamaño de iconos en botones pequeños */
-.btn-sm .bi {
-  font-size: 1rem;
-}
+/* Tarjetas y UI General */
+.card { border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); background-color: #ffffff; }
+.border-top { border-color: #f0f0f0 !important; }
+.badge { font-size: 0.8rem; padding: 0.4em 0.6em; font-weight: 500; }
+.btn-sm .bi { font-size: 1rem; }
+h4.mb-0 { font-weight: 700; color: #212529; }

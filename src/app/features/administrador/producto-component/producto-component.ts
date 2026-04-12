@@ -21,73 +21,68 @@ interface ProductoResponseDto {
   templateUrl: './producto-component.html',
   styleUrls: ['./producto-component.css'],
 })
+
 export class ProductoComponent implements OnInit {
   private productoService = inject(ProductoService);
-  private cdr = inject(ChangeDetectorRef); // 🔥 Previene el bug de renderizado
+  private cdr = inject(ChangeDetectorRef);
 
   productos: ProductoResponseDto[] = [];
+  filtroActual: 'Todos' | 'Disponibles' | 'Inactivos' = 'Todos';
 
-  // Coincide exactamente con ProductoAdminDto (Para crear)
   nuevoProducto = { nombre: '', descripcion: '', precio: 0 };
-
-  // Para editar un producto existente (ProductoUpdateDto)
   productoEdit: any = {};
 
   ngOnInit() {
     this.cargarProductos();
   }
 
-  // ===== LECTURA =====
   cargarProductos() {
     this.productoService.obtenerProductos().subscribe({
       next: (data) => {
         this.productos = data;
-        this.cdr.detectChanges(); // 🔥 Forzamos la actualización visual
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error al cargar productos:', err)
     });
   }
 
-  // ===== MODALES =====
-  abrirProducto() {
-    new (window as any).bootstrap.Modal(document.getElementById('modalProducto')).show();
-  }
-  
-  cerrarProducto() {
-    (window as any).bootstrap.Modal.getInstance(document.getElementById('modalProducto')).hide();
+  setFiltro(nuevoFiltro: 'Todos' | 'Disponibles' | 'Inactivos') {
+    this.filtroActual = nuevoFiltro;
   }
 
+  get productosFiltrados() {
+    if (this.filtroActual === 'Todos') return this.productos;
+    if (this.filtroActual === 'Disponibles') return this.productos.filter(p => p.activo);
+    return this.productos.filter(p => !p.activo);
+  }
+
+  abrirProducto() { new (window as any).bootstrap.Modal(document.getElementById('modalProducto')).show(); }
+  cerrarProducto() { (window as any).bootstrap.Modal.getInstance(document.getElementById('modalProducto')).hide(); }
+
   abrirEditar(producto: ProductoResponseDto) {
-    // Transformamos los datos de lectura al formato que pide el DTO de actualización
     this.productoEdit = {
       id: producto.id,
       nombre: producto.nombre,
       descripcion: producto.descripcion,
-      precio: producto.precioBase, // El backend lo espera como 'precio'
+      precio: producto.precioBase,
       activo: producto.activo,
       fkIdCategoria: producto.idCategoria || 1
     };
     new (window as any).bootstrap.Modal(document.getElementById('modalEditarProducto')).show();
   }
+  cerrarEditar() { (window as any).bootstrap.Modal.getInstance(document.getElementById('modalEditarProducto')).hide(); }
 
-  cerrarEditar() {
-    (window as any).bootstrap.Modal.getInstance(document.getElementById('modalEditarProducto')).hide();
-  }
-
-  // ===== CRUD CONECTADO A LA API =====
   crearProducto() {
     this.productoService.crearProducto(this.nuevoProducto).subscribe({
       next: () => {
         this.cargarProductos();
         this.cerrarProducto();
-        // Limpiamos el formulario
         this.nuevoProducto = { nombre: '', descripcion: '', precio: 0 };
       }
     });
   }
 
   guardarCambios() {
-    // Armamos el objeto exacto para el ProductoUpdateDto
     const updateDto = {
       nombre: this.productoEdit.nombre,
       descripcion: this.productoEdit.descripcion,
@@ -106,7 +101,6 @@ export class ProductoComponent implements OnInit {
 
   eliminar(producto: ProductoResponseDto) {
     if (!confirm(`¿Eliminar el producto ${producto.nombre}? Esta acción no se puede deshacer.`)) return;
-
     this.productoService.eliminarProducto(producto.id).subscribe({
       next: () => this.cargarProductos()
     });

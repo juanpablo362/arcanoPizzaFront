@@ -23,23 +23,23 @@ interface UsuarioResponseDto {
 })
 export class UsuariosComponent implements OnInit {
   private usuarioService = inject(UsuarioService);
-  private cdr = inject(ChangeDetectorRef); // 🔥 2. Inyectamos la herramienta a nuestra clase
+  private cdr = inject(ChangeDetectorRef);
 
   usuarios: UsuarioResponseDto[] = [];
-  filtro: 'Todos' | 'Empleados' | 'Administradores' = 'Todos';
+  filtroActual: 'Todos' | 'Empleado' | 'Administrador' | 'Activos' = 'Todos';
 
   nuevoUsuario = { nombre: '', email: '', telefono: '', tipo: 'Empleado' };
   usuarioEdit: any = {};
 
   ngOnInit() {
-    this.cargarUsuarios(); // Angular llamará esto naturalmente cada vez que entres a la página
+    this.cargarUsuarios();
   }
 
   cargarUsuarios() {
     this.usuarioService.obtenerUsuarios().subscribe({
       next: (data) => {
         this.usuarios = data;
-        this.cdr.detectChanges(); // 🔥 3. MAGIA: Obligamos a Angular a repintar el HTML inmediatamente
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error al cargar usuarios:', err)
     });
@@ -50,9 +50,14 @@ export class UsuariosComponent implements OnInit {
   get totalAdministradores() { return this.usuarios.filter(u => u.tipo === 'Administrador').length; }
   get totalActivos() { return this.usuarios.filter(u => u.activo).length; }
 
+  setFiltro(nuevoFiltro: 'Todos' | 'Empleado' | 'Administrador' | 'Activos') {
+    this.filtroActual = nuevoFiltro;
+  }
+
   usuariosFiltrados() {
-    if (this.filtro === 'Todos') return this.usuarios;
-    return this.usuarios.filter(u => u.tipo === this.filtro.slice(0, -1));
+    if (this.filtroActual === 'Todos') return this.usuarios;
+    if (this.filtroActual === 'Activos') return this.usuarios.filter(u => u.activo);
+    return this.usuarios.filter(u => u.tipo === this.filtroActual);
   }
 
   abrirModalUsuario() { new (window as any).bootstrap.Modal(document.getElementById('modalUsuario')).show(); }
@@ -93,7 +98,6 @@ export class UsuariosComponent implements OnInit {
 
   eliminarUsuario(usuario: UsuarioResponseDto) {
     if (!confirm(`¿Estás seguro de eliminar a ${usuario.nombre}?`)) return;
-    
     this.usuarioService.eliminarUsuario(usuario.id).subscribe({
       next: () => this.cargarUsuarios()
     });
