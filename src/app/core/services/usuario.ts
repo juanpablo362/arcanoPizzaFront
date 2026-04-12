@@ -27,4 +27,3 @@ export class UsuarioService extends ApiService {
     return this.http.patch(`${this.baseUrl}/usuarios/${id}/toggle`, {});
   }
 }
-//avance
