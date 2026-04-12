@@ -27,6 +27,9 @@ export class UsuariosComponent implements OnInit {
 
   usuarios: UsuarioResponseDto[] = [];
   filtroActual: 'Todos' | 'Empleado' | 'Administrador' | 'Activos' = 'Todos';
+  
+  // 🔥 NUEVA VARIABLE: Guarda lo que el usuario escribe en el buscador
+  terminoBusqueda: string = '';
 
   nuevoUsuario = { nombre: '', email: '', telefono: '', tipo: 'Empleado' };
   usuarioEdit: any = {};
@@ -54,12 +57,31 @@ export class UsuariosComponent implements OnInit {
     this.filtroActual = nuevoFiltro;
   }
 
+  // 🔥 LÓGICA DE BÚSQUEDA ACTUALIZADA
   usuariosFiltrados() {
-    if (this.filtroActual === 'Todos') return this.usuarios;
-    if (this.filtroActual === 'Activos') return this.usuarios.filter(u => u.activo);
-    return this.usuarios.filter(u => u.tipo === this.filtroActual);
+    let resultado = this.usuarios;
+
+    // 1. Primero filtramos por la tarjeta seleccionada
+    if (this.filtroActual === 'Activos') {
+      resultado = resultado.filter(u => u.activo);
+    } else if (this.filtroActual !== 'Todos') {
+      resultado = resultado.filter(u => u.tipo === this.filtroActual);
+    }
+
+    // 2. Luego filtramos por el texto del buscador (si hay algo escrito)
+    if (this.terminoBusqueda.trim() !== '') {
+      const termino = this.terminoBusqueda.toLowerCase();
+      resultado = resultado.filter(u => 
+        u.nombre.toLowerCase().includes(termino) || 
+        u.email.toLowerCase().includes(termino) || 
+        (u.telefono && u.telefono.includes(termino))
+      );
+    }
+
+    return resultado;
   }
 
+  // ... (Tus métodos de Modales y CRUD se mantienen idénticos)
   abrirModalUsuario() { new (window as any).bootstrap.Modal(document.getElementById('modalUsuario')).show(); }
   cerrarModalUsuario() { (window as any).bootstrap.Modal.getInstance(document.getElementById('modalUsuario')).hide(); }
   

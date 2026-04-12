@@ -28,6 +28,9 @@ export class ProductoComponent implements OnInit {
 
   productos: ProductoResponseDto[] = [];
   filtroActual: 'Todos' | 'Disponibles' | 'Inactivos' = 'Todos';
+  
+  // 🔥 NUEVA VARIABLE: Guarda lo que el usuario escribe en el buscador
+  terminoBusqueda: string = '';
 
   nuevoProducto = { nombre: '', descripcion: '', precio: 0 };
   productoEdit: any = {};
@@ -50,12 +53,30 @@ export class ProductoComponent implements OnInit {
     this.filtroActual = nuevoFiltro;
   }
 
+  // 🔥 LÓGICA DE BÚSQUEDA ACTUALIZADA
   get productosFiltrados() {
-    if (this.filtroActual === 'Todos') return this.productos;
-    if (this.filtroActual === 'Disponibles') return this.productos.filter(p => p.activo);
-    return this.productos.filter(p => !p.activo);
+    let resultado = this.productos;
+
+    // 1. Filtrar por la tarjeta seleccionada
+    if (this.filtroActual === 'Disponibles') {
+      resultado = resultado.filter(p => p.activo);
+    } else if (this.filtroActual === 'Inactivos') {
+      resultado = resultado.filter(p => !p.activo);
+    }
+
+    // 2. Filtrar por el texto del buscador
+    if (this.terminoBusqueda.trim() !== '') {
+      const termino = this.terminoBusqueda.toLowerCase();
+      resultado = resultado.filter(p => 
+        p.nombre.toLowerCase().includes(termino) || 
+        (p.descripcion && p.descripcion.toLowerCase().includes(termino))
+      );
+    }
+
+    return resultado;
   }
 
+  // ... (El resto de tus métodos de modales y CRUD se quedan igual)
   abrirProducto() { new (window as any).bootstrap.Modal(document.getElementById('modalProducto')).show(); }
   cerrarProducto() { (window as any).bootstrap.Modal.getInstance(document.getElementById('modalProducto')).hide(); }
 
