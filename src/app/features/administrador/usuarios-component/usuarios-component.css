@@ -55,53 +55,50 @@
 }
 
 /* ==========================================
-   Botones de Acción (Estilo Minimalista)
+   Botones de Acción (Estilo Minimalista) - FIX
 ========================================== */
 .btn-action {
   background-color: #ffffff;
   border: 1px solid #dee2e6;
   border-radius: 8px;
-  padding: 0.35rem 0.5rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   transition: all 0.2s ease;
+  display: inline-block; 
+  text-align: center;
+  vertical-align: middle;
 }
 
 .btn-action:hover {
   background-color: #f8f9fa;
   border-color: #cdd3d8;
-  transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
-.btn-action .bi {
-  font-size: 1.1rem;
-  line-height: 1;
+/* Botón con texto (Activar/Desactivar) */
+.btn-text {
+  height: 34px;
+  padding: 0 12px;
+  line-height: 32px; 
 }
 
-/* Colores personalizados */
-.text-action-blue { color: #0d4b85 !important; }
-.text-action-green { color: #198754 !important; }
-.text-action-grey { color: #495057 !important; }
-.text-action-red { color: #dc3545 !important; }
-
-/* Forzar a que los botones sean cuadrados y centren perfectamente */
+/* Botón cuadrado (Iconos) */
 .btn-icon-only {
   width: 34px !important;
   height: 34px !important;
   padding: 0 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  line-height: 32px !important; 
 }
 
-/* Evitar que el ícono colapse o desaparezca */
-.btn-icon-only .bi {
-  font-size: 1.2rem !important;
-  line-height: normal !important;
-  display: inline-block !important; /* Obliga al navegador a dibujarlo */
+/* Ajuste para imágenes personalizadas dentro de los botones */
+.custom-icon {
+  width: 18px;  
+  height: 18px;
+  object-fit: contain;
+  vertical-align: middle;
 }
+
+/* Colores personalizados para el texto */
+.text-action-blue { color: #0d4b85 !important; }
+.text-action-green { color: #198754 !important; }
 
 /* ==========================================
    UI General

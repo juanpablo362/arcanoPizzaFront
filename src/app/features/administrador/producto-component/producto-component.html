@@ -1,160 +1,126 @@
 <div class="container-fluid p-4">
 
+  <!-- HEADER -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="logo border p-2 fw-bold">ARCANO PIZZA</div>
     <div class="user d-flex align-items-center">
       <i class="bi bi-person-circle me-2 fs-4"></i> Administrador
-      <button class="btn btn-outline-secondary btn-sm ms-3"><i class="bi bi-box-arrow-right"></i> Salir</button>
+      <button class="btn btn-outline-secondary btn-sm ms-3">
+        <i class="bi bi-box-arrow-right"></i> Salir
+      </button>
     </div>
   </div>
 
+  <!-- NAV -->
   <div class="mb-4">
     <button class="btn btn-outline-primary me-2" routerLink="/dashboard">Dashboard</button>
     <button class="btn btn-primary me-2" routerLink="/productos">Productos</button>
     <button class="btn btn-outline-primary" routerLink="/admin">Usuarios</button>
   </div>
 
+  <!-- TITULO -->
   <div class="d-flex justify-content-between align-items-end mb-4">
     <div>
       <h4 class="mb-0">Gestión de Productos</h4>
       <small class="text-muted">Filtrando por: <strong>{{ filtroActual }}</strong></small>
     </div>
+
     <button class="btn btn-primary d-flex align-items-center" (click)="abrirProducto()">
       <i class="bi bi-plus-lg me-2"></i> Nuevo Producto
     </button>
   </div>
 
+  <!-- FILTROS -->
   <div class="row mb-4 g-3">
+
     <div class="col-md-4">
-      <div class="card p-3 text-center card-filter shadow-sm" 
-           [class.card-active]="filtroActual === 'Todos'" (click)="setFiltro('Todos')">
+      <div class="card p-3 text-center card-filter shadow-sm"
+           [class.card-active]="filtroActual === 'Todos'"
+           (click)="setFiltro('Todos')">
         <div class="text-muted small fw-bold text-uppercase">Total Productos</div>
         <div class="fs-3 fw-bold mt-1">{{ productos.length }}</div>
       </div>
     </div>
+
     <div class="col-md-4">
-      <div class="card p-3 text-center text-success card-filter shadow-sm" 
-           [class.card-active]="filtroActual === 'Disponibles'" (click)="setFiltro('Disponibles')">
-        <div class="text-muted small fw-bold text-success text-uppercase">Disponibles</div>
+      <div class="card p-3 text-center text-success card-filter shadow-sm"
+           [class.card-active]="filtroActual === 'Disponibles'"
+           (click)="setFiltro('Disponibles')">
+        <div class="text-muted small fw-bold text-uppercase">Disponibles</div>
         <div class="fs-3 fw-bold mt-1">{{ productos.filter(p => p.activo).length }}</div>
       </div>
     </div>
+
     <div class="col-md-4">
-      <div class="card p-3 text-center text-danger card-filter shadow-sm" 
-           [class.card-active]="filtroActual === 'Inactivos'" (click)="setFiltro('Inactivos')">
-        <div class="text-muted small fw-bold text-danger text-uppercase">No Disponibles</div>
+      <div class="card p-3 text-center text-danger card-filter shadow-sm"
+           [class.card-active]="filtroActual === 'Inactivos'"
+           (click)="setFiltro('Inactivos')">
+        <div class="text-muted small fw-bold text-uppercase">No Disponibles</div>
         <div class="fs-3 fw-bold mt-1">{{ productos.filter(p => !p.activo).length }}</div>
       </div>
     </div>
+
   </div>
 
+  <!-- LISTADO -->
   <div class="card p-0 shadow-sm">
     <div class="custom-scroll-container">
-      
-      <div *ngFor="let producto of productosFiltrados" class="d-flex align-items-center justify-content-between border-top p-3 hover-bg-light">
+
+      <!-- 🔥 IMPORTANTE: AQUÍ EXISTE "producto" -->
+      <div *ngFor="let producto of productosFiltrados"
+           class="d-flex align-items-center justify-content-between border-top p-3 hover-bg-light">
+
+        <!-- INFO -->
         <div class="flex-grow-1">
           <strong class="fs-5">{{ producto.nombre }}</strong>
-          <span class="badge ms-2" [ngClass]="producto.activo ? 'bg-success' : 'bg-secondary'">
+
+          <span class="badge ms-2"
+                [ngClass]="producto.activo ? 'bg-success' : 'bg-secondary'">
             {{ producto.activo ? 'Disponible' : 'Agotado' }}
           </span>
-          <div class="text-muted mt-1 small">{{ producto.descripcion || 'Sin descripción' }}</div>
+
+          <div class="text-muted mt-1 small">
+            {{ producto.descripcion || 'Sin descripción' }}
+          </div>
         </div>
 
+        <!-- PRECIO -->
         <div class="fs-4 fw-bold text-success me-4">
           ${{ producto.precioBase | number:'1.2-2' }}
         </div>
 
-        <div class="d-flex gap-2 pe-2">
-          <button class="btn btn-sm" [ngClass]="producto.activo ? 'btn-outline-warning' : 'btn-outline-success'" (click)="desactivarProducto(producto)" title="Activar/Desactivar">
-            <i class="bi" [ngClass]="producto.activo ? 'bi-eye-slash' : 'bi-eye'"></i>
+        <!-- BOTONES (IGUAL QUE USUARIOS) -->
+        <div class="d-flex gap-2 pe-2 align-items-center">
+
+          <button class="btn btn-action btn-text fw-medium"
+                  [ngClass]="producto.activo ? 'text-action-blue' : 'text-action-green'"
+                  (click)="desactivarProducto(producto)">
+            {{ producto.activo ? 'Desactivar' : 'Activar' }}
           </button>
-          <button class="btn btn-sm btn-outline-secondary" (click)="abrirEditar(producto)" title="Editar">
+
+          <button class="btn btn-action btn-icon-only"
+                  (click)="abrirEditar(producto)"
+                  title="Editar">
             <i class="bi bi-pencil"></i>
           </button>
-          <button class="btn btn-sm btn-outline-danger" (click)="eliminar(producto)" title="Eliminar">
+
+          <button class="btn btn-action btn-icon-only"
+                  (click)="eliminar(producto)"
+                  title="Eliminar">
             <i class="bi bi-trash"></i>
           </button>
+
         </div>
+
       </div>
 
-      <div *ngIf="productosFiltrados.length === 0" class="p-5 text-center text-muted border-top">
-        <i class="bi bi-box-seam fs-1 d-block mb-2"></i> No se encontraron productos.
+      <!-- VACIO -->
+      <div *ngIf="productosFiltrados.length === 0"
+           class="p-5 text-center text-muted border-top">
+        <i class="bi bi-box-seam fs-1 d-block mb-2"></i>
+        No se encontraron productos.
       </div>
 
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="modalProducto">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content p-4 rounded-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h5 class="fw-bold mb-0">Nuevo Producto</h5>
-          <small class="text-muted">Agrega un nuevo ítem al menú</small>
-        </div>
-        <button class="btn-close" (click)="cerrarProducto()"></button>
-      </div>
-      <div class="row g-3">
-        <div class="col-md-8">
-          <label class="form-label fw-semibold">Nombre del Producto</label>
-          <input class="form-control" placeholder="Ej: Pizza Hawaiana" [(ngModel)]="nuevoProducto.nombre">
-        </div>
-        <div class="col-md-4">
-          <label class="form-label fw-semibold">Precio Base ($)</label>
-          <input type="number" class="form-control" placeholder="0.00" [(ngModel)]="nuevoProducto.precio">
-        </div>
-        <div class="col-12">
-          <label class="form-label fw-semibold">Descripción</label>
-          <textarea class="form-control" rows="3" placeholder="Ingredientes y detalles..." [(ngModel)]="nuevoProducto.descripcion"></textarea>
-        </div>
-      </div>
-      <div class="d-flex justify-content-end gap-2 mt-4">
-        <button class="btn btn-light border" (click)="cerrarProducto()">Cancelar</button>
-        <button class="btn btn-primary px-4" (click)="crearProducto()">Guardar Producto</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="modalEditarProducto">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content p-4 rounded-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h5 class="fw-bold mb-0">Editar Producto</h5>
-          <small class="text-muted">Modificando: {{ productoEdit.nombre }}</small>
-        </div>
-        <button class="btn-close" (click)="cerrarEditar()"></button>
-      </div>
-      <div class="row g-3">
-        <div class="col-md-8">
-          <label class="form-label fw-semibold">Nombre del Producto</label>
-          <input class="form-control" [(ngModel)]="productoEdit.nombre">
-        </div>
-        <div class="col-md-4">
-          <label class="form-label fw-semibold">Precio Base ($)</label>
-          <input type="number" class="form-control" [(ngModel)]="productoEdit.precio">
-        </div>
-        <div class="col-12">
-          <label class="form-label fw-semibold">Categoría (ID)</label>
-          <input type="number" class="form-control" [(ngModel)]="productoEdit.fkIdCategoria">
-        </div>
-        <div class="col-12">
-          <label class="form-label fw-semibold">Descripción</label>
-          <textarea class="form-control" rows="3" [(ngModel)]="productoEdit.descripcion"></textarea>
-        </div>
-        <div class="col-12 mt-3">
-           <div class="form-check form-switch">
-             <input class="form-check-input" type="checkbox" id="switchActivoProducto" [(ngModel)]="productoEdit.activo">
-             <label class="form-check-label fw-semibold" for="switchActivoProducto">Producto disponible para la venta</label>
-           </div>
-        </div>
-      </div>
-      <div class="d-flex justify-content-end gap-2 mt-4">
-        <button class="btn btn-light border" (click)="cerrarEditar()">Cancelar</button>
-        <button class="btn btn-primary px-4" (click)="guardarCambios()">Guardar Cambios</button>
-      </div>
     </div>
   </div>
 </div>
