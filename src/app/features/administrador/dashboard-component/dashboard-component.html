@@ -1,82 +1,107 @@
 <div class="container-fluid p-4">
-  <!-- Header -->
+
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="logo">LOGO</div>
+    <div class="logo border p-2 fw-bold">ARCANO PIZZA</div>
     <div class="user d-flex align-items-center">
-      <i class="bi bi-person-circle me-2"></i> Juan Mendoza
-      <i class="bi bi-box-arrow-right ms-3"></i>
+      <i class="bi bi-person-circle me-2 fs-4"></i>
+      Administrador
+      <button class="btn btn-outline-secondary btn-sm ms-3"><i class="bi bi-box-arrow-right"></i> Salir</button>
     </div>
   </div>
 
-  <!-- Navegación -->
   <div class="mb-4">
-  <button class="btn btn-outline-primary me-2" routerLink="/dashboard">Dashboard</button>
-  <button class="btn btn-outline-primary me-2" routerLink="/productos">Productos</button>
-  <button class="btn btn-outline-primary" routerLink="/admin">Usuarios</button>
-</div>
-
-  <!-- Título -->
-  <div class="mb-4">
-    <h4>Dashboard</h4>
-    <small class="text-muted">Resumen general del negocio - {{ fecha }}</small>
+    <button class="btn btn-primary me-2" routerLink="/dashboard">Dashboard</button>
+    <button class="btn btn-outline-primary me-2" routerLink="/productos">Productos</button>
+    <button class="btn btn-outline-primary" routerLink="/admin">Usuarios</button>
   </div>
 
-  <!-- Resumen general -->
+  <div class="mb-4">
+    <h4 class="mb-0">Dashboard General</h4>
+    <small class="text-muted text-capitalize">Resumen del negocio - {{ fechaHoy }}</small>
+  </div>
+
   <div class="row mb-4">
-    <div class="col-md-4 mb-2">
-      <div class="card p-3">
-        <div>Ventas de Hoy</div>
-        <h5>${{ ventasHoy | number:'1.2-2' }}</h5>
+    <div class="col-md-3 mb-3">
+      <div class="card p-3 h-100 shadow-sm border-0">
+        <div class="text-muted small fw-bold text-uppercase">Ventas de Hoy</div>
+        <h3 class="mb-0 text-success">${{ ventasHoy | number:'1.2-2' }}</h3>
       </div>
     </div>
-    <div class="col-md-4 mb-2">
-      <div class="card p-3">
-        <div>Pedidos Activos</div>
-        <h5>{{ pedidosActivos }}</h5>
+    <div class="col-md-3 mb-3">
+      <div class="card p-3 h-100 shadow-sm border-0">
+        <div class="text-muted small fw-bold text-uppercase">Pedidos Activos</div>
+        <h3 class="mb-0 text-primary">{{ pedidosActivos }}</h3>
       </div>
     </div>
-    <div class="col-md-4 mb-2">
-      <div class="card p-3">
-        <div>Clientes del Día</div>
-        <h5>{{ clientesDia }}</h5>
+    <div class="col-md-3 mb-3">
+      <div class="card p-3 h-100 shadow-sm border-0">
+        <div class="text-muted small fw-bold text-uppercase">Productos Menú</div>
+        <h3 class="mb-0 text-warning">{{ productosActivosAPI }} <span class="fs-6 text-muted">/ {{ totalProductosAPI }}</span></h3>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card p-3 h-100 shadow-sm border-0">
+        <div class="text-muted small fw-bold text-uppercase">Usuarios Registrados</div>
+        <h3 class="mb-0 text-purple">{{ totalUsuariosAPI }}</h3>
       </div>
     </div>
   </div>
 
-  <!-- Productos más vendidos y pedidos por hora -->
   <div class="row">
-    <!-- Productos -->
+    
     <div class="col-md-6 mb-4">
-      <div class="card p-3 h-100">
-        <h6>Productos Más Vendidos</h6>
-        <small class="text-muted">Ventas del día de hoy</small>
-        <div *ngFor="let producto of productosVendidos" class="my-3">
-          <div class="d-flex justify-content-between">
-            <div>{{ producto.nombre }} ({{ producto.vendidos }} vendidas)</div>
-            <div class="text-success">${{ producto.total | number:'1.2-2' }}</div>
+      <div class="card p-4 h-100 shadow-sm border-0">
+        <h5 class="fw-bold mb-1">Productos Más Vendidos</h5>
+        <small class="text-muted mb-4 d-block">Ventas del día de hoy</small>
+        
+        <ng-container *ngIf="productosVendidos.length > 0; else sinProductos">
+          <div *ngFor="let producto of productosVendidos" class="mb-4">
+            <div class="d-flex justify-content-between align-items-end mb-1">
+              <span class="fw-medium">{{ producto.nombre }} <small class="text-muted">({{ producto.vendidos }} vendidas)</small></span>
+              <span class="text-success fw-bold">${{ producto.total | number:'1.2-2' }}</span>
+            </div>
+            <div class="progress" style="height: 8px; border-radius: 10px;">
+              <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="calcularPorcentaje(producto)"></div>
+            </div>
           </div>
-          <div class="progress mt-1" style="height: 8px;">
-            <div class="progress-bar" role="progressbar" [style.width.%]="calcularPorcentaje(producto)"></div>
+        </ng-container>
+
+        <ng-template #sinProductos>
+          <div class="text-center p-4 text-muted mt-3">
+            <i class="bi bi-bar-chart fs-1 d-block mb-2 text-light-gray"></i>
+            Aún no hay datos de ventas registrados para hoy.
           </div>
-        </div>
+        </ng-template>
+
       </div>
     </div>
 
-    <!-- Pedidos por hora -->
     <div class="col-md-6 mb-4">
-      <div class="card p-3 h-100">
-        <h6>Pedidos por Hora</h6>
-        <small class="text-muted">Actividad del día</small>
-        <div *ngFor="let pedido of pedidosPorHora" class="my-3">
-          <div class="d-flex justify-content-between">
-            <div>{{ pedido.hora }}</div>
-            <div>{{ pedido.cantidad }} pedidos</div>
+      <div class="card p-4 h-100 shadow-sm border-0">
+        <h5 class="fw-bold mb-1">Pedidos por Hora</h5>
+        <small class="text-muted mb-4 d-block">Actividad en tiempo real</small>
+        
+        <ng-container *ngIf="pedidosPorHora.length > 0; else sinPedidos">
+          <div *ngFor="let pedido of pedidosPorHora" class="mb-4">
+            <div class="d-flex justify-content-between align-items-end mb-1">
+              <span class="fw-medium text-muted"><i class="bi bi-clock me-1"></i> {{ pedido.hora }}</span>
+              <span class="fw-bold">{{ pedido.cantidad }} pedidos</span>
+            </div>
+            <div class="progress" style="height: 8px; border-radius: 10px;">
+              <div class="progress-bar bg-info" role="progressbar" [style.width.%]="calcularPorcentajePedidos(pedido)"></div>
+            </div>
           </div>
-          <div class="progress mt-1" style="height: 8px;">
-            <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="calcularPorcentajePedidos(pedido)"></div>
+        </ng-container>
+
+        <ng-template #sinPedidos>
+          <div class="text-center p-4 text-muted mt-3">
+            <i class="bi bi-graph-up fs-1 d-block mb-2 text-light-gray"></i>
+            Esperando información de nuevos pedidos.
           </div>
-        </div>
+        </ng-template>
+
       </div>
     </div>
+
   </div>
 </div>

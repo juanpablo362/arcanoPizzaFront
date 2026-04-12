@@ -28,17 +28,20 @@ export const routes: Routes = [
     loadComponent: () => import('./features/clientes/promociones-component/promociones-component').then(m => m.PromocionesComponent)
   },
   {
-    path: 'dashboard', // NUEVA RUTA
+    path: 'dashboard', 
     loadComponent: () => import('./features/administrador/dashboard-component/dashboard-component').then(m => m.DashboardComponent)
   },
   {
-  path: 'productos',
-  loadComponent: () => import('./features/administrador/producto-component/producto-component').then(m => m.ProductoComponent)
+    path: 'productos',
+    loadComponent: () => import('./features/administrador/producto-component/producto-component').then(m => m.ProductoComponent)
   },
-   {
-  path: 'admin',
-  loadComponent: () => import('./features/administrador/producto-admin-component/producto-admin-component').then(m => m.ProductoAdminComponent)
+  
+  // 🔥 AQUÍ ESTÁ EL CAMBIO: Ahora carga UsuariosComponent correctamente
+  {
+    path: 'admin',
+    loadComponent: () => import('./features/administrador/usuarios-component/usuarios-component').then(m => m.UsuariosComponent)
   },
+
   {
     path: 'carrito-compra',
     loadComponent: () => import('./features/clientes/carrito-compra-component/carrito-compra-component').then(m => m.CarritoCompraComponent)

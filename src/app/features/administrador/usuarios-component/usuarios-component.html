@@ -1,1 +1,164 @@
-<p>usuarios-component works!</p>
+<div class="container-fluid p-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="logo border p-2 fw-bold">ARCANO PIZZA</div>
+    <div class="user d-flex align-items-center">
+      <i class="bi bi-person-circle me-2 fs-4"></i>
+      Administrador
+      <button class="btn btn-outline-secondary btn-sm ms-3"><i class="bi bi-box-arrow-right"></i> Salir</button>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <button class="btn btn-outline-primary me-2" routerLink="/dashboard">Dashboard</button>
+    <button class="btn btn-outline-primary me-2" routerLink="/productos">Productos</button>
+    <button class="btn btn-primary" routerLink="/admin">Usuarios</button>
+  </div>
+
+  <div class="mb-4 d-flex gap-3 flex-wrap">
+    <div class="card p-3 flex-fill text-center">
+      <div class="text-muted small text-uppercase fw-bold">Total Usuarios</div>
+      <div class="fs-3 fw-bold">{{ totalUsuarios }}</div>
+    </div>
+    <div class="card p-3 flex-fill text-center text-success">
+      <div class="text-muted small text-uppercase fw-bold">Empleados</div>
+      <div class="fs-3 fw-bold">{{ totalEmpleados }}</div>
+    </div>
+    <div class="card p-3 flex-fill text-center text-danger">
+      <div class="text-muted small text-uppercase fw-bold">Administradores</div>
+      <div class="fs-3 fw-bold">{{ totalAdministradores }}</div>
+    </div>
+    <div class="card p-3 flex-fill text-center text-purple">
+      <div class="text-muted small text-uppercase fw-bold">Activos</div>
+      <div class="fs-3 fw-bold">{{ totalActivos }}</div>
+    </div>
+
+    <button class="btn btn-primary ms-auto d-flex align-items-center" (click)="abrirModalUsuario()">
+      <i class="bi bi-plus-lg me-2"></i> Nuevo Usuario
+    </button>
+  </div>
+
+  <div class="card p-0 overflow-hidden">
+    <div *ngFor="let usuario of usuariosFiltrados()" class="d-flex justify-content-between align-items-center border-top p-3 hover-bg-light">
+      
+      <div>
+        <strong class="fs-5">{{ usuario.nombre }}</strong>
+        <span class="badge bg-success ms-2" *ngIf="usuario.tipo==='Empleado'">Empleado</span>
+        <span class="badge bg-danger ms-2" *ngIf="usuario.tipo==='Administrador'">Admin</span>
+        <span class="badge ms-2" [ngClass]="usuario.activo ? 'bg-primary' : 'bg-secondary'">
+          {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+        </span>
+        <div class="text-muted mt-1"><i class="bi bi-envelope me-1"></i> {{ usuario.email }} | <i class="bi bi-telephone me-1"></i> {{ usuario.telefono || 'Sin teléfono' }}</div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm" [ngClass]="usuario.activo ? 'btn-outline-warning' : 'btn-outline-success'" (click)="desactivarUsuario(usuario)">
+          <i class="bi" [ngClass]="usuario.activo ? 'bi-person-dash' : 'bi-person-check'"></i>
+        </button>
+        
+        <button class="btn btn-sm btn-outline-secondary" (click)="abrirEditar(usuario)">
+          <i class="bi bi-pencil"></i>
+        </button>
+
+        <button class="btn btn-sm btn-outline-danger" (click)="eliminarUsuario(usuario)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+
+    </div>
+    
+    <div *ngIf="usuariosFiltrados().length === 0" class="p-5 text-center text-muted">
+      <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+      No se encontraron usuarios en esta categoría.
+    </div>
+  </div>
+
+</div>
+
+<div class="modal fade" id="modalUsuario">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content p-4 rounded-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h5 class="fw-bold mb-0">Nuevo Usuario</h5>
+          <small class="text-muted">Agrega un nuevo usuario al sistema</small>
+        </div>
+        <button class="btn-close" (click)="cerrarModalUsuario()"></button>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Nombre Completo</label>
+          <input class="form-control" placeholder="Ej: Juan Pérez" [(ngModel)]="nuevoUsuario.nombre">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Correo Electrónico</label>
+          <input type="email" class="form-control" placeholder="correo@ejemplo.com" [(ngModel)]="nuevoUsuario.email">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Teléfono</label>
+          <input class="form-control" placeholder="(555) 123-4567" [(ngModel)]="nuevoUsuario.telefono">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Rol</label>
+          <select class="form-select" [(ngModel)]="nuevoUsuario.tipo">
+            <option value="Empleado">Empleado</option>
+            <option value="Administrador">Administrador</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <button class="btn btn-light border" (click)="cerrarModalUsuario()">Cancelar</button>
+        <button class="btn btn-primary px-4" (click)="crearUsuario()">Crear Usuario</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEditarUsuario">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content p-4 rounded-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h5 class="fw-bold mb-0">Editar Usuario</h5>
+          <small class="text-muted">Modifica los detalles de {{ usuarioEdit.nombre }}</small>
+        </div>
+        <button class="btn-close" (click)="cerrarEditar()"></button>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Nombre Completo</label>
+          <input class="form-control" [(ngModel)]="usuarioEdit.nombre">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Correo Electrónico</label>
+          <input type="email" class="form-control" [(ngModel)]="usuarioEdit.email">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Teléfono</label>
+          <input class="form-control" [(ngModel)]="usuarioEdit.telefono">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Rol</label>
+          <select class="form-select" [(ngModel)]="usuarioEdit.tipo">
+            <option value="Empleado">Empleado</option>
+            <option value="Administrador">Administrador</option>
+          </select>
+        </div>
+        <div class="col-12 mt-3">
+           <div class="form-check form-switch">
+             <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" [(ngModel)]="usuarioEdit.activo">
+             <label class="form-check-label fw-semibold" for="flexSwitchCheckChecked">Usuario Activo en el sistema</label>
+           </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <button class="btn btn-light border" (click)="cerrarEditar()">Cancelar</button>
+        <button class="btn btn-primary px-4" (click)="guardarCambios()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>

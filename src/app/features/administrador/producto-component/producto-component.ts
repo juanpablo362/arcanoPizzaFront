@@ -1,82 +1,120 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
-
+import { RouterModule } from '@angular/router';
 import { ProductoService } from '../../../core/services/producto';
 
-interface Producto {
+// Interface que coincide con el ProductoResponseDto de .NET
+interface ProductoResponseDto {
+  id: number;
   nombre: string;
-  categoria: string;
   descripcion: string;
-  ingredientes: string;
-  precio: number;
-  disponible: boolean;
-  imagen: string;
+  precioBase: number;
+  activo: boolean;
+  idCategoria: number;
 }
 
 @Component({
   selector: 'app-producto-component',
- standalone: true,
+  standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './producto-component.html',
   styleUrls: ['./producto-component.css'],
 })
 export class ProductoComponent implements OnInit {
+  private productoService = inject(ProductoService);
+  private cdr = inject(ChangeDetectorRef); // 🔥 Previene el bug de renderizado
 
- private productoService = inject(ProductoService);
-  private router = inject(Router);
+  productos: ProductoResponseDto[] = [];
 
-  usuario = 'Administrador'; // 🔥 FIX
+  // Coincide exactamente con ProductoAdminDto (Para crear)
+  nuevoProducto = { nombre: '', descripcion: '', precio: 0 };
 
-  productos: any[] = [];
-
- nuevoProducto = {
-  nombre: '',
-  descripcion: '',
-  precio: 0,
-  ingredientes: '',
-  imagen: ''
-};
+  // Para editar un producto existente (ProductoUpdateDto)
+  productoEdit: any = {};
 
   ngOnInit() {
     this.cargarProductos();
-
-    // 🔥 recarga automática
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.cargarProductos();
-      });
   }
 
+  // ===== LECTURA =====
   cargarProductos() {
-    this.productoService.obtenerProductos().subscribe(data => {
-      this.productos = data;
+    this.productoService.obtenerProductos().subscribe({
+      next: (data) => {
+        this.productos = data;
+        this.cdr.detectChanges(); // 🔥 Forzamos la actualización visual
+      },
+      error: (err) => console.error('Error al cargar productos:', err)
     });
   }
 
+  // ===== MODALES =====
   abrirProducto() {
     new (window as any).bootstrap.Modal(document.getElementById('modalProducto')).show();
   }
-
+  
   cerrarProducto() {
     (window as any).bootstrap.Modal.getInstance(document.getElementById('modalProducto')).hide();
   }
 
+  abrirEditar(producto: ProductoResponseDto) {
+    // Transformamos los datos de lectura al formato que pide el DTO de actualización
+    this.productoEdit = {
+      id: producto.id,
+      nombre: producto.nombre,
+      descripcion: producto.descripcion,
+      precio: producto.precioBase, // El backend lo espera como 'precio'
+      activo: producto.activo,
+      fkIdCategoria: producto.idCategoria || 1
+    };
+    new (window as any).bootstrap.Modal(document.getElementById('modalEditarProducto')).show();
+  }
+
+  cerrarEditar() {
+    (window as any).bootstrap.Modal.getInstance(document.getElementById('modalEditarProducto')).hide();
+  }
+
+  // ===== CRUD CONECTADO A LA API =====
   crearProducto() {
-    this.productoService.crearProducto(this.nuevoProducto).subscribe(() => {
-      this.cargarProductos();
-      this.cerrarProducto();
+    this.productoService.crearProducto(this.nuevoProducto).subscribe({
+      next: () => {
+        this.cargarProductos();
+        this.cerrarProducto();
+        // Limpiamos el formulario
+        this.nuevoProducto = { nombre: '', descripcion: '', precio: 0 };
+      }
     });
   }
 
-  eliminar(producto: any) {
-    if (!confirm('¿Eliminar producto?')) return;
+  guardarCambios() {
+    // Armamos el objeto exacto para el ProductoUpdateDto
+    const updateDto = {
+      nombre: this.productoEdit.nombre,
+      descripcion: this.productoEdit.descripcion,
+      precio: this.productoEdit.precio,
+      activo: this.productoEdit.activo,
+      fkIdCategoria: this.productoEdit.fkIdCategoria || 1
+    };
 
-    this.productoService.eliminarProducto(producto.idProducto).subscribe(() => {
-      this.cargarProductos();
+    this.productoService.actualizarProducto(this.productoEdit.id, updateDto).subscribe({
+      next: () => {
+        this.cargarProductos();
+        this.cerrarEditar();
+      }
+    });
+  }
+
+  eliminar(producto: ProductoResponseDto) {
+    if (!confirm(`¿Eliminar el producto ${producto.nombre}? Esta acción no se puede deshacer.`)) return;
+
+    this.productoService.eliminarProducto(producto.id).subscribe({
+      next: () => this.cargarProductos()
+    });
+  }
+
+  desactivarProducto(producto: ProductoResponseDto) {
+    this.productoService.toggleProducto(producto.id).subscribe({
+      next: () => this.cargarProductos()
     });
   }
 }

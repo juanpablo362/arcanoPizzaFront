@@ -1,9 +1,10 @@
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 
+import { UsuarioService } from '../../../core/services/usuario'; 
+import { ProductoService } from '../../../core/services/producto';
 
 interface ProductoVendido {
   nombre: string;
@@ -23,37 +24,55 @@ interface PedidosHora {
   templateUrl: './dashboard-component.html',
   styleUrls: ['./dashboard-component.css'],
 })
-export class DashboardComponent {
-  fecha: string = 'Lunes, 9 de Marzo 2026';
+export class DashboardComponent implements OnInit {
+  private usuarioService = inject(UsuarioService);
+  private productoService = inject(ProductoService);
+  private cdr = inject(ChangeDetectorRef);
 
-  ventasHoy: number = 2847.50;
-  pedidosActivos: number = 23;
-  clientesDia: number = 156;
+  fechaHoy: string = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-  productosVendidos: ProductoVendido[] = [
-    { nombre: 'Pepperoni Clásica', vendidos: 45, total: 584.55 },
-    { nombre: 'Hawaiana Tropical', vendidos: 38, total: 455.62 },
-    { nombre: 'Meat Lovers', vendidos: 32, total: 479.68 },
-    { nombre: 'Vegetariana Suprema', vendidos: 28, total: 321.72 },
-    { nombre: 'Margarita Fresca', vendidos: 25, total: 274.75 },
-  ];
+  // Variables Dinámicas Reales
+  totalUsuariosAPI: number = 0;
+  totalProductosAPI: number = 0;
+  productosActivosAPI: number = 0;
 
-  pedidosPorHora: PedidosHora[] = [
-    { hora: '11:00', cantidad: 5 },
-    { hora: '12:00', cantidad: 12 },
-    { hora: '13:00', cantidad: 18 },
-    { hora: '14:00', cantidad: 23 },
-    { hora: '15:00', cantidad: 15 },
-  ];
+  // 🔥 Variables en 0 (Esperando futura conexión a API de Ventas/Pedidos)
+  ventasHoy: number = 0;
+  pedidosActivos: number = 0;
 
-  // Calcula el porcentaje de barra de cada producto
+  // 🔥 Arreglos limpios (Sin datos falsos)
+  productosVendidos: ProductoVendido[] = [];
+  pedidosPorHora: PedidosHora[] = [];
+
+  ngOnInit() {
+    this.cargarDatosReales();
+  }
+
+  cargarDatosReales() {
+    this.usuarioService.obtenerUsuarios().subscribe({
+      next: (usuarios) => {
+        this.totalUsuariosAPI = usuarios.length;
+        this.cdr.detectChanges();
+      }
+    });
+
+    this.productoService.obtenerProductos().subscribe({
+      next: (productos) => {
+        this.totalProductosAPI = productos.length;
+        this.productosActivosAPI = productos.filter((p: any) => p.activo).length;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   calcularPorcentaje(producto: ProductoVendido): number {
+    if (this.productosVendidos.length === 0) return 0;
     const max = Math.max(...this.productosVendidos.map(p => p.vendidos));
     return (producto.vendidos / max) * 100;
   }
 
-  // Calcula el porcentaje de barra de pedidos por hora
   calcularPorcentajePedidos(pedido: PedidosHora): number {
+    if (this.pedidosPorHora.length === 0) return 0;
     const max = Math.max(...this.pedidosPorHora.map(p => p.cantidad));
     return (pedido.cantidad / max) * 100;
   }

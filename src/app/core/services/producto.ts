@@ -22,4 +22,9 @@ export class ProductoService extends ApiService {
   eliminarProducto(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/productos/${id}`);
   }
+
+  // 🔥 NUEVO: Método dedicado solo para apagar/prender
+  toggleProducto(id: number): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/productos/${id}/toggle`, {});
+  }
 }

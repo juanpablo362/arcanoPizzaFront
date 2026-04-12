@@ -1,9 +1,107 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core'; // 🔥 1. Importamos el detector de cambios
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router'; // Quitamos el hack del Router viejo
+import { UsuarioService } from '../../../core/services/usuario';
+
+interface UsuarioResponseDto {
+  id: number;
+  nombre: string;
+  email: string;
+  telefono: string;
+  tipo: string;
+  activo: boolean;
+  fechaMiembro: string;
+}
 
 @Component({
   selector: 'app-usuarios-component',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './usuarios-component.html',
-  styleUrl: './usuarios-component.css',
+  styleUrls: ['./usuarios-component.css'],
 })
-export class UsuariosComponent {}
+export class UsuariosComponent implements OnInit {
+  private usuarioService = inject(UsuarioService);
+  private cdr = inject(ChangeDetectorRef); // 🔥 2. Inyectamos la herramienta a nuestra clase
+
+  usuarios: UsuarioResponseDto[] = [];
+  filtro: 'Todos' | 'Empleados' | 'Administradores' = 'Todos';
+
+  nuevoUsuario = { nombre: '', email: '', telefono: '', tipo: 'Empleado' };
+  usuarioEdit: any = {};
+
+  ngOnInit() {
+    this.cargarUsuarios(); // Angular llamará esto naturalmente cada vez que entres a la página
+  }
+
+  cargarUsuarios() {
+    this.usuarioService.obtenerUsuarios().subscribe({
+      next: (data) => {
+        this.usuarios = data;
+        this.cdr.detectChanges(); // 🔥 3. MAGIA: Obligamos a Angular a repintar el HTML inmediatamente
+      },
+      error: (err) => console.error('Error al cargar usuarios:', err)
+    });
+  }
+
+  get totalUsuarios() { return this.usuarios.length; }
+  get totalEmpleados() { return this.usuarios.filter(u => u.tipo === 'Empleado').length; }
+  get totalAdministradores() { return this.usuarios.filter(u => u.tipo === 'Administrador').length; }
+  get totalActivos() { return this.usuarios.filter(u => u.activo).length; }
+
+  usuariosFiltrados() {
+    if (this.filtro === 'Todos') return this.usuarios;
+    return this.usuarios.filter(u => u.tipo === this.filtro.slice(0, -1));
+  }
+
+  abrirModalUsuario() { new (window as any).bootstrap.Modal(document.getElementById('modalUsuario')).show(); }
+  cerrarModalUsuario() { (window as any).bootstrap.Modal.getInstance(document.getElementById('modalUsuario')).hide(); }
+  
+  abrirEditar(usuario: UsuarioResponseDto) {
+    this.usuarioEdit = { ...usuario };
+    new (window as any).bootstrap.Modal(document.getElementById('modalEditarUsuario')).show();
+  }
+  cerrarEditar() { (window as any).bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario')).hide(); }
+
+  crearUsuario() {
+    this.usuarioService.crearUsuario(this.nuevoUsuario).subscribe({
+      next: () => {
+        this.cargarUsuarios();
+        this.cerrarModalUsuario();
+        this.nuevoUsuario = { nombre: '', email: '', telefono: '', tipo: 'Empleado' };
+      }
+    });
+  }
+
+  guardarCambios() {
+    const updateDto = {
+      nombre: this.usuarioEdit.nombre,
+      email: this.usuarioEdit.email,
+      telefono: this.usuarioEdit.telefono,
+      tipo: this.usuarioEdit.tipo,
+      activo: this.usuarioEdit.activo
+    };
+
+    this.usuarioService.actualizarUsuario(this.usuarioEdit.id, updateDto).subscribe({
+      next: () => {
+        this.cargarUsuarios();
+        this.cerrarEditar();
+      }
+    });
+  }
+
+  eliminarUsuario(usuario: UsuarioResponseDto) {
+    if (!confirm(`¿Estás seguro de eliminar a ${usuario.nombre}?`)) return;
+    
+    this.usuarioService.eliminarUsuario(usuario.id).subscribe({
+      next: () => this.cargarUsuarios()
+    });
+  }
+
+  desactivarUsuario(usuario: UsuarioResponseDto) {
+    this.usuarioService.toggleUsuario(usuario.id).subscribe({
+      next: () => this.cargarUsuarios()
+    });
+  }
+}

@@ -1,31 +1,38 @@
-/* Bordes suaves y sombras para las cards */
+/* ==========================================
+   Efectos de interacción
+========================================== */
+.hover-bg-light { 
+  transition: background-color 0.2s ease-in-out; 
+}
+
+.hover-bg-light:hover { 
+  background-color: #f8f9fa; 
+}
+
+/* ==========================================
+   Estilo unificado para Tarjetas (Cards)
+========================================== */
 .card {
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.05);
 }
 
-/* Botones redondeados */
-.btn {
-  border-radius: 20px;
-}
-
-/* Badges más pequeñas y estilizadas */
-.badge {
-  font-size: 0.75rem;
-  padding: 0.35em 0.6em;
-}
-
-/* Separación entre productos */
+/* Suavizar las líneas divisorias */
 .border-top {
-  border-color: #dee2e6 !important;
+  border-color: #f0f0f0 !important;
 }
 
-/* Iconos un poco más grandes */
-.bi {
-  font-size: 1.2rem;
+/* ==========================================
+   Ajustes tipográficos y visuales
+========================================== */
+.badge {
+  font-size: 0.8rem;
+  padding: 0.4em 0.6em;
+  font-weight: 500;
 }
 
-/* Hover sobre botones de acción */
-.btn-outline-secondary:hover {
-  background-color: #e2e6ea;
+/* Tamaño de iconos en botones pequeños */
+.btn-sm .bi {
+  font-size: 1rem;
 }
