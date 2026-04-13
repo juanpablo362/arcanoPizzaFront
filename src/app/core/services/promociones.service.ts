@@ -18,6 +18,32 @@ export interface Promocion {
   activo: boolean;
 }
 
+export interface PromocionCreatePayload {
+  titulo: string;
+  descripcion?: string | null;
+  contenido?: string | null;
+  imagenURL?: string | null;
+  precioOriginal: number;
+  precioPromocional: number;
+  tipoVigencia: number;
+  fechaValidaHasta?: string | null; // ISO
+  diaSemanaRecurrente?: number | null;
+  activo?: boolean;
+}
+
+export interface PromocionUpdatePayload {
+  titulo?: string | null;
+  descripcion?: string | null;
+  contenido?: string | null;
+  imagenURL?: string | null;
+  precioOriginal?: number | null;
+  precioPromocional?: number | null;
+  tipoVigencia?: number | null;
+  fechaValidaHasta?: string | null; // ISO
+  diaSemanaRecurrente?: number | null;
+  activo?: boolean | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,5 +53,21 @@ export class PromocionesService {
 
   obtenerPromocionesActivas(): Observable<Promocion[]> {
     return this.http.get<Promocion[]>(this.apiUrl);
+  }
+
+  obtenerPromocionesAdmin(): Observable<Promocion[]> {
+    return this.http.get<Promocion[]>(`${this.apiUrl}/admin`);
+  }
+
+  crearPromocion(payload: PromocionCreatePayload): Observable<Promocion> {
+    return this.http.post<Promocion>(this.apiUrl, payload);
+  }
+
+  actualizarPromocion(id: number, payload: PromocionUpdatePayload): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, payload);
+  }
+
+  eliminarPromocion(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

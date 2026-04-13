@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { UsuarioService } from '../../../core/services/usuario'; 
 import { ProductoService } from '../../../core/services/producto';
 import { API_BASE_URL } from '../../../core/services/api';
+import { AuthService } from '../../../core/services/auth';
 
 interface ProductoVendido { nombre: string; vendidos: number; total: number; }
 interface PedidosHora { hora: string; cantidad: number; }
@@ -28,6 +29,7 @@ export class DashboardComponent implements OnInit {
   private productoService = inject(ProductoService);
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
+  private auth = inject(AuthService);
 
   fechaHoy: string = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   private readonly apiUrl = `${API_BASE_URL}/admin/dashboard`;
@@ -89,5 +91,9 @@ export class DashboardComponent implements OnInit {
     if (this.pedidosPorHora.length === 0) return 0;
     const max = Math.max(...this.pedidosPorHora.map(p => p.cantidad));
     return max > 0 ? (pedido.cantidad / max) * 100 : 0;
+  }
+
+  salir(): void {
+    this.auth.logout();
   }
 }

@@ -4,7 +4,7 @@
     <div class="logo border p-2 fw-bold">ARCANO PIZZA</div>
     <div class="user d-flex align-items-center">
       <i class="bi bi-person-circle me-2 fs-4"></i> Administrador
-      <button class="btn btn-outline-secondary btn-sm ms-3">
+      <button class="btn btn-outline-secondary btn-sm ms-3" type="button" (click)="salir()">
         <i class="bi bi-box-arrow-right"></i> Salir
       </button>
     </div>
@@ -121,4 +121,111 @@
 
     </div>
   </div>
+
+<!-- Modal: Nuevo Producto -->
+<div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nuevo producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="form-label fw-semibold">Nombre</label>
+            <input class="form-control" [(ngModel)]="nuevoProducto.nombre" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Precio</label>
+            <input class="form-control" type="number" min="0" step="0.01" [(ngModel)]="nuevoProducto.precio" />
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">Descripción</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="nuevoProducto.descripcion"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-semibold">Imagen</label>
+            <div class="d-flex gap-3 align-items-start flex-wrap">
+              <div class="img-preview" *ngIf="nuevoPreviewUrl || nuevoProducto.imagenURL">
+                <img [src]="nuevoPreviewUrl || nuevoProducto.imagenURL" alt="Vista previa" />
+              </div>
+              <div class="flex-grow-1">
+                <input class="form-control" type="file" accept="image/*" (change)="onFileNuevo($event)" />
+                <div class="form-text" *ngIf="isUploadingNuevo">Subiendo imagen…</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="crearProducto()" [disabled]="isUploadingNuevo">
+          Crear
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar Producto -->
+<div class="modal fade" id="modalEditarProducto" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="form-label fw-semibold">Nombre</label>
+            <input class="form-control" [(ngModel)]="productoEdit.nombre" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Precio</label>
+            <input class="form-control" type="number" min="0" step="0.01" [(ngModel)]="productoEdit.precio" />
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">Descripción</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="productoEdit.descripcion"></textarea>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Activo</label>
+            <select class="form-select" [(ngModel)]="productoEdit.activo">
+              <option [ngValue]="true">Sí</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </div>
+
+          <div class="col-md-8">
+            <label class="form-label fw-semibold">Categoría (id)</label>
+            <input class="form-control" type="number" min="1" step="1" [(ngModel)]="productoEdit.fkIdCategoria" />
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-semibold">Imagen</label>
+            <div class="d-flex gap-3 align-items-start flex-wrap">
+              <div class="img-preview" *ngIf="editPreviewUrl || productoEdit.imagenURL">
+                <img [src]="editPreviewUrl || productoEdit.imagenURL" alt="Vista previa" />
+              </div>
+              <div class="flex-grow-1">
+                <input class="form-control" type="file" accept="image/*" (change)="onFileEdit($event)" />
+                <div class="form-text" *ngIf="isUploadingEdit">Subiendo imagen…</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardarCambios()" [disabled]="isUploadingEdit">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 </div>

@@ -1,0 +1,20 @@
+@if (state().isOpen) {
+  <div class="confirm-backdrop" (click)="cancelar()"></div>
+  <div class="confirm-panel" role="dialog" aria-modal="true" [attr.aria-label]="state().title">
+    <div class="confirm-header">
+      <div class="confirm-title">{{ state().title }}</div>
+    </div>
+    <div class="confirm-body">
+      <div class="confirm-message">{{ state().message }}</div>
+    </div>
+    <div class="confirm-actions">
+      <button type="button" class="btn btn-secondary" (click)="cancelar()">
+        {{ state().cancelText }}
+      </button>
+      <button type="button" class="btn btn-danger" (click)="aceptar()">
+        {{ state().confirmText }}
+      </button>
+    </div>
+  </div>
+}
+

@@ -54,6 +54,14 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['Administrador'])],
     loadComponent: () => import('./features/administrador/usuarios-component/usuarios-component').then(m => m.UsuariosComponent)
   },
+  {
+    path: 'promociones-admin',
+    canActivate: [authGuard, roleGuard(['Administrador'])],
+    loadComponent: () =>
+      import('./features/administrador/promociones-admin-component/promociones-admin-component').then(
+        (m) => m.PromocionesAdminComponent,
+      ),
+  },
 
   {
     path: 'carrito-compra',

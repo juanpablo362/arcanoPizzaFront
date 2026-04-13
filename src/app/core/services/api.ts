@@ -10,7 +10,10 @@ import { HttpClient } from '@angular/common/http';
  * Si desplegás el front en otro dominio que el API, definí la URL completa en el build
  * (p. ej. sustitución en `angular.json` o variable de entorno del pipeline).
  */
-export const API_BASE_URL = '/api';
+export const API_BASE_URL =
+  (globalThis as any)?.['__API_BASE_URL__'] ??
+  (typeof process !== 'undefined' ? (process as any)?.env?.['API_BASE_URL'] : undefined) ??
+  '/api';
 
 @Injectable({
   providedIn: 'root',

@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs';
 import { CarritoService } from './features/clientes/carrito-compra-component/carrito-compra.service';
 import { ToastStackComponent } from './shared/toast/toast-stack.component';
+import { ConfirmDialogComponent } from './shared/confirm/confirm-dialog.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule, ToastStackComponent],
+  imports: [RouterOutlet, RouterModule, CommonModule, ToastStackComponent, ConfirmDialogComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router'; // Quitamos el hack del Router viejo
 import { UsuarioService } from '../../../core/services/usuario';
+import { AuthService } from '../../../core/services/auth';
+import { ConfirmService } from '../../../shared/confirm/confirm.service';
+import { ToastService } from '../../../shared/toast/toast.service';
 
 interface UsuarioResponseDto {
   id: number;
@@ -23,6 +26,9 @@ interface UsuarioResponseDto {
 })
 export class UsuariosComponent implements OnInit {
   private usuarioService = inject(UsuarioService);
+  private auth = inject(AuthService);
+  private confirm = inject(ConfirmService);
+  private toast = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
 
   usuarios: UsuarioResponseDto[] = [];
@@ -118,10 +124,20 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
-  eliminarUsuario(usuario: UsuarioResponseDto) {
-    if (!confirm(`¿Estás seguro de eliminar a ${usuario.nombre}?`)) return;
+  async eliminarUsuario(usuario: UsuarioResponseDto) {
+    const ok = await this.confirm.confirm({
+      title: 'Eliminar usuario',
+      message: `¿Eliminar a "${usuario.nombre}"?\nEsta acción no se puede deshacer.`,
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar',
+    });
+    if (!ok) return;
     this.usuarioService.eliminarUsuario(usuario.id).subscribe({
-      next: () => this.cargarUsuarios()
+      next: () => {
+        this.toast.show('Eliminado correctamente.', 'success');
+        this.cargarUsuarios();
+      },
+      error: (err) => console.error('Error eliminando usuario:', err),
     });
   }
 
@@ -129,5 +145,9 @@ export class UsuariosComponent implements OnInit {
     this.usuarioService.toggleUsuario(usuario.id).subscribe({
       next: () => this.cargarUsuarios()
     });
+  }
+
+  salir(): void {
+    this.auth.logout();
   }
 }
