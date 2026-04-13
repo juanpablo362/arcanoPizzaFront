@@ -103,6 +103,10 @@ export const routes: Routes = [
     canActivate: [guestGuard],
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
+   { 
+    path: 'pedidos-empleado', 
+    loadComponent: () => import('./features/empleado/pedidos-component/pedidos-component').then(m => m.PedidosComponent)
+  },
 
   // --- 3. RUTAS CON LAYOUT --
   {
