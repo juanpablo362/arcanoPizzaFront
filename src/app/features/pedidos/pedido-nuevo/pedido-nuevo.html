@@ -1,0 +1,158 @@
+<div class="page-container">
+  <app-cliente-top-nav />
+  <div class="nuevo-inner">
+    <a routerLink=".." class="back">← Volver</a>
+    <h1>{{ checkoutConTarjeta() ? 'Pago con tarjeta' : 'Confirmar pedido' }}</h1>
+    <p class="sub">
+      @if (checkoutConTarjeta()) {
+        Elegí el tipo de entrega. Para reparto necesitamos una dirección; para recoger en el local no hace falta.
+      } @else {
+        Mismo criterio: reparto con dirección, recogida en local sin domicilio obligatorio.
+      }
+    </p>
+
+    @if (cargandoDatos()) {
+      <p class="muted">Cargando direcciones…</p>
+    } @else if (carritoVacioBloqueo()) {
+      <div class="alert-error">Tu carrito está vacío. Agregá productos desde el menú y volvé aquí.</div>
+      <a routerLink="/menu-clientes-component" class="link">Ir al menú</a>
+    } @else {
+      @if (aviso(); as texto) {
+        <div class="alert-error">{{ texto }}</div>
+      }
+
+      <form
+        [formGroup]="pedidoForm"
+        (ngSubmit)="checkoutConTarjeta() ? iniciarPagoStripe() : confirmarPedido()"
+        class="card"
+      >
+        <h2>{{ tipoEntregaActual() === 'Recoger' ? 'Entrega' : 'Dirección y entrega' }}</h2>
+
+        <label class="field">
+          <span>Tipo de entrega</span>
+          <select formControlName="tipoEntrega">
+            <option value="Reparto">Reparto a domicilio</option>
+            <option value="Recoger">Recoger en local</option>
+          </select>
+          @if (tipoEntregaActual() === 'Recoger') {
+            <span class="hint">No necesitás cargar domicilio. Si querés, podés agregar uno opcional desde reparto y volver aquí.</span>
+          }
+        </label>
+
+        @if (tipoEntregaActual() !== 'Recoger' && direcciones().length > 0) {
+          <label class="field">
+            <span>Dirección</span>
+            <select formControlName="direccionId">
+              @for (d of direcciones(); track d.idDireccion) {
+                <option [ngValue]="d.idDireccion">
+                  {{ d.calle }}, {{ d.colonia }} ({{ d.codigoPostal }})
+                </option>
+              }
+            </select>
+          </label>
+        }
+
+        @if (tipoEntregaActual() !== 'Recoger' && direcciones().length === 0) {
+          <p class="hint hint-block">
+            Todavía no hay direcciones en tu cuenta. Desplegá <strong>«Agregar dirección nueva»</strong> más abajo,
+            completá el formulario y guardala; después volvé a elegirla aquí si hace falta.
+          </p>
+        }
+
+        <label class="field">
+          <span>Código de promoción (opcional)</span>
+          <input type="text" formControlName="promocionId" placeholder="Si tenés uno, escribilo aquí" />
+          @if (pedidoForm.get('promocionId')?.errors?.['invalid']) {
+            <span class="field-error">Revisá el código e intentá de nuevo.</span>
+          }
+        </label>
+
+        @if (!checkoutConTarjeta()) {
+          <label class="field">
+            <span>Forma de pago</span>
+            <select formControlName="metodoPago">
+              <option value="Efectivo">Efectivo (al entregar o al retirar)</option>
+              <option value="">Coordinar con la tienda</option>
+            </select>
+            <span class="hint">Si elegís efectivo, abonás en la entrega o cuando pasás a buscar el pedido.</span>
+          </label>
+        }
+
+        @if (checkoutConTarjeta()) {
+          <div class="acciones-pago">
+            <button
+              type="submit"
+              class="btn-primary"
+              [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
+            >
+              @if (enviando()) {
+                Redirigiendo al pago…
+              } @else {
+                Continuar al pago con tarjeta
+              }
+            </button>
+            <button
+              type="button"
+              class="btn-secondary btn-efectivo-stripe"
+              [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
+              (click)="confirmarPagoEfectivo()"
+            >
+              Pedir y pagar en efectivo
+            </button>
+          </div>
+          <p class="muted opcion-alt">
+            <a [routerLink]="['/pedidos/nuevo']" [queryParams]="{}" queryParamsHandling="merge"
+              >Volver al pedido sin pasarela</a
+            >
+            — para elegir forma de pago y confirmar en la misma página.
+          </p>
+        } @else {
+          <button
+            type="submit"
+            class="btn-primary"
+            [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
+          >
+            @if (enviando()) {
+              Enviando…
+            } @else {
+              Confirmar pedido
+            }
+          </button>
+          <p class="muted opcion-alt">
+            <a [routerLink]="['.']" [queryParams]="{ pago: 'stripe' }" queryParamsHandling="merge"
+              >Prefiero pagar con tarjeta (Stripe)</a
+            >
+          </p>
+        }
+      </form>
+
+      @if (tipoEntregaActual() !== 'Recoger') {
+        <details class="card card-desplegable">
+          <summary class="desplegable-summary">Agregar dirección nueva</summary>
+          <div [formGroup]="nuevaDir" class="nueva-dir">
+            <p class="hint hint-block">
+              Completá los datos y pulsá «Guardar dirección». La nueva dirección aparecerá en el selector de arriba.
+            </p>
+            <div class="grid">
+              <label>
+                Calle
+                <input formControlName="calle" />
+              </label>
+              <label>
+                Colonia
+                <input formControlName="colonia" />
+              </label>
+              <label>
+                C.P.
+                <input formControlName="codigoPostal" />
+              </label>
+            </div>
+            <button type="button" class="btn-secondary" (click)="agregarDireccion()">
+              Guardar dirección
+            </button>
+          </div>
+        </details>
+      }
+    }
+  </div>
+</div>

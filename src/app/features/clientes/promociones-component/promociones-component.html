@@ -1,25 +1,16 @@
 <div class="page-container">
-  <nav class="navbar">
-    <div class="logo">LOGO</div>
-    <div class="nav-links">
-      <a routerLink="/" style="cursor: pointer;" routerLinkActive="active-link"
-        [routerLinkActiveOptions]="{exact: true}">Inicio</a>
-      <a routerLink="/menu-clientes-component" style="cursor: pointer;" routerLinkActive="active-link">Menú</a>
-      <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
-      <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
-      <a routerLink="/carrito-compra" style="cursor: pointer;" routerLinkActive="active-link">Carrito</a>
-    </div>
-    <div class="auth">
-      <a style="cursor: pointer;">Iniciar sesión</a>
-    </div>
-  </nav>
+  <app-cliente-top-nav />
 
   <div class="promociones-wrapper">
     <h1 class="page-title">Conjuros y Promociones</h1>
 
+    @if (cargando) {
+      <app-arcano-loader></app-arcano-loader>
+    }
+
     <div class="promociones-list">
 
-      @for (promo of listaPromociones; track promo.id) {
+      @for (promo of promocionesReales; track promo.idPromocion) {
 
       <div class="promo-card" (click)="abrirDetalle(promo)" style="cursor: pointer;">
 
@@ -29,11 +20,11 @@
             <line x1="7" y1="7" x2="17" y2="17"></line>
             <polyline points="17 7 17 17 7 17"></polyline>
           </svg>
-          -{{ promo.descuentoPorcentaje }}%
+          -{{ ((promo.precioOriginal - promo.precioPromocional) / promo.precioOriginal * 100) | number:'1.0-0' }}%
         </div>
 
         <div class="promo-image-container">
-          <img [src]="promo.imagen" [alt]="promo.titulo">
+          <img [src]="promo.imagenURL || 'https://via.placeholder.com/800x400?text=Promoción'" [alt]="promo.titulo">
         </div>
 
         <div class="promo-details">
@@ -46,15 +37,15 @@
               <circle cx="12" cy="12" r="10"></circle>
               <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
-            Válido hasta: {{ promo.validez }}
+            Válido hasta: {{ promo.fechaValidaHasta ? (promo.fechaValidaHasta | date:'dd MMM yyyy') : 'Hasta agotar existencias' }}
           </p>
 
           <div class="promo-pricing-footer">
             <div class="price-left">
               <span class="old-price">${{ promo.precioOriginal | number:'1.2-2' }}</span>
-              <span class="new-price">${{ promo.precioOferta | number:'1.2-2' }}</span>
+              <span class="new-price">${{ promo.precioPromocional | number:'1.2-2' }}</span>
             </div>
-            <span class="savings-text">Ahorra ${{ promo.ahorro | number:'1.2-2' }}</span>
+            <span class="savings-text">Ahorra ${{ promo.ahorroMonto | number:'1.2-2' }}</span>
           </div>
 
         </div>

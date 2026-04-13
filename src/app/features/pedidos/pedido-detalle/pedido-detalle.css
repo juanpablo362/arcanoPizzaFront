@@ -1,0 +1,149 @@
+:host {
+  display: block;
+  --bg-deep: #0b0b12;
+  --bg-mystic: #1a1025;
+  --card-dark: #151522;
+  --magic-purple: #8a2be2;
+  --magic-glow: rgba(138, 43, 226, 0.5);
+  --gold-runes: #ffd700;
+  --text-light: var(--arcano-text);
+  --text-muted: var(--arcano-text-muted);
+}
+
+.page-container {
+  background: radial-gradient(circle at top center, var(--bg-mystic), var(--bg-deep));
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-light);
+  padding-bottom: 3rem;
+}
+
+.detalle-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--gold-runes);
+  text-decoration: none;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.muted {
+  color: #fff;
+}
+
+.alert-error {
+  padding: 0.85rem 1rem;
+  background: rgba(127, 29, 29, 0.35);
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  border-radius: 12px;
+  color: #fecaca;
+}
+
+.detalle-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--gold-runes);
+}
+
+.meta {
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.estado {
+  font-weight: 600;
+  color: var(--magic-purple);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.card {
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(138, 43, 226, 0.25);
+  border-radius: 16px;
+  background: var(--card-dark);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  /* Bootstrap .card fuerza color: var(--bs-body-color); hay que ganar en especificidad (encapsulado) */
+  color: var(--text-light);
+}
+
+.card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  color: var(--gold-runes);
+}
+
+.totales dl {
+  margin: 0;
+}
+
+.totales dl > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.totales dt {
+  font-weight: 500;
+  color: #fff;
+}
+
+.total-row {
+  border-bottom: none;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding-top: 0.75rem;
+}
+
+.promo,
+.entrega,
+.pago {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.lineas table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.lineas th,
+.lineas td {
+  padding: 0.5rem 0.35rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.lineas th {
+  color: #fff;
+  font-weight: 600;
+}
+
+.lineas td {
+  color: #fff;
+}
+
+.lineas th.num,
+.lineas td.num {
+  text-align: right;
+}

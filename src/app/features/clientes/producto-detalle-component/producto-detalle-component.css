@@ -8,8 +8,8 @@
   --magic-purple: #8A2BE2;   
   --magic-glow: rgba(138, 43, 226, 0.5); 
   --gold-runes: #FFD700;     
-  --text-light: #EAEAEA;     
-  --text-muted: #A0A0B0;     
+  --text-light: var(--arcano-text);     
+  --text-muted: var(--arcano-text-muted);     
 }
 
 .page-container {
@@ -157,6 +157,15 @@
   border-radius: 20px;
 }
 
+.size-detalle {
+  margin: 0;
+  max-width: 140px;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 /* Magia al seleccionar tamaño */
 .active-border {
   border-color: var(--magic-purple) !important;
@@ -218,4 +227,27 @@
   background-color: var(--magic-purple);
   color: #ffffff;
   box-shadow: 0 0 20px var(--magic-glow);
+}
+
+.toast-notification {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background-color: var(--magic-purple, #8A2BE2);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(138, 43, 226, 0.6);
+  z-index: 1000;
+  /* Animación para que entre deslizándose desde abajo */
+  animation: slideInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(150px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }

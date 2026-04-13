@@ -5,7 +5,6 @@ import { MenuClientesComponent } from "./menu-clientes-component";
 export const MENU_CLIENTES_ROUTES: Routes = [
   {
     path: '',
-    loadComponent: () =>
-      import('./menu-clientes-component').then(m => m.MenuClientesComponent)
+    component: MenuClientesComponent // ✅ Lo cargamos directamente
   }
 ];

@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-payment-component',
@@ -11,7 +12,8 @@ standalone: true,
 })
 
 export class PaymentComponent {
-  
+  private readonly toast = inject(ToastService);
+
   // Total simulado a pagar
   totalAPagar: number = 230.00; 
 
@@ -61,10 +63,13 @@ export class PaymentComponent {
   // Valida que todo esté correcto antes de "cobrar"
   procesarPago() {
     if (!this.nombreTitular || this.numeroTarjeta.length < 16 || this.fechaExpiracion.length < 5 || this.cvv.length < 3) {
-      alert('Por favor, completa correctamente todos los campos de la tarjeta.');
+      this.toast.show(
+        'Completá todos los datos de la tarjeta antes de continuar.',
+        'error',
+      );
       return;
     }
     console.log('Procesando pago de:', this.nombreTitular);
-    alert('¡Pago exitoso! Preparando tu pizza...');
+    this.toast.show('Pago simulado correcto. ¡Preparando tu pizza…', 'success');
   }
 }

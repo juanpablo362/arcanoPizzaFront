@@ -1,0 +1,25 @@
+<div class="result-container">
+  <div class="card success-card">
+    <div class="icon-circle">✅</div>
+    <h1>¡Pago exitoso!</h1>
+    <p>Tu pago se completó correctamente.</p>
+
+    @if (confirmando()) {
+      <p class="status">Registrando tu pedido…</p>
+      <div class="redirect-section">
+        <div class="spinner green-spinner"></div>
+      </div>
+    } @else if (pedidoRegistradoId(); as idPedido) {
+      <p class="status">Pedido <strong>#{{ idPedido }}</strong> registrado.</p>
+      <div class="redirect-section">
+        <div class="spinner green-spinner"></div>
+        <span class="redirect-text">Redirigiendo al menú…</span>
+      </div>
+    } @else {
+      <div class="redirect-section">
+        <div class="spinner green-spinner"></div>
+        <span class="redirect-text">Redirigiendo al menú…</span>
+      </div>
+    }
+  </div>
+</div>

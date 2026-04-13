@@ -1,23 +1,10 @@
 <div class="page-container">
-  <nav class="navbar">
-    <div class="logo">LOGO</div>
-    <div class="nav-links">
-      <a routerLink="/" style="cursor: pointer;" routerLinkActive="active-link"
-        [routerLinkActiveOptions]="{exact: true}">Inicio</a>
-      <a routerLink="/menu-clientes-component" style="cursor: pointer;" routerLinkActive="active-link">Menú</a>
-      <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
-      <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
-      <a routerLink="/carrito-compra" style="cursor: pointer;" routerLinkActive="active-link">Carrito</a>
-    </div>
-    <div class="auth">
-      <a style="cursor: pointer;">Iniciar sesión</a>
-    </div>
-  </nav>
+  <app-cliente-top-nav />
 
   @if (producto) {
   <div class="detail-container">
     <div class="image-wrapper">
-      <img [src]="producto.imagen" [alt]="producto.nombre">
+      <img [src]="producto?.imagenURL || producto?.imagen || 'https://via.placeholder.com/400x300?text=Pizza'" [alt]="producto?.nombre">
     </div>
 
     <div class="section-block">
@@ -43,14 +30,17 @@
     <div class="section-block">
       <h3 class="section-title">Tamaño</h3>
       <div class="sizes-container">
-        @for (size of producto.tamanos; track size.name) {
+        @for (size of producto.tamanos; track size.tamanoPizzaId + '-' + size.name) {
         <div class="size-column" (click)="selectSize(size)">
           <div class="size-circle" [class.active-border]="selectedSize === size">
             {{ size.cm }}
           </div>
           <div class="size-pill" [class.active-border]="selectedSize === size">
-            {{ size.name }} ${{ size.price }}
+            {{ size.name }} ${{ size.price | number:'1.2-2' }}
           </div>
+          @if (size.detalle) {
+            <p class="size-detalle">{{ size.detalle }}</p>
+          }
         </div>
         }
       </div>
@@ -79,3 +69,13 @@
   </div>
   }
 </div>
+
+@if (mostrarToast) {
+  <div class="toast-notification">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+    ¡Pizza agregada al carrito!
+  </div>
+}

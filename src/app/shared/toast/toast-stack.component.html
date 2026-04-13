@@ -1,0 +1,19 @@
+<div class="toast-host" aria-live="polite">
+  @for (t of toasts(); track t.id) {
+    <div class="toast" [ngClass]="'toast--' + t.kind" role="status">
+      <span class="toast__icon" aria-hidden="true">{{ icono(t.kind) }}</span>
+      <p class="toast__msg">{{ t.message }}</p>
+      <button type="button" class="toast__close" (click)="cerrar(t.id)" aria-label="Cerrar aviso">
+        ×
+      </button>
+      @if (t.kind === 'error') {
+        <div class="toast__progress-track" aria-hidden="true">
+          <div
+            class="toast__progress-bar"
+            [style.--toast-dur]="t.durationMs + 'ms'"
+          ></div>
+        </div>
+      }
+    </div>
+  }
+</div>

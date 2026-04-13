@@ -9,8 +9,8 @@
   --magic-purple: #8A2BE2; 
   --magic-glow: rgba(138, 43, 226, 0.5); 
   --gold-runes: #FFD700; 
-  --text-light: #EAEAEA; 
-  --text-muted: #A0A0B0; 
+  --text-light: var(--arcano-text); 
+  --text-muted: var(--arcano-text-muted); 
   --input-bg: #1E1E2E;
 
   /* El fondo mágico cubre toda la pantalla desde aquí */
@@ -152,7 +152,7 @@
 }
 
 .input-group input::placeholder {
-  color: #555566;
+  color: #a8a3bc;
 }
 
 .row-group {

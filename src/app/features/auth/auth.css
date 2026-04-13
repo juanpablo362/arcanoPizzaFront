@@ -28,7 +28,7 @@
 .auth-tagline {
   display: block;
   font-size: 0.75rem;
-  color: #888;
+  color: var(--arcano-text-muted);
 }
 
 a.auth-brand,
@@ -85,10 +85,32 @@ a:hover .auth-tagline {
   margin-bottom: 0.25rem;
 }
 
+.auth-hero-logo-wrap {
+  /* Aumentamos el margen vertical para dar más aire al logo más grande */
+  margin: 1.5rem 0 1rem; 
+  display: flex;
+  justify-content: center;
+}
+
+.auth-hero-logo {
+  display: block;
+  /* --- CAMBIOS CLAVE AQUÍ --- */
+  /* Aumentamos la altura considerablemente (antes 56px) */
+  height: 120px; 
+  width: auto; /* Mantiene la proporción */
+  /* Aumentamos el ancho máximo permitido (antes 240px) */
+  max-width: min(400px, 90vw); 
+  /* --------------------------- */
+  object-fit: contain;
+  filter: drop-shadow(0 0 14px rgba(138, 43, 226, 0.4))
+    drop-shadow(0 0 20px rgba(212, 175, 55, 0.15));
+}
+
 .auth-subtitle {
   font-size: 1rem;
-  color: #888;
+  color: var(--arcano-text-muted);
   margin-bottom: 2rem;
+  margin-top: 0;
 }
 
 /* Tabs */
@@ -138,7 +160,7 @@ a:hover .auth-tagline {
 
 .auth-card-subtitle {
   font-size: 0.9rem;
-  color: #888;
+  color: var(--arcano-text-muted);
   margin-bottom: 1.5rem;
 }
 
@@ -191,7 +213,7 @@ a:hover .auth-tagline {
 }
 
 .auth-back-link {
-  color: #888;
+  color: var(--arcano-text-muted);
   font-size: 0.9rem;
   text-decoration: none;
 }

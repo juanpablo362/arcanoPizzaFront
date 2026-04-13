@@ -1,0 +1,30 @@
+<nav class="navbar">
+  
+  <a routerLink="/menu-clientes-component" class="logo-container" style="text-decoration: none;">
+    
+    <svg viewBox="0 0 100 100" width="38" height="38" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 5px rgba(138,43,226,0.5));">
+      <path d="M50 5 L90 20 L90 50 C90 75 50 95 50 95 C50 95 10 75 10 50 L10 20 Z" fill="#120e1a" stroke="#c9a444" stroke-width="4"/>
+      <circle cx="50" cy="50" r="28" fill="none" stroke="#8A2BE2" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <path d="M55 35 A 15 15 0 1 1 35 48 A 18 18 0 1 0 55 35 Z" fill="#c9a444"/>
+      <path d="M50 35 L52 45 L62 47 L52 49 L50 59 L48 49 L38 47 L48 45 Z" fill="#8A2BE2"/>
+    </svg>
+
+    <span class="logo-text">ARCANO PIZZAS</span>
+  </a>
+
+  <div class="nav-links">
+    <a routerLink="/menu-clientes-component" style="cursor: pointer;" routerLinkActive="active-link">Menú</a>
+    <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
+    <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
+    <a routerLink="/carrito-compra" style="cursor: pointer;" routerLinkActive="active-link">Carrito</a>
+  </div>
+
+  <div class="auth">
+    @if (auth.isAuthenticated()) {
+      <a routerLink="/pedidos" style="cursor: pointer;">Pedidos</a>
+      <button type="button" class="nav-btn-link" (click)="logout()">Salir</button>
+    } @else {
+      <a routerLink="/auth" style="cursor: pointer;">Iniciar sesión</a>
+    }
+  </div>
+</nav>
