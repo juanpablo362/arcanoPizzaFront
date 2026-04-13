@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from '../../../core/services/api';
 
 export interface ProductoPedido {
   cantidad: number;
@@ -29,8 +30,7 @@ export interface Pedido {
 })
 export class PedidosService {
   
-  // URL de tu API en .NET (Ajustado al puerto HTTP)
-  private apiUrl = 'http://localhost:5010/api/Pedidos'; 
+  private readonly apiUrl = `${API_BASE_URL}/Pedidos`;
   
   private http = inject(HttpClient);
 

@@ -2,8 +2,11 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PedidosService, Pedido } from './pedidos.service';
+import { AuthService } from '../../../core/services/auth';
+import { ThemeService } from '../../../core/services/theme';
+import { finalize, timeout } from 'rxjs';
 
-type TipoFiltro = 'Todos' | 'Pendiente' | 'Preparando' | 'Listo' | 'En Ruta';
+type TipoFiltro = 'Todos' | 'Pendiente' | 'En Preparacion' | 'Listo' | 'En Ruta';
 
 @Component({
   selector: 'app-pedidos',
@@ -17,8 +20,13 @@ export class PedidosComponent implements OnInit {
   
   pedidos: Pedido[] = []; 
   pedidosFiltrados: Pedido[] = []; 
+
+  isLoading = false;
+  errorMsg: string | null = null;
   
   private pedidosService = inject(PedidosService);
+  protected readonly auth = inject(AuthService);
+  protected readonly theme = inject(ThemeService);
 
   private cdr = inject(ChangeDetectorRef);
   ngOnInit(): void {
@@ -26,13 +34,29 @@ export class PedidosComponent implements OnInit {
   }
 
   cargarPedidos() {
-    this.pedidosService.obtenerPedidos().subscribe({
-      next: (datos) => {
-        this.pedidos = datos;
-        this.aplicarFiltro();
-      },
-      error: (err) => console.error('Error al cargar pedidos', err)
-    });
+    this.isLoading = true;
+    this.errorMsg = null;
+    this.pedidosService
+      .obtenerPedidos()
+      .pipe(
+        timeout(12000),
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }),
+      )
+      .subscribe({
+        next: (datos) => {
+          this.pedidos = datos;
+          this.aplicarFiltro();
+        },
+        error: (err) => {
+          console.error('Error al cargar pedidos', err);
+          this.pedidos = [];
+          this.pedidosFiltrados = [];
+          this.errorMsg = 'No pudimos cargar los pedidos. Revisa tu sesión o intenta nuevamente.';
+        },
+      });
   }
 
   aplicarFiltro() {
@@ -52,8 +76,8 @@ export class PedidosComponent implements OnInit {
     if (pedido.procesando) return;
 
     let nuevoEstado = '';
-    if (pedido.estado === 'Pendiente') nuevoEstado = 'Preparando';
-    else if (pedido.estado === 'Preparando') nuevoEstado = 'Listo';
+    if (pedido.estado === 'Pendiente') nuevoEstado = 'En Preparacion';
+    else if (pedido.estado === 'En Preparacion') nuevoEstado = 'Listo';
     else if (pedido.estado === 'Listo') nuevoEstado = 'En Ruta';
 
     if (nuevoEstado) {
@@ -106,9 +130,28 @@ export class PedidosComponent implements OnInit {
   getTextoBoton(estado?: string): string {
     switch(estado) {
       case 'Pendiente': return 'Iniciar Preparación';
-      case 'Preparando': return 'Marcar como Listo';
+      case 'En Preparacion': return 'Marcar como Listo';
       case 'Listo': return 'Asignar Repartidor';
       default: return 'Actualizar';
     }
+  }
+
+  getEstadoClass(estado?: string): string {
+    switch (estado) {
+      case 'Pendiente':
+        return 'pendiente';
+      case 'En Preparacion':
+        return 'en-preparacion';
+      case 'Listo':
+        return 'listo';
+      case 'En Ruta':
+        return 'en-ruta';
+      default:
+        return 'default';
+    }
+  }
+
+  logout(): void {
+    this.auth.logout();
   }
 }

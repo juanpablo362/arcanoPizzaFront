@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { guestGuard } from './core/guards/guest-guard';
+import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
 
@@ -38,16 +39,19 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard', 
+    canActivate: [authGuard, roleGuard(['Administrador'])],
     loadComponent: () => import('./features/administrador/dashboard-component/dashboard-component').then(m => m.DashboardComponent)
   },
   {
     path: 'productos',
+    canActivate: [authGuard, roleGuard(['Administrador'])],
     loadComponent: () => import('./features/administrador/producto-component/producto-component').then(m => m.ProductoComponent)
   },
   
   // 🔥 AQUÍ ESTÁ EL CAMBIO: Ahora carga UsuariosComponent correctamente
   {
     path: 'admin',
+    canActivate: [authGuard, roleGuard(['Administrador'])],
     loadComponent: () => import('./features/administrador/usuarios-component/usuarios-component').then(m => m.UsuariosComponent)
   },
 
@@ -105,6 +109,7 @@ export const routes: Routes = [
   },
    { 
     path: 'pedidos-empleado', 
+    canActivate: [authGuard, roleGuard(['Empleado', 'Administrador'])],
     loadComponent: () => import('./features/empleado/pedidos-component/pedidos-component').then(m => m.PedidosComponent)
   },
 

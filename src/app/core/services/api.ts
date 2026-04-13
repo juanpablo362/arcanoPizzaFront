@@ -18,5 +18,6 @@ export const API_BASE_URL = '/api';
 export class ApiService {
   protected readonly http = inject(HttpClient);
 
-  protected readonly baseUrl = API_BASE_URL;
+  /** Permite a servicios hijos apuntar a sub-rutas (p.ej. /api/admin). */
+  protected baseUrl = API_BASE_URL;
 }

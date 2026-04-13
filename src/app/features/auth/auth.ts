@@ -15,6 +15,7 @@ import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth';
 import { ToastService } from '../../shared/toast/toast.service';
+import { getUserHomeUrl } from '../../core/auth/role';
 
 function passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
   const confirm = group.get('confirmPassword');
@@ -69,7 +70,7 @@ export class Auth {
       .login({ email, password })
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
-        next: () => void this.router.navigate(['/menu-clientes-component']),
+        next: () => void this.router.navigate([getUserHomeUrl(this.authService.user())]),
         error: () =>
           this.toast.show(
             'Credenciales incorrectas o no pudimos contactar al servidor. Revisá los datos e intentá de nuevo.',
@@ -91,7 +92,7 @@ export class Auth {
       .subscribe({
         next: (res) => {
           if (res?.accessToken) {
-            void this.router.navigate(['/menu-clientes-component']);
+            void this.router.navigate([getUserHomeUrl(this.authService.user())]);
             return;
           }
           this.toast.show('Cuenta creada. Ya podés iniciar sesión.', 'success');

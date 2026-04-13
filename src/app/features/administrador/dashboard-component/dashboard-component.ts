@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { UsuarioService } from '../../../core/services/usuario'; 
 import { ProductoService } from '../../../core/services/producto';
+import { API_BASE_URL } from '../../../core/services/api';
 
 interface ProductoVendido { nombre: string; vendidos: number; total: number; }
 interface PedidosHora { hora: string; cantidad: number; }
@@ -29,7 +30,7 @@ export class DashboardComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   fechaHoy: string = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  private readonly apiUrl = 'http://localhost:5010/api/admin/dashboard';
+  private readonly apiUrl = `${API_BASE_URL}/admin/dashboard`;
 
   totalUsuariosAPI: number = 0;
   totalProductosAPI: number = 0;
