@@ -29,7 +29,7 @@ jobs:
           action: "upload"
           app_location: "."                # raíz del repo del front
           api_location: ""                 # sin Azure Functions
-          output_location: "dist/arcanoPizzaFront"  # salida de ng build
+          output_location: "dist/arcanoPizzaFront/browser"  # salida de ng build
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
