@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ProductoService } from '../../../core/services/producto';
 
-// Interface que coincide con el ProductoResponseDto de .NET
 interface ProductoResponseDto {
   id: number;
   nombre: string;
@@ -21,18 +20,31 @@ interface ProductoResponseDto {
   templateUrl: './producto-component.html',
   styleUrls: ['./producto-component.css'],
 })
-
 export class ProductoComponent implements OnInit {
   private productoService = inject(ProductoService);
   private cdr = inject(ChangeDetectorRef);
 
   productos: ProductoResponseDto[] = [];
   filtroActual: 'Todos' | 'Disponibles' | 'Inactivos' = 'Todos';
-  
-  // 🔥 NUEVA VARIABLE: Guarda lo que el usuario escribe en el buscador
   terminoBusqueda: string = '';
 
-  nuevoProducto = { nombre: '', descripcion: '', precio: 0 };
+  // 🔥 IDs corregidos según la base de datos
+  categorias = [
+    { id: 2, nombre: 'Clásicas' },
+    { id: 3, nombre: 'Pizzas Especiales' },
+    { id: 1, nombre: 'Bebidas' },
+    { id: 4, nombre: 'Extras' }
+  ];
+
+  nuevoProducto = { 
+    nombre: '', 
+    descripcion: '', 
+    precio: null as any, 
+    fkIdCategoria: 2, // Por defecto "Clásicas"
+    ingredientes: '', 
+    urlImagen: '' 
+  };
+  
   productoEdit: any = {};
 
   ngOnInit() {
@@ -42,80 +54,135 @@ export class ProductoComponent implements OnInit {
   cargarProductos() {
     this.productoService.obtenerProductos().subscribe({
       next: (data) => {
-        this.productos = data;
+        this.productos = data || [];
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error al cargar productos:', err)
+      error: (err) => {
+        console.error('Error al cargar productos:', err);
+        this.productos = [];
+      }
     });
   }
+
+  get totalProductos() { return this.productos ? this.productos.length : 0; }
+  get totalDisponibles() { return this.productos ? this.productos.filter(p => p.activo).length : 0; }
+  get totalInactivos() { return this.productos ? this.productos.filter(p => !p.activo).length : 0; }
 
   setFiltro(nuevoFiltro: 'Todos' | 'Disponibles' | 'Inactivos') {
     this.filtroActual = nuevoFiltro;
   }
 
-  // 🔥 LÓGICA DE BÚSQUEDA ACTUALIZADA
   get productosFiltrados() {
+    if (!this.productos) return [];
+
     let resultado = this.productos;
 
-    // 1. Filtrar por la tarjeta seleccionada
     if (this.filtroActual === 'Disponibles') {
       resultado = resultado.filter(p => p.activo);
     } else if (this.filtroActual === 'Inactivos') {
       resultado = resultado.filter(p => !p.activo);
     }
 
-    // 2. Filtrar por el texto del buscador
-    if (this.terminoBusqueda.trim() !== '') {
+    if (this.terminoBusqueda && this.terminoBusqueda.trim() !== '') {
       const termino = this.terminoBusqueda.toLowerCase();
-      resultado = resultado.filter(p => 
-        p.nombre.toLowerCase().includes(termino) || 
-        (p.descripcion && p.descripcion.toLowerCase().includes(termino))
-      );
+      resultado = resultado.filter(p => {
+        const nombreValido = p.nombre ? p.nombre.toLowerCase() : '';
+        const descValida = p.descripcion ? p.descripcion.toLowerCase() : '';
+        return nombreValido.includes(termino) || descValida.includes(termino);
+      });
     }
 
     return resultado;
   }
 
-  // ... (El resto de tus métodos de modales y CRUD se quedan igual)
-  abrirProducto() { new (window as any).bootstrap.Modal(document.getElementById('modalProducto')).show(); }
-  cerrarProducto() { (window as any).bootstrap.Modal.getInstance(document.getElementById('modalProducto')).hide(); }
+  abrirProducto() { 
+    const modalElement = document.getElementById('modalProducto');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalElement);
+      modal.show();
+    }
+  }
+  
+  cerrarProducto() { 
+    const modalElement = document.getElementById('modalProducto');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+      if (modal) modal.hide();
+    }
+  }
 
   abrirEditar(producto: ProductoResponseDto) {
     this.productoEdit = {
       id: producto.id,
-      nombre: producto.nombre,
-      descripcion: producto.descripcion,
-      precio: producto.precioBase,
+      nombre: producto.nombre || '',
+      descripcion: producto.descripcion || '',
+      precio: producto.precioBase || 0,
       activo: producto.activo,
-      fkIdCategoria: producto.idCategoria || 1
+      // 🔥 Aseguramos que la categoría que trae se asigne, o le ponemos 2 (Clásicas) si viene null
+      fkIdCategoria: producto.idCategoria || 2,
+      ingredientes: '', 
+      urlImagen: ''     
     };
-    new (window as any).bootstrap.Modal(document.getElementById('modalEditarProducto')).show();
+    
+    const modalElement = document.getElementById('modalEditarProducto');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalElement);
+      modal.show();
+    }
   }
-  cerrarEditar() { (window as any).bootstrap.Modal.getInstance(document.getElementById('modalEditarProducto')).hide(); }
+  
+  cerrarEditar() { 
+    const modalElement = document.getElementById('modalEditarProducto');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+      if (modal) modal.hide();
+    }
+  }
 
   crearProducto() {
-    this.productoService.crearProducto(this.nuevoProducto).subscribe({
+    // Al crear un producto, mandamos solo lo que la API espera estrictamente
+    const createDto = {
+      nombre: this.nuevoProducto.nombre,
+      descripcion: this.nuevoProducto.descripcion,
+      precio: this.nuevoProducto.precio,
+      // Ignoramos fkIdCategoria, ingredientes y urlImagen por ahora
+    };
+
+    this.productoService.crearProducto(createDto).subscribe({
       next: () => {
         this.cargarProductos();
         this.cerrarProducto();
-        this.nuevoProducto = { nombre: '', descripcion: '', precio: 0 };
+        this.nuevoProducto = { nombre: '', descripcion: '', precio: null as any, fkIdCategoria: 2, ingredientes: '', urlImagen: '' };
+      },
+      error: (err) => {
+        console.error('Error al crear:', err);
+        alert('Hubo un error al crear el producto. Revisa la consola para más detalles.');
       }
     });
   }
 
   guardarCambios() {
+    // 🔥 CORRECCIÓN CLAVE: 
+    // Construimos el DTO exactamente como lo espera tu backend en .NET
     const updateDto = {
       nombre: this.productoEdit.nombre,
       descripcion: this.productoEdit.descripcion,
       precio: this.productoEdit.precio,
-      activo: this.productoEdit.activo,
-      fkIdCategoria: this.productoEdit.fkIdCategoria || 1
+      tipo: "Producto", // Agregamos esto si tu DTO original lo requería
+      activo: this.productoEdit.activo
+      // ⚠️ No enviamos fkIdCategoria ni ingredientes porque tu DTO de C# actual (UsuarioUpdateDto) 
+      // parece no estar preparado para recibirlos en la ruta PUT /api/admin/productos/{id}
     };
 
     this.productoService.actualizarProducto(this.productoEdit.id, updateDto).subscribe({
       next: () => {
         this.cargarProductos();
         this.cerrarEditar();
+      },
+      error: (err) => {
+        console.error('Error al actualizar el producto:', err);
+        // Si sigue marcando 404, nos avisará en pantalla
+        alert('Error 404: El servidor no pudo actualizar el producto. Verifica la ruta en el controlador de C#.');
       }
     });
   }
@@ -123,13 +190,15 @@ export class ProductoComponent implements OnInit {
   eliminar(producto: ProductoResponseDto) {
     if (!confirm(`¿Eliminar el producto ${producto.nombre}? Esta acción no se puede deshacer.`)) return;
     this.productoService.eliminarProducto(producto.id).subscribe({
-      next: () => this.cargarProductos()
+      next: () => this.cargarProductos(),
+      error: (err) => console.error('Error al eliminar:', err)
     });
   }
 
   desactivarProducto(producto: ProductoResponseDto) {
     this.productoService.toggleProducto(producto.id).subscribe({
-      next: () => this.cargarProductos()
+      next: () => this.cargarProductos(),
+      error: (err) => console.error('Error al desactivar:', err)
     });
   }
 }
