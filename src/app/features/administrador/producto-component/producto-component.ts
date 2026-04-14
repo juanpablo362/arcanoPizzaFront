@@ -28,7 +28,6 @@ export class ProductoComponent implements OnInit {
   filtroActual: 'Todos' | 'Disponibles' | 'Inactivos' = 'Todos';
   terminoBusqueda: string = '';
 
-  // 🔥 IDs corregidos según la base de datos
   categorias = [
     { id: 2, nombre: 'Clásicas' },
     { id: 3, nombre: 'Pizzas Especiales' },
@@ -40,7 +39,7 @@ export class ProductoComponent implements OnInit {
     nombre: '', 
     descripcion: '', 
     precio: null as any, 
-    fkIdCategoria: 2, // Por defecto "Clásicas"
+    fkIdCategoria: 2, 
     ingredientes: '', 
     urlImagen: '' 
   };
@@ -118,7 +117,6 @@ export class ProductoComponent implements OnInit {
       descripcion: producto.descripcion || '',
       precio: producto.precioBase || 0,
       activo: producto.activo,
-      // 🔥 Aseguramos que la categoría que trae se asigne, o le ponemos 2 (Clásicas) si viene null
       fkIdCategoria: producto.idCategoria || 2,
       ingredientes: '', 
       urlImagen: ''     
@@ -140,12 +138,10 @@ export class ProductoComponent implements OnInit {
   }
 
   crearProducto() {
-    // Al crear un producto, mandamos solo lo que la API espera estrictamente
     const createDto = {
       nombre: this.nuevoProducto.nombre,
       descripcion: this.nuevoProducto.descripcion,
-      precio: this.nuevoProducto.precio,
-      // Ignoramos fkIdCategoria, ingredientes y urlImagen por ahora
+      precio: this.nuevoProducto.precio
     };
 
     this.productoService.crearProducto(createDto).subscribe({
@@ -162,16 +158,13 @@ export class ProductoComponent implements OnInit {
   }
 
   guardarCambios() {
-    // 🔥 CORRECCIÓN CLAVE: 
-    // Construimos el DTO exactamente como lo espera tu backend en .NET
+    // 🔥 Ahora sí enviamos la Categoría porque el C# (ProductoUpdateDto) la exige como requerida
     const updateDto = {
       nombre: this.productoEdit.nombre,
       descripcion: this.productoEdit.descripcion,
       precio: this.productoEdit.precio,
-      tipo: "Producto", // Agregamos esto si tu DTO original lo requería
-      activo: this.productoEdit.activo
-      // ⚠️ No enviamos fkIdCategoria ni ingredientes porque tu DTO de C# actual (UsuarioUpdateDto) 
-      // parece no estar preparado para recibirlos en la ruta PUT /api/admin/productos/{id}
+      activo: this.productoEdit.activo,
+      fkIdCategoria: this.productoEdit.fkIdCategoria 
     };
 
     this.productoService.actualizarProducto(this.productoEdit.id, updateDto).subscribe({
@@ -181,8 +174,7 @@ export class ProductoComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al actualizar el producto:', err);
-        // Si sigue marcando 404, nos avisará en pantalla
-        alert('Error 404: El servidor no pudo actualizar el producto. Verifica la ruta en el controlador de C#.');
+        alert('Hubo un error al guardar los cambios.');
       }
     });
   }
