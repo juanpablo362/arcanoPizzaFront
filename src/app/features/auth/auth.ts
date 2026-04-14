@@ -16,6 +16,7 @@ import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth';
 import { ToastService } from '../../shared/toast/toast.service';
 import { getUserHomeUrl } from '../../core/auth/role';
+import { consumePostLoginPayload, sanitizeReturnUrl } from '../../core/auth/post-login-redirect';
 
 function passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
   const confirm = group.get('confirmPassword');
@@ -59,6 +60,22 @@ export class Auth {
     this.activeTab.set(tab);
   }
 
+  /** Prioridad: estado guardado (p. ej. detalle de producto) → ?returnUrl= → home por rol. */
+  private navigateAfterSuccessfulAuth(): void {
+    const pending = consumePostLoginPayload();
+    if (pending) {
+      void this.router.navigate([pending.path], { state: pending.state ?? undefined });
+      return;
+    }
+    const raw = this.router.parseUrl(this.router.url).queryParams['returnUrl'];
+    const ret = sanitizeReturnUrl(raw);
+    if (ret) {
+      void this.router.navigateByUrl(ret);
+      return;
+    }
+    void this.router.navigate([getUserHomeUrl(this.authService.user())]);
+  }
+
   protected onSubmit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
@@ -70,7 +87,7 @@ export class Auth {
       .login({ email, password })
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
-        next: () => void this.router.navigate([getUserHomeUrl(this.authService.user())]),
+        next: () => this.navigateAfterSuccessfulAuth(),
         error: () =>
           this.toast.show(
             'Credenciales incorrectas o no pudimos contactar al servidor. Revisá los datos e intentá de nuevo.',
@@ -92,7 +109,7 @@ export class Auth {
       .subscribe({
         next: (res) => {
           if (res?.accessToken) {
-            void this.router.navigate([getUserHomeUrl(this.authService.user())]);
+            this.navigateAfterSuccessfulAuth();
             return;
           }
           this.toast.show('Cuenta creada. Ya podés iniciar sesión.', 'success');

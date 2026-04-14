@@ -3,6 +3,9 @@ import { CommonModule, Location } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { CarritoService, ItemCarrito } from '../carrito-compra-component/carrito-compra.service';
 import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-top-nav.component';
+import { AuthService } from '../../../core/services/auth';
+import { ToastService } from '../../../shared/toast/toast.service';
+import { savePostLoginPayload } from '../../../core/auth/post-login-redirect';
 import type { TamanoPizzaOpcion } from '../../../shared/models/tamano-pizza';
 import { enriquecerProductoConTamanos } from '../../../shared/models/tamano-pizza';
 
@@ -17,6 +20,8 @@ export class ProductoDetalleComponent implements OnInit {
   private router = inject(Router);
   private location = inject(Location);
   private carritoService = inject(CarritoService);
+  private auth = inject(AuthService);
+  private toast = inject(ToastService);
 
   producto: any = null;
   selectedSize: TamanoPizzaOpcion | null = null;
@@ -70,6 +75,16 @@ export class ProductoDetalleComponent implements OnInit {
   }
   
   agregarAlCarrito(): void {
+    if (!this.auth.isAuthenticated()) {
+      savePostLoginPayload({
+        path: '/producto-detalle',
+        state: { producto: this.producto },
+      });
+      this.toast.show('Iniciá sesión para agregar productos al carrito.', 'info');
+      void this.router.navigate(['/auth'], { queryParams: { returnUrl: '/producto-detalle' } });
+      return;
+    }
+
     const precioFinal = this.selectedSize
       ? this.selectedSize.price
       : this.producto.precioBase || this.producto.precio;

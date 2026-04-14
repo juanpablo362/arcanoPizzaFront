@@ -5,17 +5,16 @@ import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
 
-  // 👇 --- 0. RUTA MAESTRA POR DEFECTO --- 👇
+  // 👇 Entrada: menú público (sin cuenta). Login al intentar carrito / pedido / pago, etc.
   {
     path: '',
-    redirectTo: '/auth',
+    redirectTo: '/menu-clientes-component',
     pathMatch: 'full',
   },
 
   // --- 1. RUTAS ESPECÍFICAS PRIMERO ---
   {
     path: 'menu-clientes-component',
-    canActivate: [authGuard],
     loadChildren: () =>
       import('./features/clientes/menu-clientes-component/menu-clientes-component.routes').then(
         (m) => m.MENU_CLIENTES_ROUTES,
@@ -23,7 +22,6 @@ export const routes: Routes = [
   },
   {
     path: 'producto-detalle',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/clientes/producto-detalle-component/producto-detalle-component').then(
         (m) => m.ProductoDetalleComponent,
@@ -31,7 +29,6 @@ export const routes: Routes = [
   },
   {
     path: 'promociones',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/clientes/promociones-component/promociones-component').then(
         (m) => m.PromocionesComponent,
@@ -86,11 +83,20 @@ export const routes: Routes = [
   },
   {
     path: 'contacto',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/clientes/contacto-component/contacto-component').then(
         (m) => m.ContactoComponent,
       ),
+  },
+  {
+    path: 'terminos',
+    loadComponent: () =>
+      import('./features/clientes/legal/terminos-component').then((m) => m.TerminosComponent),
+  },
+  {
+    path: 'privacidad',
+    loadComponent: () =>
+      import('./features/clientes/legal/privacidad-component').then((m) => m.PrivacidadComponent),
   },
   {
     path: 'pago',

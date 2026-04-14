@@ -1,19 +1,17 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 /**
- * Base de la API para HttpClient (ruta relativa al origen de la app).
+ * Base de la API para HttpClient.
  *
- * Con `ng serve`, `proxy.conf.json` reenvía `/api` al backend (p. ej. `https://localhost:7030`),
- * evitando CORS y usando el mismo esquema que el front.
- *
- * Si desplegás el front en otro dominio que el API, definí la URL completa en el build
- * (p. ej. sustitución en `angular.json` o variable de entorno del pipeline).
+ * - Desarrollo: `proxy.conf.json` reenvía `/api` al backend local.
+ * - Producción: `environment.prod.ts` (sustitución en build) o `window.__API_BASE_URL__` en index.html.
  */
 export const API_BASE_URL =
-  (globalThis as any)?.['__API_BASE_URL__'] ??
-  (typeof process !== 'undefined' ? (process as any)?.env?.['API_BASE_URL'] : undefined) ??
-  '/api';
+  (globalThis as { __API_BASE_URL__?: string } | undefined)?.['__API_BASE_URL__'] ??
+  (typeof process !== 'undefined' ? (process as { env?: { API_BASE_URL?: string } }).env?.['API_BASE_URL'] : undefined) ??
+  environment.apiBaseUrl;
 
 @Injectable({
   providedIn: 'root',

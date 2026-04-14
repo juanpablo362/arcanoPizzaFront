@@ -14,6 +14,54 @@
 }
 
 /* --- FONDO MÁGICO (Gradiente Radial) --- */
+.menu-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+}
+
+.menu-banner--info {
+  background: rgba(138, 43, 226, 0.12);
+  color: var(--text-muted);
+}
+
+.menu-banner--promo {
+  background: rgba(255, 215, 0, 0.08);
+  color: var(--gold-runes);
+}
+
+.menu-banner-link {
+  color: var(--gold-runes);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.menu-banner-link:hover {
+  text-decoration: underline;
+}
+
+.menu-banner-close {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  border-radius: 4px;
+}
+
+.menu-banner-close:hover {
+  color: var(--text-light);
+}
+
 .page-container {
   /* Crea un efecto de luz mágica saliendo del centro superior */
   background: radial-gradient(circle at top center, var(--bg-mystic), var(--bg-deep));
@@ -172,4 +220,97 @@
   font-size: 0.95rem;
   line-height: 1.5;
   flex-grow: 1; /* Empuja el botón al fondo de la tarjeta si decides usarlo */
+}
+
+.product-card img {
+  aspect-ratio: 5 / 3;
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+}
+
+/* --- Skeleton carga --- */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.skeleton-filters {
+  min-height: 52px;
+}
+
+.skeleton-pill {
+  display: inline-block;
+  width: 96px;
+  height: 40px;
+  border-radius: 50px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
+}
+
+.skeleton-card {
+  pointer-events: none;
+  cursor: default;
+}
+
+.skeleton-img {
+  width: 100%;
+  aspect-ratio: 5 / 3;
+  border-radius: 12px 12px 0 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
+}
+
+.skeleton-line--title {
+  height: 18px;
+  width: 70%;
+}
+
+.skeleton-line--short {
+  width: 40%;
+}
+
+.skeleton-btn {
+  margin-top: 16px;
+  height: 38px;
+  border-radius: 50px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.09) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
 }

@@ -7,6 +7,23 @@
   --text-muted: var(--arcano-text-muted);
 }
 
+.top-nav-stack {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.guest-banner {
+  margin: 0;
+  padding: 0.4rem 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: rgba(138, 43, 226, 0.12);
+  border-bottom: 1px solid rgba(138, 43, 226, 0.22);
+  line-height: 1.35;
+}
+
 /* Tres franjas: logo | menú centrado en pantalla | sesión pegada a la derecha */
 .navbar {
   display: grid;
@@ -18,9 +35,6 @@
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(138, 43, 226, 0.3);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
 }
 
 .navbar-start {

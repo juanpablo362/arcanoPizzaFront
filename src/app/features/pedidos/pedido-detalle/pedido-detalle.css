@@ -24,15 +24,38 @@
   padding: 1.5rem 1.25rem;
 }
 
+.detalle-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
 .back {
   display: inline-block;
-  margin-bottom: 1rem;
   color: var(--gold-runes);
   text-decoration: none;
 }
 
 .back:hover {
   text-decoration: underline;
+}
+
+.btn-refresh {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(138, 43, 226, 0.45);
+  background: rgba(11, 11, 18, 0.6);
+  color: var(--text-light);
+  cursor: pointer;
+  font: inherit;
+}
+
+.btn-refresh:hover {
+  box-shadow: 0 0 12px var(--magic-glow);
 }
 
 .muted {
@@ -62,11 +85,55 @@
   font-size: 0.9rem;
 }
 
-.estado {
+.estado-badge {
+  display: inline-block;
+  width: fit-content;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: var(--magic-purple);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.estado-badge--pendiente {
+  color: #bfdbfe;
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(96, 165, 250, 0.45);
+}
+
+.estado-badge--preparacion {
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+.estado-badge--listo {
+  color: #bbf7d0;
+  background: rgba(34, 197, 94, 0.18);
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+.estado-badge--ruta {
+  color: #e9d5ff;
+  background: rgba(139, 92, 246, 0.22);
+  border-color: rgba(167, 139, 250, 0.45);
+}
+
+.estado-badge--entregado {
+  color: #d1fae5;
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+.estado-badge--cancelado {
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(248, 113, 113, 0.45);
+}
+
+.estado-badge--default {
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .card {

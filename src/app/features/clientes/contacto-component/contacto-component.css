@@ -13,6 +13,21 @@
   --text-muted: var(--arcano-text-muted);     
 }
 
+.legal-links {
+  text-align: center;
+  margin: 1rem 0 0.5rem;
+  font-size: 0.88rem;
+}
+
+.legal-links a {
+  color: var(--gold-runes);
+  text-decoration: none;
+}
+
+.legal-links a:hover {
+  text-decoration: underline;
+}
+
 .page-container {
   background: radial-gradient(circle at top center, var(--bg-mystic), var(--bg-deep));
   min-height: 100vh;

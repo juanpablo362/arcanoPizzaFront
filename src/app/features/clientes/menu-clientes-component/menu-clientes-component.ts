@@ -1,19 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 
 import { ProductoService } from '../../../core/services/producto.service';
 import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-top-nav.component';
 import { Producto } from '../../../shared/models/producto.model';
-import { ArcanoLoader } from '../../../shared/arcano-loader/arcano-loader';
-
-
 @Component({
   selector: 'app-menu-clientes-component',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ClienteTopNavComponent, ArcanoLoader],
+  imports: [CommonModule, FormsModule, RouterModule, ClienteTopNavComponent],
   templateUrl: './menu-clientes-component.html',
   styleUrl: './menu-clientes-component.css',
 })
@@ -24,6 +21,9 @@ export class MenuClientesComponent implements OnInit {
   private productoService = inject(ProductoService);
   private cdr = inject(ChangeDetectorRef);
 
+  /** Placeholders para filas del skeleton de carga. */
+  readonly skeletonSlots = [0, 1, 2, 3, 4, 5, 6, 7];
+
   categorias: string[] = [];
   categoriaActiva: string = '';
   todosLosProductos: Producto[] = [];
@@ -31,8 +31,33 @@ export class MenuClientesComponent implements OnInit {
   // 👉 Bandera maestra para saber si estamos esperando datos
   cargando: boolean = true;
 
+  /** Texto informativo (editá en un solo lugar). */
+  readonly horarioBannerTexto =
+    'Horario referencial: Lun–Dom 12:00–23:00. Entregas según disponibilidad.';
+
+  protected readonly bannerHorarioVisible = signal(true);
+  protected readonly bannerPromoVisible = signal(true);
+
   ngOnInit(): void {
+    if (typeof sessionStorage !== 'undefined') {
+      if (sessionStorage.getItem('arcano_dismiss_horario_banner') === '1') {
+        this.bannerHorarioVisible.set(false);
+      }
+      if (sessionStorage.getItem('arcano_dismiss_promo_banner') === '1') {
+        this.bannerPromoVisible.set(false);
+      }
+    }
     this.cargarProductos();
+  }
+
+  cerrarBannerHorario(): void {
+    sessionStorage.setItem('arcano_dismiss_horario_banner', '1');
+    this.bannerHorarioVisible.set(false);
+  }
+
+  cerrarBannerPromo(): void {
+    sessionStorage.setItem('arcano_dismiss_promo_banner', '1');
+    this.bannerPromoVisible.set(false);
   }
 
   get productosFiltrados(): Producto[] {

@@ -9,6 +9,10 @@ import {
 import { RouterLink } from '@angular/router';
 import { catchError, EMPTY, finalize } from 'rxjs';
 import { etiquetaMetodoPago, type PedidoLista } from '../../shared/models/pedido.model';
+import {
+  etiquetaEstadoPedidoCliente,
+  sufijoClaseEstadoPedido,
+} from '../../shared/pedido-estado';
 import { ClienteTopNavComponent } from '../../shared/cliente-top-nav/cliente-top-nav.component';
 import { PedidosService } from './pedidos.service';
 
@@ -23,6 +27,8 @@ export class Pedidos {
   private readonly pedidosService = inject(PedidosService);
 
   protected readonly metodoPagoEtiqueta = etiquetaMetodoPago;
+  protected readonly etiquetaEstado = etiquetaEstadoPedidoCliente;
+  protected readonly claseEstado = sufijoClaseEstadoPedido;
 
   protected readonly pedidos = signal<PedidoLista[]>([]);
   protected readonly loading = signal(true);

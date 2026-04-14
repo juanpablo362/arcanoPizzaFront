@@ -23,7 +23,9 @@
           <li>
             <a [routerLink]="['/pedidos', p.idPedido]" class="pedido-card">
               <span class="pedido-id">#{{ p.idPedido }}</span>
-              <span class="estado">{{ p.estado }}</span>
+              <span [class]="'estado-badge estado-badge--' + claseEstado(p.estado)">{{
+                etiquetaEstado(p.estado)
+              }}</span>
               <span class="fecha">{{ p.creado | date: 'medium' }}</span>
               <span class="total">{{ p.total | currency: 'MXN' : 'symbol' : '1.2-2' }}</span>
               <span class="entrega">{{ p.tipoEntrega }}</span>

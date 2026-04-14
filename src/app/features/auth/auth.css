@@ -221,3 +221,22 @@ a:hover .auth-tagline {
 .auth-back-link:hover {
   color: #d4af37;
 }
+
+.auth-legal {
+  font-size: 0.82rem;
+  color: var(--arcano-text-muted);
+}
+
+.auth-legal-link {
+  color: var(--arcano-text-muted);
+  text-decoration: none;
+}
+
+.auth-legal-link:hover {
+  color: #d4af37;
+  text-decoration: underline;
+}
+
+.auth-legal-sep {
+  opacity: 0.6;
+}

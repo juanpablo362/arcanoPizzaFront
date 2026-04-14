@@ -24,7 +24,12 @@
         </div>
 
         <div class="promo-image-container">
-          <img [src]="promo.imagenURL || 'https://via.placeholder.com/800x400?text=Promoción'" [alt]="promo.titulo">
+          <img
+            [src]="promo.imagenURL || 'https://via.placeholder.com/800x400?text=Promoción'"
+            [alt]="promo.titulo"
+            loading="lazy"
+            width="800"
+            height="400" />
         </div>
 
         <div class="promo-details">

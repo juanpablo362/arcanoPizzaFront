@@ -14,7 +14,10 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-import { CarritoService } from '../../clientes/carrito-compra-component/carrito-compra.service';
+import {
+  CarritoService,
+  type ItemCarrito,
+} from '../../clientes/carrito-compra-component/carrito-compra.service';
 import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-top-nav.component';
 import { DireccionesService } from '../../../core/services/direcciones.service';
 import type { Direccion } from '../../../shared/models/pedido.model';
@@ -42,6 +45,9 @@ export class PedidoNuevo {
   protected readonly carritoVacioBloqueo = signal(false);
   /** Avisos sobre el formulario (fallo al guardar dirección, al confirmar pedido, etc.). */
   protected readonly aviso = signal<string | null>(null);
+
+  /** Para Reintentar tras error: última acción que falló. */
+  protected readonly ultimoErrorAccion = signal<'stripe' | 'pedido' | 'efectivo' | null>(null);
 
   /** Flujo desde carrito: mismo formulario y luego Stripe. */
   protected readonly checkoutConTarjeta = signal(false);
@@ -178,6 +184,7 @@ export class PedidoNuevo {
 
     this.enviando.set(true);
     this.aviso.set(null);
+    this.ultimoErrorAccion.set(null);
 
     this.carrito
       .crearSesionStripe$({
@@ -194,11 +201,41 @@ export class PedidoNuevo {
         },
         error: (err) => {
           console.error('[PedidoNuevo] Error al crear sesión Stripe', err);
+          this.ultimoErrorAccion.set('stripe');
           this.aviso.set(
             'No pudimos iniciar el pago con tarjeta. Revisá tu sesión e intentá de nuevo.',
           );
         },
       });
+  }
+
+  protected reintentarUltimaAccion(): void {
+    const u = this.ultimoErrorAccion();
+    if (u === 'stripe') {
+      this.iniciarPagoStripe();
+      return;
+    }
+    if (u === 'efectivo') {
+      this.confirmarPagoEfectivo();
+      return;
+    }
+    this.confirmarPedido();
+  }
+
+  protected itemsResumen(): ItemCarrito[] {
+    return this.carrito.obtenerCarrito();
+  }
+
+  protected subtotalResumen(): number {
+    return this.itemsResumen().reduce((acc, i) => acc + i.precio * i.cantidad, 0);
+  }
+
+  protected ivaResumen(): number {
+    return this.subtotalResumen() * 0.16;
+  }
+
+  protected totalResumen(): number {
+    return this.subtotalResumen() + this.ivaResumen();
   }
 
   protected confirmarPedido(): void {
@@ -242,6 +279,8 @@ export class PedidoNuevo {
     this.enviando.set(true);
     this.aviso.set(null);
 
+    const accionPedido: 'pedido' | 'efectivo' = metodoPago === 'Efectivo' ? 'efectivo' : 'pedido';
+
     this.pedidosService
       .crear({
         lineas,
@@ -253,11 +292,13 @@ export class PedidoNuevo {
       .pipe(finalize(() => this.enviando.set(false)))
       .subscribe({
         next: (pedido) => {
+          this.ultimoErrorAccion.set(null);
           this.carrito.vaciarCarrito();
           void this.router.navigate(['/pedidos', pedido.idPedido]);
         },
         error: (err) => {
           console.error('[PedidoNuevo] Error al crear pedido', err);
+          this.ultimoErrorAccion.set(accionPedido);
           this.aviso.set('No pudimos completar tu pedido. Intentá de nuevo en un momento.');
         },
       });

@@ -37,11 +37,12 @@ export class PagoExito implements OnDestroy {
         this.route.snapshot.queryParamMap.get('session_id') ??
         this.route.snapshot.queryParamMap.get('sessionId');
 
-      const finalizarYRedirigir = () => {
+      const finalizarYRedirigir = (opts?: { delayMs?: number }) => {
         this.carritoService.vaciarCarrito();
+        const delay = opts?.delayMs ?? 4000;
         this.timeoutId = setTimeout(() => {
           void this.router.navigate(['/menu-clientes-component']);
-        }, 4000);
+        }, delay);
       };
 
       if (!sessionId) {
@@ -58,7 +59,7 @@ export class PagoExito implements OnDestroy {
           console.log('[PagoExito] Pedido guardado', pedido.idPedido);
           this.pedidoRegistradoId.set(pedido.idPedido);
           this.confirmando.set(false);
-          finalizarYRedirigir();
+          finalizarYRedirigir({ delayMs: 12000 });
         },
         error: (err) => {
           console.error('[PagoExito] Error al confirmar sesión / crear pedido en el servidor', err);
@@ -72,6 +73,14 @@ export class PagoExito implements OnDestroy {
   ngOnDestroy(): void {
     if (this.timeoutId !== undefined) {
       clearTimeout(this.timeoutId);
+    }
+  }
+
+  /** Cancela la redirección automática al ir a otra ruta desde los enlaces. */
+  protected cancelarRedireccionAuto(): void {
+    if (this.timeoutId !== undefined) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = undefined;
     }
   }
 }

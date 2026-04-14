@@ -17,142 +17,199 @@
       <div class="alert-error">Tu carrito está vacío. Agregá productos desde el menú y volvé aquí.</div>
       <a routerLink="/menu-clientes-component" class="link">Ir al menú</a>
     } @else {
+      <nav class="checkout-steps" aria-label="Progreso del pedido">
+        <ol class="steps-list">
+          <li class="step step--done">
+            <a routerLink="/menu-clientes-component">Menú</a>
+            <span class="step-sep">·</span>
+            <a routerLink="/carrito-compra">Carrito</a>
+          </li>
+          <li class="step step--current">
+            <span>Datos de entrega</span>
+          </li>
+          <li
+            class="step"
+            [class.step--todo]="checkoutConTarjeta()"
+            [class.step--next]="!checkoutConTarjeta()">
+            <span>{{ checkoutConTarjeta() ? 'Pago con tarjeta' : 'Confirmar' }}</span>
+          </li>
+        </ol>
+      </nav>
+
       @if (aviso(); as texto) {
-        <div class="alert-error">{{ texto }}</div>
-      }
-
-      <form
-        [formGroup]="pedidoForm"
-        (ngSubmit)="checkoutConTarjeta() ? iniciarPagoStripe() : confirmarPedido()"
-        class="card"
-      >
-        <h2>{{ tipoEntregaActual() === 'Recoger' ? 'Entrega' : 'Dirección y entrega' }}</h2>
-
-        <label class="field">
-          <span>Tipo de entrega</span>
-          <select formControlName="tipoEntrega">
-            <option value="Reparto">Reparto a domicilio</option>
-            <option value="Recoger">Recoger en local</option>
-          </select>
-          @if (tipoEntregaActual() === 'Recoger') {
-            <span class="hint">No necesitás cargar domicilio. Si querés, podés agregar uno opcional desde reparto y volver aquí.</span>
-          }
-        </label>
-
-        @if (tipoEntregaActual() !== 'Recoger' && direcciones().length > 0) {
-          <label class="field">
-            <span>Dirección</span>
-            <select formControlName="direccionId">
-              @for (d of direcciones(); track d.idDireccion) {
-                <option [ngValue]="d.idDireccion">
-                  {{ d.calle }}, {{ d.colonia }} ({{ d.codigoPostal }})
-                </option>
-              }
-            </select>
-          </label>
-        }
-
-        @if (tipoEntregaActual() !== 'Recoger' && direcciones().length === 0) {
-          <p class="hint hint-block">
-            Todavía no hay direcciones en tu cuenta. Desplegá <strong>«Agregar dirección nueva»</strong> más abajo,
-            completá el formulario y guardala; después volvé a elegirla aquí si hace falta.
-          </p>
-        }
-
-        <label class="field">
-          <span>Código de promoción (opcional)</span>
-          <input type="text" formControlName="promocionId" placeholder="Si tenés uno, escribilo aquí" />
-          @if (pedidoForm.get('promocionId')?.errors?.['invalid']) {
-            <span class="field-error">Revisá el código e intentá de nuevo.</span>
-          }
-        </label>
-
-        @if (!checkoutConTarjeta()) {
-          <label class="field">
-            <span>Forma de pago</span>
-            <select formControlName="metodoPago">
-              <option value="Efectivo">Efectivo (al entregar o al retirar)</option>
-              <option value="">Coordinar con la tienda</option>
-            </select>
-            <span class="hint">Si elegís efectivo, abonás en la entrega o cuando pasás a buscar el pedido.</span>
-          </label>
-        }
-
-        @if (checkoutConTarjeta()) {
-          <div class="acciones-pago">
-            <button
-              type="submit"
-              class="btn-primary"
-              [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
-            >
-              @if (enviando()) {
-                Redirigiendo al pago…
-              } @else {
-                Continuar al pago con tarjeta
-              }
-            </button>
-            <button
-              type="button"
-              class="btn-secondary btn-efectivo-stripe"
-              [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
-              (click)="confirmarPagoEfectivo()"
-            >
-              Pedir y pagar en efectivo
-            </button>
-          </div>
-          <p class="muted opcion-alt">
-            <a [routerLink]="['/pedidos/nuevo']" [queryParams]="{}" queryParamsHandling="merge"
-              >Volver al pedido sin pasarela</a
-            >
-            — para elegir forma de pago y confirmar en la misma página.
-          </p>
-        } @else {
-          <button
-            type="submit"
-            class="btn-primary"
-            [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
-          >
-            @if (enviando()) {
-              Enviando…
-            } @else {
-              Confirmar pedido
+        <div class="alert-error">
+          <p>{{ texto }}</p>
+          <div class="alert-actions">
+            @if (ultimoErrorAccion()) {
+              <button type="button" class="btn-retry" (click)="reintentarUltimaAccion()">Reintentar</button>
             }
-          </button>
-          <p class="muted opcion-alt">
-            <a [routerLink]="['.']" [queryParams]="{ pago: 'stripe' }" queryParamsHandling="merge"
-              >Prefiero pagar con tarjeta (Stripe)</a
-            >
-          </p>
-        }
-      </form>
-
-      @if (tipoEntregaActual() !== 'Recoger') {
-        <details class="card card-desplegable">
-          <summary class="desplegable-summary">Agregar dirección nueva</summary>
-          <div [formGroup]="nuevaDir" class="nueva-dir">
-            <p class="hint hint-block">
-              Completá los datos y pulsá «Guardar dirección». La nueva dirección aparecerá en el selector de arriba.
-            </p>
-            <div class="grid">
-              <label>
-                Calle
-                <input formControlName="calle" />
-              </label>
-              <label>
-                Colonia
-                <input formControlName="colonia" />
-              </label>
-              <label>
-                C.P.
-                <input formControlName="codigoPostal" />
-              </label>
-            </div>
-            <button type="button" class="btn-secondary" (click)="agregarDireccion()">
-              Guardar dirección
-            </button>
+            <a routerLink="/carrito-compra" class="link-carrito">Volver al carrito</a>
           </div>
-        </details>
+        </div>
       }
+
+      <div class="checkout-layout">
+        <div class="checkout-main">
+          <form
+            [formGroup]="pedidoForm"
+            (ngSubmit)="checkoutConTarjeta() ? iniciarPagoStripe() : confirmarPedido()"
+            class="card"
+          >
+            <h2>{{ tipoEntregaActual() === 'Recoger' ? 'Entrega' : 'Dirección y entrega' }}</h2>
+
+            <label class="field">
+              <span>Tipo de entrega</span>
+              <select formControlName="tipoEntrega">
+                <option value="Reparto">Reparto a domicilio</option>
+                <option value="Recoger">Recoger en local</option>
+              </select>
+              @if (tipoEntregaActual() === 'Recoger') {
+                <span class="hint">No necesitás cargar domicilio. Si querés, podés agregar uno opcional desde reparto y volver aquí.</span>
+              }
+            </label>
+
+            @if (tipoEntregaActual() !== 'Recoger' && direcciones().length > 0) {
+              <label class="field">
+                <span>Dirección</span>
+                <select formControlName="direccionId">
+                  @for (d of direcciones(); track d.idDireccion) {
+                    <option [ngValue]="d.idDireccion">
+                      {{ d.calle }}, {{ d.colonia }} ({{ d.codigoPostal }})
+                    </option>
+                  }
+                </select>
+              </label>
+            }
+
+            @if (tipoEntregaActual() !== 'Recoger' && direcciones().length === 0) {
+              <p class="hint hint-block">
+                Todavía no hay direcciones en tu cuenta. Desplegá <strong>«Agregar dirección nueva»</strong> más abajo,
+                completá el formulario y guardala; después volvé a elegirla aquí si hace falta.
+              </p>
+            }
+
+            <label class="field">
+              <span>Código de promoción (opcional)</span>
+              <input type="text" formControlName="promocionId" placeholder="Si tenés uno, escribilo aquí" />
+              @if (pedidoForm.get('promocionId')?.errors?.['invalid']) {
+                <span class="field-error">Revisá el código e intentá de nuevo.</span>
+              }
+            </label>
+
+            @if (!checkoutConTarjeta()) {
+              <label class="field">
+                <span>Forma de pago</span>
+                <select formControlName="metodoPago">
+                  <option value="Efectivo">Efectivo (al entregar o al retirar)</option>
+                  <option value="">Coordinar con la tienda</option>
+                </select>
+                <span class="hint">Si elegís efectivo, abonás en la entrega o cuando pasás a buscar el pedido.</span>
+              </label>
+            }
+
+            @if (checkoutConTarjeta()) {
+              <div class="acciones-pago">
+                <button
+                  type="submit"
+                  class="btn-primary"
+                  [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
+                >
+                  @if (enviando()) {
+                    Redirigiendo al pago…
+                  } @else {
+                    Continuar al pago con tarjeta
+                  }
+                </button>
+                <button
+                  type="button"
+                  class="btn-secondary btn-efectivo-stripe"
+                  [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
+                  (click)="confirmarPagoEfectivo()"
+                >
+                  Pedir y pagar en efectivo
+                </button>
+              </div>
+              <p class="muted opcion-alt">
+                <a [routerLink]="['/pedidos/nuevo']" [queryParams]="{}" queryParamsHandling="merge"
+                  >Volver al pedido sin pasarela</a
+                >
+                — para elegir forma de pago y confirmar en la misma página.
+              </p>
+            } @else {
+              <button
+                type="submit"
+                class="btn-primary"
+                [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
+              >
+                @if (enviando()) {
+                  Enviando…
+                } @else {
+                  Confirmar pedido
+                }
+              </button>
+              <p class="muted opcion-alt">
+                <a [routerLink]="['.']" [queryParams]="{ pago: 'stripe' }" queryParamsHandling="merge"
+                  >Prefiero pagar con tarjeta (Stripe)</a
+                >
+              </p>
+            }
+          </form>
+
+          @if (tipoEntregaActual() !== 'Recoger') {
+            <details class="card card-desplegable">
+              <summary class="desplegable-summary">Agregar dirección nueva</summary>
+              <div [formGroup]="nuevaDir" class="nueva-dir">
+                <p class="hint hint-block">
+                  Completá los datos y pulsá «Guardar dirección». La nueva dirección aparecerá en el selector de arriba.
+                </p>
+                <div class="grid">
+                  <label>
+                    Calle
+                    <input formControlName="calle" />
+                  </label>
+                  <label>
+                    Colonia
+                    <input formControlName="colonia" />
+                  </label>
+                  <label>
+                    C.P.
+                    <input formControlName="codigoPostal" />
+                  </label>
+                </div>
+                <button type="button" class="btn-secondary" (click)="agregarDireccion()">
+                  Guardar dirección
+                </button>
+              </div>
+            </details>
+          }
+        </div>
+
+        <aside class="checkout-summary" aria-label="Resumen del pedido">
+          <h3 class="summary-title">Tu pedido</h3>
+          <ul class="summary-lines">
+            @for (item of itemsResumen(); track item.lineKey) {
+              <li>
+                <span class="summary-name">{{ item.nombre }} × {{ item.cantidad }}</span>
+                <span class="summary-price">{{ item.precio * item.cantidad | currency: 'MXN' : 'symbol' : '1.2-2' }}</span>
+              </li>
+            }
+          </ul>
+          <div class="summary-totals">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span>{{ subtotalResumen() | currency: 'MXN' : 'symbol' : '1.2-2' }}</span>
+            </div>
+            <div class="summary-row">
+              <span>IVA (16%)</span>
+              <span>{{ ivaResumen() | currency: 'MXN' : 'symbol' : '1.2-2' }}</span>
+            </div>
+            <div class="summary-row summary-total">
+              <span>Total estimado</span>
+              <span>{{ totalResumen() | currency: 'MXN' : 'symbol' : '1.2-2' }}</span>
+            </div>
+          </div>
+        </aside>
+      </div>
     }
   </div>
 </div>

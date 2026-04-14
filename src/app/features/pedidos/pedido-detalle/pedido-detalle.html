@@ -1,7 +1,12 @@
 <div class="page-container">
   <app-cliente-top-nav />
   <div class="detalle-inner">
-    <a routerLink=".." class="back">← Volver a pedidos</a>
+    <div class="detalle-toolbar">
+      <a routerLink=".." class="back">← Volver a pedidos</a>
+      @if (pedido(); as p) {
+        <button type="button" class="btn-refresh" (click)="recargar()">Actualizar estado</button>
+      }
+    </div>
 
     @if (loading()) {
       <p class="muted">Cargando…</p>
@@ -11,7 +16,9 @@
       <header class="detalle-header">
         <h1>Pedido #{{ p.idPedido }}</h1>
         <p class="meta">
-          <span class="estado">{{ p.estado }}</span>
+          <span [class]="'estado-badge estado-badge--' + claseEstado(p.estado)">{{
+            etiquetaEstado(p.estado)
+          }}</span>
           @if (p.timeStamp) {
             <span>{{ p.timeStamp | date: 'medium' }}</span>
           }

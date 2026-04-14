@@ -11,9 +11,26 @@
       </div>
     } @else if (pedidoRegistradoId(); as idPedido) {
       <p class="status">Pedido <strong>#{{ idPedido }}</strong> registrado.</p>
+      <div class="success-actions">
+        <a
+          class="btn-cta"
+          [routerLink]="['/pedidos', idPedido]"
+          (click)="cancelarRedireccionAuto()"
+          >Ver pedido</a
+        >
+        <a class="btn-cta btn-cta--secondary" routerLink="/pedidos" (click)="cancelarRedireccionAuto()"
+          >Ir a mis pedidos</a
+        >
+        <a
+          class="btn-cta btn-cta--ghost"
+          routerLink="/menu-clientes-component"
+          (click)="cancelarRedireccionAuto()"
+          >Ir al menú</a
+        >
+      </div>
       <div class="redirect-section">
         <div class="spinner green-spinner"></div>
-        <span class="redirect-text">Redirigiendo al menú…</span>
+        <span class="redirect-text">Te llevamos al menú en unos segundos…</span>
       </div>
     } @else {
       <div class="redirect-section">

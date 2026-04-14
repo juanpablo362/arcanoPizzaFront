@@ -4,7 +4,12 @@
   @if (producto) {
   <div class="detail-container">
     <div class="image-wrapper">
-      <img [src]="producto?.imagenURL || producto?.imagen || 'https://via.placeholder.com/400x300?text=Pizza'" [alt]="producto?.nombre">
+      <img
+        [src]="producto?.imagenURL || producto?.imagen || 'https://via.placeholder.com/400x300?text=Pizza'"
+        [alt]="producto?.nombre"
+        loading="lazy"
+        width="400"
+        height="300" />
     </div>
 
     <div class="section-block">
