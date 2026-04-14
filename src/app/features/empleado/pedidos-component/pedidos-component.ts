@@ -1,4 +1,3 @@
-
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PedidosService, Pedido } from './pedidos.service';
@@ -13,7 +12,7 @@ type TipoFiltro = 'Todos' | 'Pendiente' | 'En Preparacion' | 'Listo' | 'En Ruta'
   standalone: true,
   imports: [CommonModule],
   templateUrl: './pedidos-component.html',
-  styleUrls: ['./pedidos-component.css']
+  styleUrl: './pedidos-component.css'
 })
 export class PedidosComponent implements OnInit {
   filtroActual: TipoFiltro = 'Todos';
@@ -27,8 +26,9 @@ export class PedidosComponent implements OnInit {
   private pedidosService = inject(PedidosService);
   protected readonly auth = inject(AuthService);
   protected readonly theme = inject(ThemeService);
+  // Forzamos redibujado cuando el server responde y Angular no refresca por referencia.
+  private cdr = inject(ChangeDetectorRef); 
 
-  private cdr = inject(ChangeDetectorRef);
   ngOnInit(): void {
     this.cargarPedidos();
   }

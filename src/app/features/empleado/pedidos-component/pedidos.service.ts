@@ -7,6 +7,7 @@ export interface ProductoPedido {
   cantidad: number;
   nombre: string;
   nota?: string | null;
+  ingredientes?: string; // 👈 Campo de ingredientes agregado
 }
 
 export interface Pedido {
@@ -22,31 +23,24 @@ export interface Pedido {
   };
   productos: ProductoPedido[];
   total: number;
-  procesando?: boolean; // Bandera para la animación de carga y bloqueo
+  procesando?: boolean; 
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class PedidosService {
-  
   private readonly apiUrl = `${API_BASE_URL}/Pedidos`;
-  
   private http = inject(HttpClient);
 
-  // Obtener todos los pedidos para el dashboard
   obtenerPedidos(): Observable<Pedido[]> {
     return this.http.get<Pedido[]>(`${this.apiUrl}/dashboard`);
   }
 
-  // Actualizar el estado de un pedido específico
   actualizarEstado(idString: string, nuevoEstado: string): Observable<any> {
-    // Convertimos "ORD-000007" a 7 para que .NET lo entienda
     const idNumerico = parseInt(idString.replace('ORD-', ''), 10);
-    
     return this.http.patch(`${this.apiUrl}/${idNumerico}/estado`, JSON.stringify(nuevoEstado), {
-      headers: { 'Content-Type': 'application/json' },
-      
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }

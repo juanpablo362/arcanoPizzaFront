@@ -246,13 +246,7 @@
   box-shadow: var(--shadow-3);
 }
 
-.order-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 5px;
-}
-
+.order-header { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
 .order-header h3 { margin: 0; }
 
 .badge {
@@ -303,8 +297,16 @@
 .customer-info h4, .items-info h4 { margin-bottom: 10px; color: var(--text-3); }
 
 .items-info ul { list-style: none; padding: 0; margin: 0; }
-.items-info li { margin-bottom: 10px; }
-.note { color: #dc3545; font-style: italic; }
+
+/* Nuevos estilos para los productos e ingredientes */
+.product-item {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #e0e0e0; 
+}
+.product-item:last-child { border-bottom: none; }
+.ingredients-text { color: #6c757d; line-height: 1.3; margin-top: 4px; margin-left: 5px; }
+.note { color: #dc3545; font-weight: 600; font-size: 0.85em; margin-top: 4px; margin-left: 5px; }
 
 .total-row {
   display: flex;
@@ -315,7 +317,7 @@
 }
 .price { color: var(--text-1); font-size: 1.05em; }
 
-/* Botón de Acción y Animaciones */
+/* Botones y Spinner */
 .action-btn {
   width: 100%;
   padding: 12px;
@@ -336,11 +338,8 @@
   box-shadow: var(--shadow-3);
 }
 
-.action-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: scale(0.99);
-}
+.action-btn.preparando { background-color: #198754; } 
+.action-btn.pendiente { background-color: #ffc107; color: #000; } 
 
 .action-btn:focus-visible {
   outline: none;

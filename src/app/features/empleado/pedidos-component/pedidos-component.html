@@ -132,11 +132,17 @@
             <h4>Artículos:</h4>
             <ul>
               @for (producto of pedido.productos; track producto.nombre) {
-                <li>
-                  {{ producto.cantidad }}x {{ producto.nombre }}
-                  <br>
+                <li class="product-item">
+                  <strong>{{ producto.cantidad }}x {{ producto.nombre }}</strong>
+                  
+                  @if (producto.ingredientes) {
+                    <div class="ingredients-text">
+                      <small>🍕 {{ producto.ingredientes }}</small>
+                    </div>
+                  }
+                  
                   @if (producto.nota) {
-                    <small class="note">Nota: {{ producto.nota }}</small>
+                    <div class="note">⚠️ Nota: {{ producto.nota }}</div>
                   }
                 </li>
               }
@@ -158,6 +164,7 @@
           } @else {
             {{ getTextoBoton(pedido.estado) }}
           }
+          
         </button>
 
       </div>

@@ -10,7 +10,8 @@ import { environment } from '../../../environments/environment';
  */
 export const API_BASE_URL =
   (globalThis as { __API_BASE_URL__?: string } | undefined)?.['__API_BASE_URL__'] ??
-  (typeof process !== 'undefined' ? (process as { env?: { API_BASE_URL?: string } }).env?.['API_BASE_URL'] : undefined) ??
+  // Permite builds/entornos donde exista `process.env` (sin requerir tipos de Node en el front).
+  (globalThis as any)?.process?.env?.API_BASE_URL ??
   environment.apiBaseUrl;
 
 @Injectable({
