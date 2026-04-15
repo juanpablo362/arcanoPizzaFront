@@ -47,8 +47,9 @@ export class ProductoComponent implements OnInit {
   };
   
   productoEdit: any = {};
-
-  // 🔥 NUEVO: Variable para el mensaje de error del modal
+  
+  // 🔥 NUEVO: Variable para recordar qué producto vamos a eliminar
+  productoAEliminar: ProductoResponseDto | null = null;
   mensajeError: string = '';
 
   ngOnInit() {
@@ -97,49 +98,30 @@ export class ProductoComponent implements OnInit {
     return resultado;
   }
 
-  // ==========================================
-  // 🔥 LÓGICA DE VALIDACIÓN (Productos)
-  // ==========================================
   validarDatos(producto: any, isEdit: boolean): string | null {
-    // 1. Validar Nombre (Vacío o muy corto)
-    if (!producto.nombre || producto.nombre.trim().length < 3) {
-      return "El nombre del producto debe tener al menos 3 caracteres.";
-    }
-
-    // 2. Validar Nombre (Duplicados en la base de datos)
+    if (!producto.nombre || producto.nombre.trim().length < 3) return "El nombre del producto debe tener al menos 3 caracteres.";
+    
     const nombreExiste = this.productos.some(p => 
       p.nombre && producto.nombre && 
       p.nombre.toLowerCase().trim() === producto.nombre.toLowerCase().trim() && 
       (isEdit ? p.id !== producto.id : true)
     );
-    if (nombreExiste) {
-      return "Ya existe un producto registrado con este nombre exacto.";
-    }
-
-    // 3. Validar Precio (Debe ser mayor a 0 y menor a 5000)
-    if (producto.precio === null || producto.precio === undefined || producto.precio <= 0) {
-      return "El precio debe ser un número mayor a $0.00.";
-    }
-    if (producto.precio > 5000) {
-      return "El precio excede el límite permitido ($5,000). Revisa si hay un error de teclado.";
-    }
-
-    // 4. Validar URL de Imagen (Si existe, que tenga formato correcto)
+    if (nombreExiste) return "Ya existe un producto registrado con este nombre exacto.";
+    
+    if (producto.precio === null || producto.precio === undefined || producto.precio <= 0) return "El precio debe ser un número mayor a $0.00.";
+    if (producto.precio > 5000) return "El precio excede el límite permitido ($5,000). Revisa si hay un error de teclado.";
+    
     if (producto.urlImagen && producto.urlImagen.trim() !== '') {
       if (!producto.urlImagen.startsWith('http://') && !producto.urlImagen.startsWith('https://')) {
         return "La URL de la imagen debe comenzar con 'http://' o 'https://'.";
       }
     }
-
-    // 5. Validar Descripción (No exageradamente larga)
-    if (producto.descripcion && producto.descripcion.length > 250) {
-      return "La descripción es demasiado larga. Máximo 250 caracteres.";
-    }
-
-    return null; // Todo correcto
+    
+    if (producto.descripcion && producto.descripcion.length > 250) return "La descripción es demasiado larga. Máximo 250 caracteres.";
+    
+    return null;
   }
 
-  // Métodos del Modal de Error
   mostrarError(mensaje: string) {
     this.mensajeError = mensaje;
     const modalElement = document.getElementById('modalErrorProducto');
@@ -157,9 +139,6 @@ export class ProductoComponent implements OnInit {
     }
   }
 
-  // ==========================================
-  // MODALES PRINCIPALES Y CRUD
-  // ==========================================
   abrirProducto() { 
     const modalElement = document.getElementById('modalProducto');
     if (modalElement) {
@@ -177,16 +156,7 @@ export class ProductoComponent implements OnInit {
   }
 
   abrirEditar(producto: ProductoResponseDto) {
-    this.productoEdit = {
-      id: producto.id,
-      nombre: producto.nombre || '',
-      descripcion: producto.descripcion || '',
-      precio: producto.precioBase || 0,
-      activo: producto.activo,
-      fkIdCategoria: producto.idCategoria || 2,
-      ingredientes: producto.ingredientes || '', 
-      urlImagen: producto.imagenURL || ''     
-    };
+    this.productoEdit = { ...producto };
     
     const modalElement = document.getElementById('modalEditarProducto');
     if (modalElement) {
@@ -204,12 +174,8 @@ export class ProductoComponent implements OnInit {
   }
 
   crearProducto() {
-    // 🔥 Validamos antes de enviar al servidor
     const error = this.validarDatos(this.nuevoProducto, false);
-    if (error) {
-      this.mostrarError(error);
-      return; 
-    }
+    if (error) { this.mostrarError(error); return; }
 
     const createDto = {
       nombre: this.nuevoProducto.nombre.trim(),
@@ -226,20 +192,13 @@ export class ProductoComponent implements OnInit {
         this.cerrarProducto();
         this.nuevoProducto = { nombre: '', descripcion: '', precio: null as any, fkIdCategoria: 2, ingredientes: '', urlImagen: '' };
       },
-      error: (err) => {
-        console.error('Error al crear:', err);
-        alert('Hubo un error interno al crear el producto.');
-      }
+      error: (err) => { console.error('Error al crear:', err); alert('Hubo un error interno al crear el producto.'); }
     });
   }
 
   guardarCambios() {
-    // 🔥 Validamos antes de enviar al servidor
     const error = this.validarDatos(this.productoEdit, true);
-    if (error) {
-      this.mostrarError(error);
-      return; 
-    }
+    if (error) { this.mostrarError(error); return; }
 
     const updateDto = {
       nombre: this.productoEdit.nombre.trim(),
@@ -256,20 +215,7 @@ export class ProductoComponent implements OnInit {
         this.cargarProductos();
         this.cerrarEditar();
       },
-      error: (err) => {
-        console.error('Error al actualizar el producto:', err);
-        alert('Hubo un error interno al guardar los cambios.');
-      }
-    });
-  }
-
-  eliminar(producto: ProductoResponseDto) {
-    // 👇 Esta es la línea que hace que aparezca esa ventana negra
-    if (!confirm(`¿Eliminar el producto ${producto.nombre}? Esta acción no se puede deshacer.`)) return;
-    
-    this.productoService.eliminarProducto(producto.id).subscribe({
-      next: () => this.cargarProductos(),
-      error: (err) => console.error('Error al eliminar:', err)
+      error: (err) => { console.error('Error al actualizar:', err); alert('Hubo un error interno al guardar los cambios.'); }
     });
   }
 
@@ -277,6 +223,43 @@ export class ProductoComponent implements OnInit {
     this.productoService.toggleProducto(producto.id).subscribe({
       next: () => this.cargarProductos(),
       error: (err) => console.error('Error al desactivar:', err)
+    });
+  }
+
+  // ==========================================
+  // 🔥 LÓGICA DEL NUEVO MODAL DE ELIMINAR
+  // ==========================================
+  abrirModalEliminar(producto: ProductoResponseDto) {
+    this.productoAEliminar = producto;
+    const modalElement = document.getElementById('modalConfirmarEliminar');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalElement);
+      modal.show();
+    }
+  }
+
+  cerrarModalEliminar() {
+    this.productoAEliminar = null;
+    const modalElement = document.getElementById('modalConfirmarEliminar');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+      if (modal) modal.hide();
+    }
+  }
+
+  confirmarEliminacion() {
+    if (!this.productoAEliminar) return;
+    
+    this.productoService.eliminarProducto(this.productoAEliminar.id).subscribe({
+      next: () => {
+        this.cargarProductos();
+        this.cerrarModalEliminar();
+      },
+      error: (err) => {
+        console.error('Error al eliminar:', err);
+        this.cerrarModalEliminar();
+        alert('Hubo un error al intentar eliminar el producto.');
+      }
     });
   }
 }

@@ -95,7 +95,7 @@
              <i class="bi bi-pencil"></i>
           </button>
 
-          <button class="btn btn-action btn-icon-only" (click)="eliminar(producto)" title="Eliminar">
+          <button class="btn btn-action btn-icon-only" (click)="abrirModalEliminar(producto)" title="Eliminar">
             <i class="bi bi-trash"></i>
           </button>
         </div>
@@ -142,8 +142,8 @@
           </div>
           
           <div class="col-12">
-            <label class="form-label fw-bold small text-dark mb-1">Descripción</label>
-            <textarea class="form-control custom-input" rows="2" placeholder="Describe el producto..." [(ngModel)]="nuevoProducto.descripcion"></textarea>
+            <label class="form-label fw-bold small text-dark mb-1">Descripción <span class="text-muted fw-normal">(Máx. 250 caracteres)</span></label>
+            <textarea class="form-control custom-input" rows="2" placeholder="Describe el producto..." [(ngModel)]="nuevoProducto.descripcion" maxlength="250"></textarea>
           </div>
 
           <div class="col-12">
@@ -199,8 +199,8 @@
           </div>
           
           <div class="col-12">
-            <label class="form-label fw-bold small text-dark mb-1">Descripción</label>
-            <textarea class="form-control custom-input" rows="2" [(ngModel)]="productoEdit.descripcion"></textarea>
+            <label class="form-label fw-bold small text-dark mb-1">Descripción <span class="text-muted fw-normal">(Máx. 250 caracteres)</span></label>
+            <textarea class="form-control custom-input" rows="2" [(ngModel)]="productoEdit.descripcion" maxlength="250"></textarea>
           </div>
 
           <div class="col-12">
@@ -241,6 +241,24 @@
       </div>
       <div class="modal-footer border-0 justify-content-center pb-3">
         <button type="button" class="btn btn-danger px-4 rounded-3 fw-bold" (click)="cerrarError()">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" style="z-index: 1060;">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+      <div class="modal-body p-4">
+        <div class="bg-light rounded-circle d-inline-flex p-3 mb-3">
+          <i class="bi bi-trash text-danger" style="font-size: 2.5rem;"></i>
+        </div>
+        <h5 class="fw-bold mb-2">¿Estás seguro?</h5>
+        <p class="text-muted mb-0">Estás a punto de eliminar <strong>{{ productoAEliminar?.nombre }}</strong>. Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer border-0 d-flex justify-content-center gap-2 pb-3">
+        <button type="button" class="btn btn-light border fw-medium rounded-3" (click)="cerrarModalEliminar()">Cancelar</button>
+        <button type="button" class="btn btn-danger px-4 rounded-3 fw-bold" (click)="confirmarEliminacion()">Sí, eliminar</button>
       </div>
     </div>
   </div>
