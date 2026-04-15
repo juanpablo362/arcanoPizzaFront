@@ -64,7 +64,13 @@ export class DashboardComponent implements OnInit {
         if (data) {
           this.ventasHoy = data.ventasHoy || 0;
           this.pedidosActivos = data.pedidosActivos || 0;
-          this.productosVendidos = data.productosVendidos || [];
+          
+          // 🔥 CORRECCIÓN: Multiplicamos el total de cada producto por 1.16 para incluir el IVA
+          this.productosVendidos = (data.productosVendidos || []).map(p => ({
+            ...p,
+            total: p.total * 1.16
+          }));
+
           this.pedidosPorHora = data.pedidosPorHora || [];
         }
         this.cdr.detectChanges();

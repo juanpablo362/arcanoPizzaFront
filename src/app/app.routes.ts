@@ -50,10 +50,6 @@ export const routes: Routes = [
     path: 'contacto',
     loadComponent: () => import('./features/clientes/contacto-component/contacto-component').then(m => m.ContactoComponent)
   },
-  {
-    path: 'pago',
-    loadComponent: () => import('./features/clientes/payment-component/payment-component').then(m => m.PaymentComponent)
-  },
 
   // --- 2. RUTAS DE AUTENTICACIÓN ---
   {
