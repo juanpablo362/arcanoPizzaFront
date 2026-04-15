@@ -62,14 +62,6 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'pago',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/clientes/payment-component/payment-component').then(
-        (m) => m.PaymentComponent,
-      ),
-  },
-  {
     path: 'pedidos',
     canActivate: [authGuard],
     loadChildren: () => import('./features/pedidos/pedidos.routes').then((m) => m.PEDIDOS_ROUTES),
