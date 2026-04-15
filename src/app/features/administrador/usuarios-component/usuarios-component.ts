@@ -32,7 +32,7 @@ export class UsuariosComponent implements OnInit {
   nuevoUsuario = { nombre: '', email: '', telefono: '', tipo: 'Empleado', contrasena: '' };
   usuarioEdit: any = {};
 
-  // 🔥 NUEVO: Variable para el mensaje de error del modal
+  // Variable para el mensaje de error del modal
   mensajeError: string = '';
 
   ngOnInit() {
@@ -94,17 +94,31 @@ export class UsuariosComponent implements OnInit {
       return "Por favor, ingresa solo números, sin espacios ni guiones.";
     }
 
-    // 2. Validar Teléfono (Longitud)
+    // 2. Validar Teléfono (Longitud mínima)
     if (usuario.telefono.length < 10) {
       return "El número debe tener al menos 10 dígitos.";
     }
 
-    // 3. Validar Correo (Formato básico)
+    // 3. Validar Teléfono (Longitud máxima)
+    if (usuario.telefono.length > 10) {
+      return "El número no puede tener más de 10 dígitos.";
+    }
+
+    // 🔥 4. Validar Teléfono (Que no se repita con otro usuario)
+    const telefonoExiste = this.usuarios.some(u => 
+      u.telefono === usuario.telefono && 
+      (isEdit ? u.id !== usuario.id : true) // Si editamos, ignoramos el teléfono del propio usuario
+    );
+    if (telefonoExiste) {
+      return "Este número de teléfono ya está en uso por otro usuario.";
+    }
+
+    // 5. Validar Correo (Formato básico)
     if (!usuario.email || !usuario.email.includes('@') || !usuario.email.includes('.')) {
       return "Por favor, ingresa una dirección de correo electrónico válida.";
     }
 
-    // 4. Validar Correo (Dominio)
+    // 6. Validar Correo (Dominio)
     const partesEmail = usuario.email.split('@');
     if (partesEmail.length === 2) {
       const dominio = partesEmail[1];
@@ -114,10 +128,10 @@ export class UsuariosComponent implements OnInit {
       }
     }
 
-    // 5. Validar Correo (Ya registrado)
+    // 7. Validar Correo (Que no se repita)
     const emailExiste = this.usuarios.some(u => 
       u.email.toLowerCase() === usuario.email.toLowerCase() && 
-      (isEdit ? u.id !== usuario.id : true) // Si estamos editando, ignoramos el correo actual del propio usuario
+      (isEdit ? u.id !== usuario.id : true)
     );
 
     if (emailExiste) {
@@ -182,11 +196,10 @@ export class UsuariosComponent implements OnInit {
   }
 
   crearUsuario() {
-    // 🔥 Antes de crear, Validamos:
     const error = this.validarDatos(this.nuevoUsuario, false);
     if (error) {
       this.mostrarError(error);
-      return; // Detenemos la ejecución si hay error
+      return; 
     }
 
     this.usuarioService.crearUsuario(this.nuevoUsuario).subscribe({
@@ -200,11 +213,10 @@ export class UsuariosComponent implements OnInit {
   }
 
   guardarCambios() {
-    // 🔥 Antes de guardar, Validamos:
     const error = this.validarDatos(this.usuarioEdit, true);
     if (error) {
       this.mostrarError(error);
-      return; // Detenemos la ejecución si hay error
+      return; 
     }
 
     const updateDto = {
