@@ -19,7 +19,13 @@
 
     <div class="search-box">
       <div class="input-group">
-        <input type="text" class="form-control shadow-none" placeholder="Buscar producto..." [(ngModel)]="terminoBusqueda">
+        <div style="position: absolute; left: -9999px;">
+          <input type="text" autocomplete="username" tabindex="-1">
+          <input type="password" autocomplete="current-password" tabindex="-1">
+        </div>
+        
+        <input type="search" class="form-control shadow-none" placeholder="Buscar producto..." 
+               [(ngModel)]="terminoBusqueda" name="search_producto_sec" autocomplete="off">
         <button class="btn btn-primary" type="button">
           <i class="bi bi-search"></i>
         </button>
@@ -124,8 +130,8 @@
           </div>
           
           <div class="col-md-4">
-            <label class="form-label fw-bold small text-dark mb-1">Precio</label>
-            <input type="number" class="form-control custom-input" placeholder="12.99" [(ngModel)]="nuevoProducto.precio">
+            <label class="form-label fw-bold small text-dark mb-1">Precio ($)</label>
+            <input type="number" class="form-control custom-input" placeholder="120.00" [(ngModel)]="nuevoProducto.precio">
           </div>
           
           <div class="col-12">
@@ -181,7 +187,7 @@
           </div>
           
           <div class="col-md-4">
-            <label class="form-label fw-bold small text-dark mb-1">Precio</label>
+            <label class="form-label fw-bold small text-dark mb-1">Precio ($)</label>
             <input type="number" class="form-control custom-input" [(ngModel)]="productoEdit.precio">
           </div>
           
@@ -220,6 +226,21 @@
       <div class="modal-footer border-0 pt-0">
         <button type="button" class="btn btn-light border px-4 fw-medium rounded-3" (click)="cerrarEditar()">Cancelar</button>
         <button type="button" class="btn btn-primary px-4 fw-bold rounded-3" (click)="guardarCambios()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalErrorProducto" tabindex="-1" style="z-index: 1060;">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+      <div class="modal-body p-4">
+        <i class="bi bi-exclamation-circle text-danger mb-3" style="font-size: 3rem;"></i>
+        <h5 class="fw-bold mb-3">Revisa los datos</h5>
+        <p class="text-muted mb-0">{{ mensajeError }}</p>
+      </div>
+      <div class="modal-footer border-0 justify-content-center pb-3">
+        <button type="button" class="btn btn-danger px-4 rounded-3 fw-bold" (click)="cerrarError()">Entendido</button>
       </div>
     </div>
   </div>
