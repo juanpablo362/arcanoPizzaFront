@@ -17,12 +17,19 @@
     
     <div class="search-box">
       <div class="input-group">
-        <input type="text" 
+        
+        <div style="position: absolute; left: -9999px;">
+          <input type="text" autocomplete="username" tabindex="-1">
+          <input type="password" autocomplete="current-password" tabindex="-1">
+        </div>
+
+        <input type="search" 
                class="form-control shadow-none" 
                placeholder="Buscar usuario..."
                [(ngModel)]="terminoBusqueda" 
-               name="filtro_generico_123" 
-               autocomplete="new-password">
+               name="busqueda_real_secreta" 
+               autocomplete="off">
+               
         <button class="btn btn-primary" type="button"><i class="bi bi-search"></i></button>
       </div>
     </div>
@@ -139,7 +146,7 @@
 
           <div class="col-12">
             <label class="form-label fw-bold small text-dark mb-1">Contraseña</label>
-            <input type="password" class="form-control custom-input" placeholder="********" [(ngModel)]="nuevoUsuario.contrasena">
+            <input type="password" class="form-control custom-input" placeholder="********" [(ngModel)]="nuevoUsuario.contrasena" autocomplete="new-password">
           </div>
 
         </div>
