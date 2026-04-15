@@ -25,6 +25,12 @@ export interface Pedido {
   procesando?: boolean; 
 }
 
+// Agrega esta interfaz arriba
+export interface Empleado {
+  idUsuario: number;
+  nombreUsuario: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -40,6 +46,18 @@ export class PedidosService {
     const idNumerico = parseInt(idString.replace('ORD-', ''), 10);
     return this.http.patch(`${this.apiUrl}/${idNumerico}/estado`, JSON.stringify(nuevoEstado), {
       headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  // Dentro de tu clase PedidosService añade:
+  obtenerRepartidores(): Observable<Empleado[]> {
+    return this.http.get<Empleado[]>(`${this.apiUrl}/repartidores`);
+  }
+
+  asignarRepartidor(idString: string, repartidorId: number): Observable<any> {
+    const idNumerico = parseInt(idString.replace('ORD-', ''), 10);
+    return this.http.patch(`${this.apiUrl}/${idNumerico}/asignar-repartidor`, { 
+      repartidorId: repartidorId 
     });
   }
 }
