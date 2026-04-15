@@ -1,7 +1,7 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core'; // 🔥 1. Importamos el detector de cambios
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router'; // Quitamos el hack del Router viejo
+import { RouterModule } from '@angular/router'; 
 import { UsuarioService } from '../../../core/services/usuario';
 
 interface UsuarioResponseDto {
@@ -27,12 +27,13 @@ export class UsuariosComponent implements OnInit {
 
   usuarios: UsuarioResponseDto[] = [];
   filtroActual: 'Todos' | 'Empleado' | 'Administrador' | 'Activos' = 'Todos';
-  
-  // 🔥 NUEVA VARIABLE: Guarda lo que el usuario escribe en el buscador
   terminoBusqueda: string = '';
 
-  nuevoUsuario = { nombre: '', email: '', telefono: '', tipo: 'Empleado' };
+  nuevoUsuario = { nombre: '', email: '', telefono: '', tipo: 'Empleado', contrasena: '' };
   usuarioEdit: any = {};
+
+  // 🔥 NUEVO: Variable para el mensaje de error del modal
+  mensajeError: string = '';
 
   ngOnInit() {
     this.cargarUsuarios();
@@ -41,67 +42,171 @@ export class UsuariosComponent implements OnInit {
   cargarUsuarios() {
     this.usuarioService.obtenerUsuarios().subscribe({
       next: (data) => {
-        this.usuarios = data;
+        this.usuarios = data || [];
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error al cargar usuarios:', err)
+      error: (err) => {
+        console.error('Error al cargar usuarios:', err);
+        this.usuarios = [];
+      }
     });
   }
 
-  get totalUsuarios() { return this.usuarios.length; }
-  get totalEmpleados() { return this.usuarios.filter(u => u.tipo === 'Empleado').length; }
-  get totalAdministradores() { return this.usuarios.filter(u => u.tipo === 'Administrador').length; }
-  get totalActivos() { return this.usuarios.filter(u => u.activo).length; }
+  get totalUsuarios() { return this.usuarios ? this.usuarios.filter(u => u.tipo === 'Empleado' || u.tipo === 'Administrador').length : 0; }
+  get totalEmpleados() { return this.usuarios ? this.usuarios.filter(u => u.tipo === 'Empleado').length : 0; }
+  get totalAdministradores() { return this.usuarios ? this.usuarios.filter(u => u.tipo === 'Administrador').length : 0; }
+  get totalActivos() { return this.usuarios ? this.usuarios.filter(u => u.activo && (u.tipo === 'Empleado' || u.tipo === 'Administrador')).length : 0; }
 
   setFiltro(nuevoFiltro: 'Todos' | 'Empleado' | 'Administrador' | 'Activos') {
     this.filtroActual = nuevoFiltro;
   }
 
-  // 🔥 LÓGICA DE BÚSQUEDA ACTUALIZADA
   usuariosFiltrados() {
+    if (!this.usuarios) return [];
     let resultado = this.usuarios;
 
-    // 1. Primero filtramos por la tarjeta seleccionada
-    if (this.filtroActual === 'Activos') {
-      resultado = resultado.filter(u => u.activo);
-    } else if (this.filtroActual !== 'Todos') {
+    if (this.filtroActual === 'Todos') {
+      resultado = resultado.filter(u => u.tipo === 'Empleado' || u.tipo === 'Administrador');
+    } else if (this.filtroActual === 'Activos') {
+      resultado = resultado.filter(u => u.activo && (u.tipo === 'Empleado' || u.tipo === 'Administrador'));
+    } else {
       resultado = resultado.filter(u => u.tipo === this.filtroActual);
     }
 
-    // 2. Luego filtramos por el texto del buscador (si hay algo escrito)
-    if (this.terminoBusqueda.trim() !== '') {
+    if (this.terminoBusqueda && this.terminoBusqueda.trim() !== '') {
       const termino = this.terminoBusqueda.toLowerCase();
-      resultado = resultado.filter(u => 
-        u.nombre.toLowerCase().includes(termino) || 
-        u.email.toLowerCase().includes(termino) || 
+      resultado = this.usuarios.filter(u => 
+        (u.nombre && u.nombre.toLowerCase().includes(termino)) || 
+        (u.email && u.email.toLowerCase().includes(termino)) || 
         (u.telefono && u.telefono.includes(termino))
       );
     }
-
     return resultado;
   }
 
-  // ... (Tus métodos de Modales y CRUD se mantienen idénticos)
-  abrirModalUsuario() { new (window as any).bootstrap.Modal(document.getElementById('modalUsuario')).show(); }
-  cerrarModalUsuario() { (window as any).bootstrap.Modal.getInstance(document.getElementById('modalUsuario')).hide(); }
+  // ==========================================
+  // 🔥 LÓGICA DE VALIDACIÓN (Nuevo y Editar)
+  // ==========================================
+  validarDatos(usuario: any, isEdit: boolean): string | null {
+    // 1. Validar Teléfono (Solo números)
+    const regexNumeros = /^[0-9]+$/;
+    if (!usuario.telefono || !regexNumeros.test(usuario.telefono)) {
+      return "Por favor, ingresa solo números, sin espacios ni guiones.";
+    }
+
+    // 2. Validar Teléfono (Longitud)
+    if (usuario.telefono.length < 10) {
+      return "El número debe tener al menos 10 dígitos.";
+    }
+
+    // 3. Validar Correo (Formato básico)
+    if (!usuario.email || !usuario.email.includes('@') || !usuario.email.includes('.')) {
+      return "Por favor, ingresa una dirección de correo electrónico válida.";
+    }
+
+    // 4. Validar Correo (Dominio)
+    const partesEmail = usuario.email.split('@');
+    if (partesEmail.length === 2) {
+      const dominio = partesEmail[1];
+      const regexDominio = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!regexDominio.test(dominio)) {
+        return `¿Es correcto tu correo? No pudimos verificar el dominio '${dominio}'.`;
+      }
+    }
+
+    // 5. Validar Correo (Ya registrado)
+    const emailExiste = this.usuarios.some(u => 
+      u.email.toLowerCase() === usuario.email.toLowerCase() && 
+      (isEdit ? u.id !== usuario.id : true) // Si estamos editando, ignoramos el correo actual del propio usuario
+    );
+
+    if (emailExiste) {
+      return "Este correo ya está en uso.";
+    }
+
+    return null; // Todo correcto
+  }
+
+  // Métodos del Modal de Error
+  mostrarError(mensaje: string) {
+    this.mensajeError = mensaje;
+    const modalElement = document.getElementById('modalErrorValidacion');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalElement);
+      modal.show();
+    }
+  }
+
+  cerrarError() {
+    const modalElement = document.getElementById('modalErrorValidacion');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+      if (modal) modal.hide();
+    }
+  }
+
+  // ==========================================
+  // MODALES PRINCIPALES Y CRUD
+  // ==========================================
+  abrirModalUsuario() { 
+    const modalElement = document.getElementById('modalUsuario');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalElement);
+      modal.show();
+    }
+  }
+  
+  cerrarModalUsuario() { 
+    const modalElement = document.getElementById('modalUsuario');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+      if (modal) modal.hide();
+    }
+  }
   
   abrirEditar(usuario: UsuarioResponseDto) {
     this.usuarioEdit = { ...usuario };
-    new (window as any).bootstrap.Modal(document.getElementById('modalEditarUsuario')).show();
+    const modalElement = document.getElementById('modalEditarUsuario');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalElement);
+      modal.show();
+    }
   }
-  cerrarEditar() { (window as any).bootstrap.Modal.getInstance(document.getElementById('modalEditarUsuario')).hide(); }
+  
+  cerrarEditar() { 
+    const modalElement = document.getElementById('modalEditarUsuario');
+    if (modalElement) {
+      const modal = (window as any).bootstrap.Modal.getInstance(modalElement);
+      if (modal) modal.hide();
+    }
+  }
 
   crearUsuario() {
+    // 🔥 Antes de crear, Validamos:
+    const error = this.validarDatos(this.nuevoUsuario, false);
+    if (error) {
+      this.mostrarError(error);
+      return; // Detenemos la ejecución si hay error
+    }
+
     this.usuarioService.crearUsuario(this.nuevoUsuario).subscribe({
       next: () => {
         this.cargarUsuarios();
         this.cerrarModalUsuario();
-        this.nuevoUsuario = { nombre: '', email: '', telefono: '', tipo: 'Empleado' };
-      }
+        this.nuevoUsuario = { nombre: '', email: '', telefono: '', tipo: 'Empleado', contrasena: '' };
+      },
+      error: (err) => console.error('Error al crear usuario:', err)
     });
   }
 
   guardarCambios() {
+    // 🔥 Antes de guardar, Validamos:
+    const error = this.validarDatos(this.usuarioEdit, true);
+    if (error) {
+      this.mostrarError(error);
+      return; // Detenemos la ejecución si hay error
+    }
+
     const updateDto = {
       nombre: this.usuarioEdit.nombre,
       email: this.usuarioEdit.email,
@@ -114,7 +219,8 @@ export class UsuariosComponent implements OnInit {
       next: () => {
         this.cargarUsuarios();
         this.cerrarEditar();
-      }
+      },
+      error: (err) => console.error('Error al actualizar usuario:', err)
     });
   }
 
