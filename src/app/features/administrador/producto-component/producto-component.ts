@@ -11,6 +11,8 @@ interface ProductoResponseDto {
   precioBase: number;
   activo: boolean;
   idCategoria: number;
+  ingredientes?: string;
+  imagenURL?: string;
 }
 
 @Component({
@@ -118,8 +120,8 @@ export class ProductoComponent implements OnInit {
       precio: producto.precioBase || 0,
       activo: producto.activo,
       fkIdCategoria: producto.idCategoria || 2,
-      ingredientes: '', 
-      urlImagen: ''     
+      ingredientes: producto.ingredientes || '', 
+      urlImagen: producto.imagenURL || ''     
     };
     
     const modalElement = document.getElementById('modalEditarProducto');
@@ -141,7 +143,10 @@ export class ProductoComponent implements OnInit {
     const createDto = {
       nombre: this.nuevoProducto.nombre,
       descripcion: this.nuevoProducto.descripcion,
-      precio: this.nuevoProducto.precio
+      precio: this.nuevoProducto.precio,
+      fkIdCategoria: this.nuevoProducto.fkIdCategoria,
+      ingredientes: this.nuevoProducto.ingredientes,
+      imagenURL: this.nuevoProducto.urlImagen
     };
 
     this.productoService.crearProducto(createDto).subscribe({
@@ -152,19 +157,20 @@ export class ProductoComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al crear:', err);
-        alert('Hubo un error al crear el producto. Revisa la consola para más detalles.');
+        alert('Hubo un error al crear el producto.');
       }
     });
   }
 
   guardarCambios() {
-    // 🔥 Ahora sí enviamos la Categoría porque el C# (ProductoUpdateDto) la exige como requerida
     const updateDto = {
       nombre: this.productoEdit.nombre,
       descripcion: this.productoEdit.descripcion,
       precio: this.productoEdit.precio,
       activo: this.productoEdit.activo,
-      fkIdCategoria: this.productoEdit.fkIdCategoria 
+      fkIdCategoria: this.productoEdit.fkIdCategoria,
+      ingredientes: this.productoEdit.ingredientes,
+      imagenURL: this.productoEdit.urlImagen
     };
 
     this.productoService.actualizarProducto(this.productoEdit.id, updateDto).subscribe({
