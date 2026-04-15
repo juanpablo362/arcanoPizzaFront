@@ -1,0 +1,229 @@
+<div class="container-fluid p-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="logo border p-2 fw-bold">ARCANO PIZZA</div>
+    <div class="user d-flex align-items-center">
+      <i class="bi bi-person-circle me-2 fs-4"></i> Administrador
+      <button class="btn btn-outline-secondary btn-sm ms-3"><i class="bi bi-box-arrow-right"></i> Salir</button>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <button class="btn btn-outline-primary me-2" routerLink="/dashboard">Dashboard</button>
+      <button class="btn btn-outline-primary me-2" routerLink="/productos">Productos</button>
+      <button class="btn btn-primary" routerLink="/admin">Usuarios</button>
+    </div>
+    
+    <div class="search-box">
+      <div class="input-group">
+        
+        <div style="position: absolute; left: -9999px;">
+          <input type="text" autocomplete="username" tabindex="-1">
+          <input type="password" autocomplete="current-password" tabindex="-1">
+        </div>
+
+        <input type="search" 
+               class="form-control shadow-none" 
+               placeholder="Buscar usuario..."
+               [(ngModel)]="terminoBusqueda" 
+               name="busqueda_real_secreta" 
+               autocomplete="off">
+               
+        <button class="btn btn-primary" type="button"><i class="bi bi-search"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <h4 class="mb-0">Gestión de Usuarios</h4>
+      <small class="text-muted">
+        Filtrando por: <strong>{{ filtroActual }}</strong>
+        <span *ngIf="terminoBusqueda"> | Búsqueda: "<strong>{{terminoBusqueda}}</strong>"</span>
+      </small>
+    </div>
+    <button class="btn btn-primary d-flex align-items-center" (click)="abrirModalUsuario()">
+      <i class="bi bi-plus-lg me-2"></i> Nuevo Usuario
+    </button>
+  </div>
+
+  <div class="mb-4 d-flex gap-3 flex-wrap">
+    <div class="card p-3 flex-fill text-center card-filter shadow-sm" [class.card-active]="filtroActual === 'Todos'" (click)="setFiltro('Todos')">
+      <div class="text-muted small text-uppercase fw-bold">Total Usuarios</div>
+      <div class="fs-3 fw-bold">{{ totalUsuarios }}</div>
+    </div>
+    <div class="card p-3 flex-fill text-center text-success card-filter shadow-sm" [class.card-active]="filtroActual === 'Empleado'" (click)="setFiltro('Empleado')">
+      <div class="text-muted small text-uppercase fw-bold">Empleados</div>
+      <div class="fs-3 fw-bold">{{ totalEmpleados }}</div>
+    </div>
+    <div class="card p-3 flex-fill text-center text-danger card-filter shadow-sm" [class.card-active]="filtroActual === 'Administrador'" (click)="setFiltro('Administrador')">
+      <div class="text-muted small text-uppercase fw-bold">Administradores</div>
+      <div class="fs-3 fw-bold">{{ totalAdministradores }}</div>
+    </div>
+    <div class="card p-3 flex-fill text-center text-purple card-filter shadow-sm" [class.card-active]="filtroActual === 'Activos'" (click)="setFiltro('Activos')">
+      <div class="text-muted small text-uppercase fw-bold">Activos</div>
+      <div class="fs-3 fw-bold">{{ totalActivos }}</div>
+    </div>
+  </div>
+
+  <div class="card p-0 shadow-sm">
+    <div class="custom-scroll-container">
+      
+      <div *ngFor="let usuario of usuariosFiltrados()" class="d-flex justify-content-between align-items-center border-top p-3 hover-bg-light">
+        <div>
+          <strong class="fs-5">{{ usuario.nombre }}</strong>
+          
+          <span class="badge bg-info ms-2" *ngIf="usuario.tipo==='Cliente'">Cliente</span>
+          <span class="badge bg-success ms-2" *ngIf="usuario.tipo==='Empleado'">Empleado</span>
+          <span class="badge bg-danger ms-2" *ngIf="usuario.tipo==='Administrador'">Admin</span>
+          
+          <span class="badge ms-2" [ngClass]="usuario.activo ? 'bg-primary' : 'bg-secondary'">{{ usuario.activo ? 'Activo' : 'Inactivo' }}</span>
+          
+          <div class="text-muted mt-1">
+            <i class="bi bi-envelope me-1"></i> {{ usuario.email }} | 
+            <i class="bi bi-telephone me-1"></i> {{ usuario.telefono || 'Sin teléfono' }}
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 pe-2 align-items-center">
+          <button class="btn btn-action btn-text fw-medium" [ngClass]="usuario.activo ? 'text-action-blue' : 'text-action-green'" (click)="desactivarUsuario(usuario)">
+            {{ usuario.activo ? 'Desactivar' : 'Activar' }}
+          </button>
+          <button class="btn btn-action btn-icon-only" (click)="abrirEditar(usuario)" title="Editar">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-action btn-icon-only" (click)="eliminarUsuario(usuario)" title="Eliminar">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div *ngIf="usuariosFiltrados().length === 0" class="p-5 text-center text-muted border-top">
+        <i class="bi bi-search fs-1 d-block mb-2"></i> No se encontraron resultados.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalUsuario" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow rounded-4 p-2">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="fw-bold mb-0">Nuevo Usuario</h5>
+          <small class="text-muted">Agrega un nuevo usuario al sistema</small>
+        </div>
+        <button type="button" class="btn-close shadow-none" (click)="cerrarModalUsuario()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          
+          <div class="col-md-6">
+            <label class="form-label fw-bold small text-dark mb-1">Nombre Completo</label>
+            <input type="text" class="form-control custom-input" placeholder="Juan Pérez" [(ngModel)]="nuevoUsuario.nombre">
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label fw-bold small text-dark mb-1">Correo Electrónico</label>
+            <input type="email" class="form-control custom-input" placeholder="correo@ejemplo.com" [(ngModel)]="nuevoUsuario.email">
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label fw-bold small text-dark mb-1">Teléfono</label>
+            <input type="text" class="form-control custom-input" placeholder="(555) 123-4567" [(ngModel)]="nuevoUsuario.telefono">
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label fw-bold small text-dark mb-1">Rol</label>
+            <select class="form-select custom-input" [(ngModel)]="nuevoUsuario.tipo">
+              <option value="Cliente">Cliente</option>
+              <option value="Empleado">Empleado</option>
+              <option value="Administrador">Administrador</option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-bold small text-dark mb-1">Contraseña</label>
+            <input type="password" class="form-control custom-input" placeholder="********" [(ngModel)]="nuevoUsuario.contrasena" autocomplete="new-password">
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-light border px-4 fw-medium rounded-3" (click)="cerrarModalUsuario()">Cancelar</button>
+        <button type="button" class="btn btn-danger px-4 fw-bold rounded-3" (click)="crearUsuario()">Crear Usuario</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow rounded-4 p-2">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="fw-bold mb-0">Editar Usuario</h5>
+          <small class="text-muted">Modificando: {{ usuarioEdit.nombre }}</small>
+        </div>
+        <button type="button" class="btn-close shadow-none" (click)="cerrarEditar()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          
+          <div class="col-md-6">
+            <label class="form-label fw-bold small text-dark mb-1">Nombre Completo</label>
+            <input type="text" class="form-control custom-input" [(ngModel)]="usuarioEdit.nombre">
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label fw-bold small text-dark mb-1">Correo Electrónico</label>
+            <input type="email" class="form-control custom-input" [(ngModel)]="usuarioEdit.email">
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label fw-bold small text-dark mb-1">Teléfono</label>
+            <input type="text" class="form-control custom-input" [(ngModel)]="usuarioEdit.telefono">
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label fw-bold small text-dark mb-1">Rol</label>
+            <select class="form-select custom-input" [(ngModel)]="usuarioEdit.tipo">
+              <option value="Cliente">Cliente</option>
+              <option value="Empleado">Empleado</option>
+              <option value="Administrador">Administrador</option>
+            </select>
+          </div>
+
+          <div class="col-12 mt-2">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="switchActivoUsuarioEdit" [(ngModel)]="usuarioEdit.activo">
+              <label class="form-check-label fw-bold small text-dark" for="switchActivoUsuarioEdit">Usuario Activo en el sistema</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-light border px-4 fw-medium rounded-3" (click)="cerrarEditar()">Cancelar</button>
+        <button type="button" class="btn btn-danger px-4 fw-bold rounded-3" (click)="guardarCambios()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalErrorValidacion" tabindex="-1" style="z-index: 1060;">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+      <div class="modal-body p-4">
+        <i class="bi bi-exclamation-circle text-danger mb-3" style="font-size: 3rem;"></i>
+        <h5 class="fw-bold mb-3">Revisa tus datos</h5>
+        <p class="text-muted mb-0">{{ mensajeError }}</p>
+      </div>
+      <div class="modal-footer border-0 justify-content-center pb-3">
+        <button type="button" class="btn btn-danger px-4 rounded-3 fw-bold" (click)="cerrarError()">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>

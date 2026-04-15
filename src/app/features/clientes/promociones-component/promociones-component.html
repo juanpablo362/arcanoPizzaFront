@@ -1,0 +1,66 @@
+<div class="page-container">
+  <nav class="navbar">
+    <div class="logo">LOGO</div>
+    <div class="nav-links">
+      <a routerLink="/" style="cursor: pointer;" routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{exact: true}">Inicio</a>
+      <a routerLink="/menu-clientes-component" style="cursor: pointer;" routerLinkActive="active-link">Menú</a>
+      <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
+      <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
+      <a routerLink="/carrito-compra" style="cursor: pointer;" routerLinkActive="active-link">Carrito</a>
+    </div>
+    <div class="auth">
+      <a style="cursor: pointer;">Iniciar sesión</a>
+    </div>
+  </nav>
+
+  <div class="promociones-wrapper">
+    <h1 class="page-title">Conjuros y Promociones</h1>
+
+    <div class="promociones-list">
+
+      @for (promo of listaPromociones; track promo.id) {
+
+      <div class="promo-card" (click)="abrirDetalle(promo)" style="cursor: pointer;">
+
+        <div class="discount-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="7" y1="7" x2="17" y2="17"></line>
+            <polyline points="17 7 17 17 7 17"></polyline>
+          </svg>
+          -{{ promo.descuentoPorcentaje }}%
+        </div>
+
+        <div class="promo-image-container">
+          <img [src]="promo.imagen" [alt]="promo.titulo">
+        </div>
+
+        <div class="promo-details">
+          <h3 class="promo-title">{{ promo.titulo }}</h3>
+          <p class="promo-desc">{{ promo.descripcion }}</p>
+
+          <p class="promo-validity">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            Válido hasta: {{ promo.validez }}
+          </p>
+
+          <div class="promo-pricing-footer">
+            <div class="price-left">
+              <span class="old-price">${{ promo.precioOriginal | number:'1.2-2' }}</span>
+              <span class="new-price">${{ promo.precioOferta | number:'1.2-2' }}</span>
+            </div>
+            <span class="savings-text">Ahorra ${{ promo.ahorro | number:'1.2-2' }}</span>
+          </div>
+
+        </div>
+      </div>
+      }
+
+    </div>
+  </div>
+</div>

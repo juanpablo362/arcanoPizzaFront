@@ -1,0 +1,61 @@
+/* ==========================================
+   Efectos de interacción
+========================================== */
+.hover-bg-light { 
+  transition: background-color 0.2s ease-in-out; 
+}
+
+.hover-bg-light:hover { 
+  background-color: #f8f9fa; 
+}
+
+/* ==========================================
+   Estilo unificado para Tarjetas (Cards)
+========================================== */
+.card {
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.05);
+  background-color: #ffffff;
+  min-height: 120px; /* Asegura que todas tengan la misma base */
+}
+
+/* Suavizar las líneas divisorias */
+.border-top {
+  border-color: #f0f0f0 !important;
+}
+
+/* ==========================================
+   Ajustes Tipográficos
+========================================== */
+.text-purple { 
+  color: #6f42c1 !important; 
+}
+
+h4.mb-0 {
+  font-weight: 700;
+  color: #212529;
+}
+
+.fs-2 {
+  font-size: 2rem !important; /* Tamaño unificado para los números */
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.text-muted.small.fw-bold {
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================
+   Barras de progreso
+========================================== */
+.progress {
+  background-color: #f0f0f0;
+  border-radius: 10px;
+}
+
+.progress-bar {
+  border-radius: 10px;
+}

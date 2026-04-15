@@ -1,0 +1,81 @@
+<div class="page-container">
+  <nav class="navbar">
+    <div class="logo">LOGO</div>
+    <div class="nav-links">
+      <a routerLink="/" style="cursor: pointer;" routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{exact: true}">Inicio</a>
+      <a routerLink="/menu-clientes-component" style="cursor: pointer;" routerLinkActive="active-link">Menú</a>
+      <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
+      <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
+      <a routerLink="/carrito-compra" style="cursor: pointer;" routerLinkActive="active-link">Carrito</a>
+    </div>
+    <div class="auth">
+      <a style="cursor: pointer;">Iniciar sesión</a>
+    </div>
+  </nav>
+
+  @if (producto) {
+  <div class="detail-container">
+    <div class="image-wrapper">
+      <img [src]="producto.imagen" [alt]="producto.nombre">
+    </div>
+
+    <div class="section-block">
+      <h1 class="product-title">{{ producto.nombre }}</h1>
+      <p class="product-price">${{ (selectedSize ? selectedSize.price : producto.precio) | number:'1.2-2' }} MXN</p>
+    </div>
+
+    <div class="section-block">
+      <h3 class="section-title">Descripción</h3>
+      <p class="description-text">{{ producto.descripcion }}</p>
+    </div>
+
+    <div class="section-block">
+      <h3 class="section-title">Ingredientes</h3>
+      <ul class="ingredients-list">
+        @for (item of producto.ingredientes; track item) {
+        <li>{{ item }}</li>
+        }
+      </ul>
+    </div>
+
+    @if (producto.tamanos && producto.tamanos.length > 0) {
+    <div class="section-block">
+      <h3 class="section-title">Tamaño</h3>
+      <div class="sizes-container">
+        @for (size of producto.tamanos; track size.name) {
+        <div class="size-column" (click)="selectSize(size)">
+          <div class="size-circle" [class.active-border]="selectedSize === size">
+            {{ size.cm }}
+          </div>
+          <div class="size-pill" [class.active-border]="selectedSize === size">
+            {{ size.name }} ${{ size.price }}
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <div class="section-block">
+      <h3 class="section-title">Cantidad</h3>
+      <div class="quantity-controls">
+        <button class="qty-btn" (click)="decreaseQuantity()">-</button>
+        <span class="qty-number">{{ quantity }}</span>
+        <button class="qty-btn" (click)="increaseQuantity()">+</button>
+      </div>
+    </div>
+
+    <div class="detail-footer">
+      <div class="total-wrapper">
+        <h3 class="section-title">Total</h3>
+        <p class="product-price">${{ total | number:'1.2-2' }} MXN</p>
+      </div>
+
+      <button class="add-to-cart-btn" (click)="agregarAlCarrito()">
+        Agregar al carrito
+      </button>
+    </div>
+  </div>
+  }
+</div>

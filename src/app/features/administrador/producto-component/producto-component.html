@@ -1,0 +1,265 @@
+<div class="container-fluid p-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="logo border p-2 fw-bold">ARCANO PIZZA</div>
+    <div class="user d-flex align-items-center">
+      <i class="bi bi-person-circle me-2 fs-4"></i> Administrador
+      <button class="btn btn-outline-secondary btn-sm ms-3">
+        <i class="bi bi-box-arrow-right"></i> Salir
+      </button>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <button class="btn btn-outline-primary me-2" routerLink="/dashboard">Dashboard</button>
+      <button class="btn btn-primary me-2" routerLink="/productos">Productos</button>
+      <button class="btn btn-outline-primary" routerLink="/admin">Usuarios</button>
+    </div>
+
+    <div class="search-box">
+      <div class="input-group">
+        <div style="position: absolute; left: -9999px;">
+          <input type="text" autocomplete="username" tabindex="-1">
+          <input type="password" autocomplete="current-password" tabindex="-1">
+        </div>
+        
+        <input type="search" class="form-control shadow-none" placeholder="Buscar producto..." 
+               [(ngModel)]="terminoBusqueda" name="search_producto_sec" autocomplete="off">
+        <button class="btn btn-primary" type="button">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <h4 class="mb-0">Gestión de Productos</h4>
+      <small class="text-muted">
+        Filtrando por: <strong>{{ filtroActual }}</strong>
+        <span *ngIf="terminoBusqueda"> | Búsqueda: "<strong>{{terminoBusqueda}}</strong>"</span>
+      </small>
+    </div>
+
+    <button class="btn btn-primary d-flex align-items-center" (click)="abrirProducto()">
+      <i class="bi bi-plus-lg me-2"></i> Nuevo Producto
+    </button>
+  </div>
+
+  <div class="row mb-4 g-3">
+    <div class="col-md-4">
+      <div class="card p-3 text-center card-filter shadow-sm" [class.card-active]="filtroActual === 'Todos'" (click)="setFiltro('Todos')">
+        <div class="text-muted small fw-bold text-uppercase">Total Productos</div>
+        <div class="fs-3 fw-bold mt-1">{{ totalProductos }}</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 text-center text-success card-filter shadow-sm" [class.card-active]="filtroActual === 'Disponibles'" (click)="setFiltro('Disponibles')">
+        <div class="text-muted small fw-bold text-uppercase">Disponibles</div>
+        <div class="fs-3 fw-bold mt-1">{{ totalDisponibles }}</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 text-center text-danger card-filter shadow-sm" [class.card-active]="filtroActual === 'Inactivos'" (click)="setFiltro('Inactivos')">
+        <div class="text-muted small fw-bold text-uppercase">No Disponibles</div>
+        <div class="fs-3 fw-bold mt-1">{{ totalInactivos }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-0 shadow-sm">
+    <div class="custom-scroll-container">
+
+      <div *ngFor="let producto of productosFiltrados" class="d-flex align-items-center justify-content-between border-top p-3 hover-bg-light">
+        <div class="flex-grow-1">
+          <strong class="fs-5">{{ producto.nombre || 'Producto sin nombre' }}</strong>
+          <span class="badge ms-2" [ngClass]="producto.activo ? 'bg-success' : 'bg-secondary'">
+            {{ producto.activo ? 'Disponible' : 'Agotado' }}
+          </span>
+          <div class="text-muted mt-1 small">
+            {{ producto.descripcion || 'Sin descripción' }}
+          </div>
+        </div>
+
+        <div class="fs-4 fw-bold text-success me-4">
+          ${{ producto.precioBase | number:'1.2-2' }}
+        </div>
+
+        <div class="d-flex gap-2 pe-2 align-items-center">
+          <button class="btn btn-action btn-text fw-medium" [ngClass]="producto.activo ? 'text-action-blue' : 'text-action-green'" (click)="desactivarProducto(producto)">
+            {{ producto.activo ? 'Desactivar' : 'Activar' }}
+          </button>
+
+          <button class="btn btn-action btn-icon-only" (click)="abrirEditar(producto)" title="Editar">
+             <i class="bi bi-pencil"></i>
+          </button>
+
+          <button class="btn btn-action btn-icon-only" (click)="abrirModalEliminar(producto)" title="Eliminar">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="productosFiltrados.length === 0" class="p-5 text-center text-muted border-top">
+        <i class="bi bi-search fs-1 d-block mb-2"></i>
+        No se encontraron resultados.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalProducto" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-4 p-2">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="fw-bold mb-0">Nuevo Producto</h5>
+          <small class="text-muted">Agrega un nuevo producto al menú</small>
+        </div>
+        <button type="button" class="btn-close shadow-none" (click)="cerrarProducto()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="row g-3">
+          
+          <div class="col-md-8">
+            <label class="form-label fw-bold small text-dark mb-1">Nombre del Producto</label>
+            <input type="text" class="form-control custom-input" placeholder="Ej: Pizza Especial" [(ngModel)]="nuevoProducto.nombre">
+          </div>
+          
+          <div class="col-md-4">
+            <label class="form-label fw-bold small text-dark mb-1">Precio ($)</label>
+            <input type="number" class="form-control custom-input" placeholder="120.00" [(ngModel)]="nuevoProducto.precio">
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label fw-bold small text-dark mb-1">Categoría</label>
+            <select class="form-select custom-input" [(ngModel)]="nuevoProducto.fkIdCategoria">
+              <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+            </select>
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label fw-bold small text-dark mb-1">Descripción <span class="text-muted fw-normal">(Máx. 250 caracteres)</span></label>
+            <textarea class="form-control custom-input" rows="2" placeholder="Describe el producto..." [(ngModel)]="nuevoProducto.descripcion" maxlength="250"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-bold small text-dark mb-1">Ingredientes (separados por coma)</label>
+            <input type="text" class="form-control custom-input" placeholder="Mozzarella, Tomate, Albahaca..." [(ngModel)]="nuevoProducto.ingredientes">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-bold small text-dark mb-1">URL de la Imagen</label>
+            <input type="text" class="form-control custom-input" placeholder="https://..." [(ngModel)]="nuevoProducto.urlImagen">
+          </div>
+          
+        </div>
+      </div>
+      
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-light border px-4 fw-medium rounded-3" (click)="cerrarProducto()">Cancelar</button>
+        <button type="button" class="btn btn-danger px-4 fw-bold rounded-3" (click)="crearProducto()">Crear Producto</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEditarProducto" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-4 p-2">
+      <div class="modal-header border-0 pb-0">
+        <div>
+          <h5 class="fw-bold mb-0">Editar Producto</h5>
+          <small class="text-muted">Modificando: {{ productoEdit.nombre }}</small>
+        </div>
+        <button type="button" class="btn-close shadow-none" (click)="cerrarEditar()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="row g-3">
+          
+          <div class="col-md-8">
+            <label class="form-label fw-bold small text-dark mb-1">Nombre del Producto</label>
+            <input type="text" class="form-control custom-input" [(ngModel)]="productoEdit.nombre">
+          </div>
+          
+          <div class="col-md-4">
+            <label class="form-label fw-bold small text-dark mb-1">Precio ($)</label>
+            <input type="number" class="form-control custom-input" [(ngModel)]="productoEdit.precio">
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label fw-bold small text-dark mb-1">Categoría</label>
+            <select class="form-select custom-input" [(ngModel)]="productoEdit.fkIdCategoria">
+              <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+            </select>
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label fw-bold small text-dark mb-1">Descripción <span class="text-muted fw-normal">(Máx. 250 caracteres)</span></label>
+            <textarea class="form-control custom-input" rows="2" [(ngModel)]="productoEdit.descripcion" maxlength="250"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-bold small text-dark mb-1">Ingredientes (separados por coma)</label>
+            <input type="text" class="form-control custom-input" [(ngModel)]="productoEdit.ingredientes">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-bold small text-dark mb-1">URL de la Imagen</label>
+            <input type="text" class="form-control custom-input" [(ngModel)]="productoEdit.urlImagen">
+          </div>
+
+          <div class="col-12 mt-2">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="switchActivoProductoEdit" [(ngModel)]="productoEdit.activo">
+              <label class="form-check-label fw-bold small text-dark" for="switchActivoProductoEdit">Producto disponible para la venta</label>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-light border px-4 fw-medium rounded-3" (click)="cerrarEditar()">Cancelar</button>
+        <button type="button" class="btn btn-primary px-4 fw-bold rounded-3" (click)="guardarCambios()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalErrorProducto" tabindex="-1" style="z-index: 1060;">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+      <div class="modal-body p-4">
+        <i class="bi bi-exclamation-circle text-danger mb-3" style="font-size: 3rem;"></i>
+        <h5 class="fw-bold mb-3">Revisa los datos</h5>
+        <p class="text-muted mb-0">{{ mensajeError }}</p>
+      </div>
+      <div class="modal-footer border-0 justify-content-center pb-3">
+        <button type="button" class="btn btn-danger px-4 rounded-3 fw-bold" (click)="cerrarError()">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalConfirmarEliminar" tabindex="-1" style="z-index: 1060;">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow-lg rounded-4 text-center p-3">
+      <div class="modal-body p-4">
+        <div class="bg-light rounded-circle d-inline-flex p-3 mb-3">
+          <i class="bi bi-trash text-danger" style="font-size: 2.5rem;"></i>
+        </div>
+        <h5 class="fw-bold mb-2">¿Estás seguro?</h5>
+        <p class="text-muted mb-0">Estás a punto de eliminar <strong>{{ productoAEliminar?.nombre }}</strong>. Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer border-0 d-flex justify-content-center gap-2 pb-3">
+        <button type="button" class="btn btn-light border fw-medium rounded-3" (click)="cerrarModalEliminar()">Cancelar</button>
+        <button type="button" class="btn btn-danger px-4 rounded-3 fw-bold" (click)="confirmarEliminacion()">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
