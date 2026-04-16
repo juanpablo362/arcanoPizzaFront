@@ -130,14 +130,21 @@ export const routes: Routes = [
     path: 'carrito-compra',
     redirectTo: '/carrito',
   },
-  /** Sin authGuard: el retorno desde Stripe es navegación externa; en SSR no hay sesión y se redirigía a /auth antes de vaciar el carrito. */
+  /**
+   * Compatibilidad con URLs antiguas.
+   * Importante: NO usar redirectTo aquí porque puede perder query params como `?session_id=...` al volver desde Stripe.
+   */
   {
     path: 'pago-exito',
-    redirectTo: '/pago/exito',
+    loadChildren: () =>
+      import('./features/clientes/pago-exito/pago-exito.routes').then((m) => m.PAGO_EXITO_ROUTES),
   },
   {
     path: 'pago-cancelado',
-    redirectTo: '/pago/cancelado',
+    loadChildren: () =>
+      import('./features/clientes/pago-cancelado/pago-cancelado.routes').then(
+        (m) => m.PAGO_CANCELADO_ROUTES,
+      ),
   },
   {
     path: 'contacto',
