@@ -84,8 +84,26 @@ export class PedidosComponent implements OnInit {
     if (pedido.procesando) return;
 
     if (pedido.estado === 'Listo') {
-      this.abrirModal(pedido);
-      return; 
+      // Solo pedidos de reparto requieren repartidor.
+      if ((pedido.tipoEntrega || '').toLowerCase() === 'reparto') {
+        this.abrirModal(pedido);
+        return;
+      }
+      // Si es recoger, no asignamos repartidor: lo marcamos como entregado/cerrado.
+      pedido.procesando = true;
+      this.pedidosService.actualizarEstado(pedido.id, 'Entregado').subscribe({
+        next: () => {
+          this.pedidos = this.pedidos.filter(p => p.id !== pedido.id);
+          this.aplicarFiltro();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error al actualizar:', err);
+          pedido.procesando = false;
+          this.cdr.detectChanges();
+        }
+      });
+      return;
     }
 
     let nuevoEstado = '';
@@ -138,13 +156,20 @@ export class PedidosComponent implements OnInit {
     }
   }
 
-  getTextoBoton(estado?: string): string {
-    switch(estado) {
-      case 'Pendiente': return 'Iniciar Preparación';
-      case 'En Preparacion': return 'Marcar como Listo';
-      case 'Listo': return 'Asignar Repartidor';
-      case 'En Ruta': return 'Marcar como Entregado'; // 👈 NUEVO CASO AÑADIDO
-      default: return 'Actualizar';
+  getTextoBoton(pedido: Pedido): string {
+    switch (pedido.estado) {
+      case 'Pendiente':
+        return 'Iniciar Preparación';
+      case 'En Preparacion':
+        return 'Marcar como Listo';
+      case 'Listo':
+        return (pedido.tipoEntrega || '').toLowerCase() === 'reparto'
+          ? 'Asignar Repartidor'
+          : 'Cerrar pedido';
+      case 'En Ruta':
+        return 'Marcar como Entregado';
+      default:
+        return 'Actualizar';
     }
   }
 

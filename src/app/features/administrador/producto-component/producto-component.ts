@@ -8,6 +8,7 @@ import { finalize, switchMap, of } from 'rxjs';
 import { ConfirmService } from '../../../shared/confirm/confirm.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { AuthService } from '../../../core/services/auth';
+import { ThemeService } from '../../../core/services/theme';
 
 interface ProductoResponseDto {
   id: number;
@@ -33,6 +34,7 @@ export class ProductoComponent implements OnInit {
   private confirm = inject(ConfirmService);
   private toast = inject(ToastService);
   private auth = inject(AuthService);
+  protected readonly theme = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);
 
   productos: ProductoResponseDto[] = [];

@@ -400,3 +400,36 @@ input {
   margin: 0 0 0.85rem;
   line-height: 1.45;
 }
+
+.address-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: -0.5rem 0 0.75rem;
+}
+
+.modal-arcano {
+  background: var(--card-dark);
+  border: 1px solid rgba(138, 43, 226, 0.25);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  color: var(--text-light);
+}
+
+.modal-arcano .modal-header,
+.modal-arcano .modal-footer {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.modal-arcano .modal-title {
+  color: var(--gold-runes);
+  font-weight: 700;
+}
+
+.modal-arcano .btn-close {
+  filter: invert(1);
+  opacity: 0.8;
+}
+
+.modal-arcano .btn-close:hover {
+  opacity: 1;
+}

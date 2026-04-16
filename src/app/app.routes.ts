@@ -121,6 +121,14 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['Empleado', 'Administrador'])],
     loadComponent: () => import('./features/empleado/pedidos-component/pedidos-component').then(m => m.PedidosComponent)
   },
+  {
+    path: 'pedidos-repartidor',
+    canActivate: [authGuard, roleGuard(['Repartidor'])],
+    loadComponent: () =>
+      import('./features/repartidor/pedidos-asignados-component/pedidos-asignados-component').then(
+        (m) => m.PedidosAsignadosComponent,
+      ),
+  },
 
   // --- 3. RUTAS CON LAYOUT --
   {

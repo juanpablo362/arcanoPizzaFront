@@ -13,6 +13,7 @@ export interface ProductoPedido {
 export interface Pedido {
   id: string;
   estado: string;
+  tipoEntrega: string;
   urgente: boolean;
   horaRecibido: string;
   horaEntrega: string;

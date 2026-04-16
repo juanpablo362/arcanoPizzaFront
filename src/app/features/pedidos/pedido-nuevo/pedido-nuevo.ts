@@ -134,6 +134,20 @@ export class PedidoNuevo {
     );
   }
 
+  protected abrirModalDireccion(): void {
+    const el = globalThis.document?.getElementById('modalNuevaDireccion');
+    if (!el) return;
+    const modal = (globalThis as any).bootstrap?.Modal?.getOrCreateInstance?.(el);
+    modal?.show?.();
+  }
+
+  protected cerrarModalDireccion(): void {
+    const el = globalThis.document?.getElementById('modalNuevaDireccion');
+    if (!el) return;
+    const modal = (globalThis as any).bootstrap?.Modal?.getInstance?.(el);
+    modal?.hide?.();
+  }
+
   protected agregarDireccion(): void {
     if (this.nuevaDir.invalid) {
       this.nuevaDir.markAllAsTouched();
@@ -146,6 +160,7 @@ export class PedidoNuevo {
         this.direcciones.update((list) => [...list, d]);
         this.pedidoForm.patchValue({ direccionId: d.idDireccion });
         this.nuevaDir.reset();
+        this.cerrarModalDireccion();
       },
       error: () => this.aviso.set('No pudimos guardar la dirección.'),
     });

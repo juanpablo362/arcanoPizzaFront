@@ -79,13 +79,22 @@
                   }
                 </select>
               </label>
+              <div class="address-actions">
+                <button type="button" class="btn-secondary" (click)="abrirModalDireccion()">
+                  Agregar dirección nueva
+                </button>
+              </div>
             }
 
             @if (tipoEntregaActual() !== 'Recoger' && direcciones().length === 0) {
               <p class="hint hint-block">
-                Todavía no hay direcciones en tu cuenta. Desplegá <strong>«Agregar dirección nueva»</strong> más abajo,
-                completá el formulario y guardala; después volvé a elegirla aquí si hace falta.
+                Todavía no hay direcciones en tu cuenta. Agregá una nueva para continuar con reparto.
               </p>
+              <div class="address-actions">
+                <button type="button" class="btn-secondary" (click)="abrirModalDireccion()">
+                  Agregar dirección nueva
+                </button>
+              </div>
             }
 
             <label class="field">
@@ -156,31 +165,41 @@
           </form>
 
           @if (tipoEntregaActual() !== 'Recoger') {
-            <details class="card card-desplegable">
-              <summary class="desplegable-summary">Agregar dirección nueva</summary>
-              <div [formGroup]="nuevaDir" class="nueva-dir">
-                <p class="hint hint-block">
-                  Completá los datos y pulsá «Guardar dirección». La nueva dirección aparecerá en el selector de arriba.
-                </p>
-                <div class="grid">
-                  <label>
-                    Calle
-                    <input formControlName="calle" />
-                  </label>
-                  <label>
-                    Colonia
-                    <input formControlName="colonia" />
-                  </label>
-                  <label>
-                    C.P.
-                    <input formControlName="codigoPostal" />
-                  </label>
+            <div class="modal fade" id="modalNuevaDireccion" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-arcano">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Agregar dirección</h5>
+                    <button type="button" class="btn-close" (click)="cerrarModalDireccion()" aria-label="Cerrar"></button>
+                  </div>
+                  <div class="modal-body" [formGroup]="nuevaDir">
+                    <p class="hint hint-block">
+                      Completá los datos y guardala. Luego quedará seleccionada automáticamente.
+                    </p>
+                    <div class="grid">
+                      <label>
+                        Calle
+                        <input formControlName="calle" />
+                      </label>
+                      <label>
+                        Colonia
+                        <input formControlName="colonia" />
+                      </label>
+                      <label>
+                        C.P.
+                        <input formControlName="codigoPostal" />
+                      </label>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn-secondary" (click)="cerrarModalDireccion()">Cancelar</button>
+                    <button type="button" class="btn-primary" (click)="agregarDireccion()">
+                      Guardar dirección
+                    </button>
+                  </div>
                 </div>
-                <button type="button" class="btn-secondary" (click)="agregarDireccion()">
-                  Guardar dirección
-                </button>
               </div>
-            </details>
+            </div>
           }
         </div>
 

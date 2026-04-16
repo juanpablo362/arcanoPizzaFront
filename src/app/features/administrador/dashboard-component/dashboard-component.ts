@@ -7,6 +7,7 @@ import { UsuarioService } from '../../../core/services/usuario';
 import { ProductoService } from '../../../core/services/producto';
 import { API_BASE_URL } from '../../../core/services/api';
 import { AuthService } from '../../../core/services/auth';
+import { ThemeService } from '../../../core/services/theme';
 
 interface ProductoVendido { nombre: string; vendidos: number; total: number; }
 interface PedidosHora { hora: string; cantidad: number; }
@@ -30,6 +31,7 @@ export class DashboardComponent implements OnInit {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
   private auth = inject(AuthService);
+  protected readonly theme = inject(ThemeService);
 
   fechaHoy: string = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   private readonly apiUrl = `${API_BASE_URL}/admin/dashboard`;

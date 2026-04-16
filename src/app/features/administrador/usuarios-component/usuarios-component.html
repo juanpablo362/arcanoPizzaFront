@@ -4,6 +4,25 @@
     <div class="logo border p-2 fw-bold">ARCANO PIZZA</div>
     <div class="user d-flex align-items-center">
       <i class="bi bi-person-circle me-2 fs-4"></i> Administrador
+      <button
+        class="btn btn-outline-secondary btn-sm ms-3"
+        type="button"
+        (click)="theme.toggle()"
+        [attr.aria-label]="theme.isDark() ? 'Cambiar a modo día' : 'Cambiar a modo noche'"
+        [attr.title]="theme.isDark() ? 'Modo día' : 'Modo noche'"
+      >
+        @if (theme.isDark()) {
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="18" height="18">
+            <path
+              d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm0-14.5a1 1 0 0 1 1 1V6a1 1 0 0 1-2 0V4.5a1 1 0 0 1 1-1Zm0 14a1 1 0 0 1 1 1V20a1 1 0 0 1-2 0v-1.5a1 1 0 0 1 1-1ZM4.5 11a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2h1.5Zm17.5 0a1 1 0 0 1 0 2H20.5a1 1 0 0 1 0-2H22ZM6.2 6.2a1 1 0 0 1 1.4 0l1.1 1.1a1 1 0 1 1-1.4 1.4L6.2 7.6a1 1 0 0 1 0-1.4Zm10.7 10.7a1 1 0 0 1 1.4 0l1.1 1.1a1 1 0 0 1-1.4 1.4l-1.1-1.1a1 1 0 0 1 0-1.4ZM17.8 6.2a1 1 0 0 1 0 1.4l-1.1 1.1a1 1 0 1 1-1.4-1.4l1.1-1.1a1 1 0 0 1 1.4 0ZM7.1 16.9a1 1 0 0 1 0 1.4l-1.1 1.1a1 1 0 0 1-1.4-1.4l1.1-1.1a1 1 0 0 1 1.4 0Z"
+            />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="18" height="18">
+            <path d="M21 14.6A8.5 8.5 0 0 1 9.4 3a7.5 7.5 0 1 0 11.6 11.6Z" />
+          </svg>
+        }
+      </button>
       <button class="btn btn-outline-secondary btn-sm ms-3" type="button" (click)="salir()">
         <i class="bi bi-box-arrow-right"></i> Salir
       </button>
@@ -59,6 +78,10 @@
       <div class="text-muted small text-uppercase fw-bold">Empleados</div>
       <div class="fs-3 fw-bold">{{ totalEmpleados }}</div>
     </div>
+    <div class="card p-3 flex-fill text-center text-primary card-filter shadow-sm" [class.card-active]="filtroActual === 'Repartidor'" (click)="setFiltro('Repartidor')">
+      <div class="text-muted small text-uppercase fw-bold">Repartidores</div>
+      <div class="fs-3 fw-bold">{{ totalRepartidores }}</div>
+    </div>
     <div class="card p-3 flex-fill text-center text-danger card-filter shadow-sm" [class.card-active]="filtroActual === 'Administrador'" (click)="setFiltro('Administrador')">
       <div class="text-muted small text-uppercase fw-bold">Administradores</div>
       <div class="fs-3 fw-bold">{{ totalAdministradores }}</div>
@@ -78,6 +101,7 @@
           
           <span class="badge bg-info ms-2" *ngIf="usuario.tipo==='Cliente'">Cliente</span>
           <span class="badge bg-success ms-2" *ngIf="usuario.tipo==='Empleado'">Empleado</span>
+          <span class="badge bg-primary ms-2" *ngIf="usuario.tipo==='Repartidor'">Repartidor</span>
           <span class="badge bg-danger ms-2" *ngIf="usuario.tipo==='Administrador'">Admin</span>
           
           <span class="badge ms-2" [ngClass]="usuario.activo ? 'bg-primary' : 'bg-secondary'">{{ usuario.activo ? 'Activo' : 'Inactivo' }}</span>
@@ -142,6 +166,7 @@
             <select class="form-select custom-input" [(ngModel)]="nuevoUsuario.tipo">
               <option value="Cliente">Cliente</option>
               <option value="Empleado">Empleado</option>
+              <option value="Repartidor">Repartidor</option>
               <option value="Administrador">Administrador</option>
             </select>
           </div>
@@ -194,6 +219,7 @@
             <select class="form-select custom-input" [(ngModel)]="usuarioEdit.tipo">
               <option value="Cliente">Cliente</option>
               <option value="Empleado">Empleado</option>
+              <option value="Repartidor">Repartidor</option>
               <option value="Administrador">Administrador</option>
             </select>
           </div>
