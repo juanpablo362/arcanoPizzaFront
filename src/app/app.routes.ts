@@ -1,80 +1,189 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
-import { MainLayout } from './layouts/main-layout/main-layout';
-import { MenuClientesComponent } from './features/clientes/menu-clientes-component/menu-clientes-component';
-import { ProductoDetalleComponent } from './features/clientes/producto-detalle-component/producto-detalle-component';
-import { PromocionesComponent } from './features/clientes/promociones-component/promociones-component';
+import { guestGuard } from './core/guards/guest-guard';
+import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
 
-  // 👇 --- 0. RUTA MAESTRA POR DEFECTO --- 👇
+  // 👇 Entrada: menú público (sin cuenta). Login al intentar carrito / pedido / pago, etc.
   {
     path: '',
-    redirectTo: 'menu-clientes-component',
-    pathMatch: 'full'
+    redirectTo: '/menu',
+    pathMatch: 'full',
   },
 
   // --- 1. RUTAS ESPECÍFICAS PRIMERO ---
+  // URLs limpias (preferidas)
+  {
+    path: 'menu',
+    loadChildren: () =>
+      import('./features/clientes/menu-clientes-component/menu-clientes-component.routes').then(
+        (m) => m.MENU_CLIENTES_ROUTES,
+      ),
+  },
+  {
+    path: 'producto',
+    loadComponent: () =>
+      import('./features/clientes/producto-detalle-component/producto-detalle-component').then(
+        (m) => m.ProductoDetalleComponent,
+      ),
+  },
+  {
+    path: 'carrito',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/clientes/carrito-compra-component/carrito-compra-component').then(
+        (m) => m.CarritoCompraComponent,
+      ),
+  },
+  {
+    path: 'pago/exito',
+    loadChildren: () =>
+      import('./features/clientes/pago-exito/pago-exito.routes').then((m) => m.PAGO_EXITO_ROUTES),
+  },
+  {
+    path: 'pago/cancelado',
+    loadChildren: () =>
+      import('./features/clientes/pago-cancelado/pago-cancelado.routes').then(
+        (m) => m.PAGO_CANCELADO_ROUTES,
+      ),
+  },
+  {
+    path: 'legal/terminos',
+    loadComponent: () =>
+      import('./features/clientes/legal/terminos-component').then((m) => m.TerminosComponent),
+  },
+  {
+    path: 'legal/privacidad',
+    loadComponent: () =>
+      import('./features/clientes/legal/privacidad-component').then((m) => m.PrivacidadComponent),
+  },
+  {
+    path: 'admin/dashboard',
+    canActivate: [authGuard, roleGuard(['Administrador'])],
+    loadComponent: () =>
+      import('./features/administrador/dashboard-component/dashboard-component').then(
+        (m) => m.DashboardComponent,
+      ),
+  },
+  {
+    path: 'admin/productos',
+    canActivate: [authGuard, roleGuard(['Administrador'])],
+    loadComponent: () =>
+      import('./features/administrador/producto-component/producto-component').then(
+        (m) => m.ProductoComponent,
+      ),
+  },
+  {
+    path: 'admin/usuarios',
+    canActivate: [authGuard, roleGuard(['Administrador'])],
+    loadComponent: () =>
+      import('./features/administrador/usuarios-component/usuarios-component').then(
+        (m) => m.UsuariosComponent,
+      ),
+  },
+  {
+    path: 'admin/promociones',
+    canActivate: [authGuard, roleGuard(['Administrador'])],
+    loadComponent: () =>
+      import('./features/administrador/promociones-admin-component/promociones-admin-component').then(
+        (m) => m.PromocionesAdminComponent,
+      ),
+  },
+  {
+    path: 'empleado/pedidos',
+    canActivate: [authGuard, roleGuard(['Empleado', 'Administrador'])],
+    loadComponent: () =>
+      import('./features/empleado/pedidos-component/pedidos-component').then((m) => m.PedidosComponent),
+  },
+  {
+    path: 'repartidor/pedidos',
+    canActivate: [authGuard, roleGuard(['Repartidor'])],
+    loadComponent: () =>
+      import('./features/repartidor/pedidos-asignados-component/pedidos-asignados-component').then(
+        (m) => m.PedidosAsignadosComponent,
+      ),
+  },
+
+  // Redirects desde rutas antiguas (compatibilidad)
   {
     path: 'menu-clientes-component',
-    loadChildren: () => import('./features/clientes/menu-clientes-component/menu-clientes-component.routes').then(m => m.MENU_CLIENTES_ROUTES)
+    redirectTo: '/menu',
   },
   {
     path: 'producto-detalle',
-    loadComponent: () => import('./features/clientes/producto-detalle-component/producto-detalle-component').then(m => m.ProductoDetalleComponent)
+    redirectTo: '/producto',
   },
   {
     path: 'promociones',
-    loadComponent: () => import('./features/clientes/promociones-component/promociones-component').then(m => m.PromocionesComponent)
+    loadComponent: () =>
+      import('./features/clientes/promociones-component/promociones-component').then(
+        (m) => m.PromocionesComponent,
+      ),
   },
-  {
-    path: 'dashboard', 
-    loadComponent: () => import('./features/administrador/dashboard-component/dashboard-component').then(m => m.DashboardComponent)
-  },
-  {
-    path: 'productos',
-    loadComponent: () => import('./features/administrador/producto-component/producto-component').then(m => m.ProductoComponent)
-  },
-  
-  // 🔥 AQUÍ ESTÁ EL CAMBIO: Ahora carga UsuariosComponent correctamente
-  {
-    path: 'admin',
-    loadComponent: () => import('./features/administrador/usuarios-component/usuarios-component').then(m => m.UsuariosComponent)
-  },
+  { path: 'dashboard', redirectTo: '/admin/dashboard' },
+  { path: 'productos', redirectTo: '/admin/productos' },
+  { path: 'admin', redirectTo: '/admin/usuarios' },
+  { path: 'promociones-admin', redirectTo: '/admin/promociones' },
 
   {
     path: 'carrito-compra',
-    loadComponent: () => import('./features/clientes/carrito-compra-component/carrito-compra-component').then(m => m.CarritoCompraComponent)
+    redirectTo: '/carrito',
+  },
+  /** Sin authGuard: el retorno desde Stripe es navegación externa; en SSR no hay sesión y se redirigía a /auth antes de vaciar el carrito. */
+  {
+    path: 'pago-exito',
+    redirectTo: '/pago/exito',
+  },
+  {
+    path: 'pago-cancelado',
+    redirectTo: '/pago/cancelado',
   },
   {
     path: 'contacto',
-    loadComponent: () => import('./features/clientes/contacto-component/contacto-component').then(m => m.ContactoComponent)
+    loadComponent: () =>
+      import('./features/clientes/contacto-component/contacto-component').then(
+        (m) => m.ContactoComponent,
+      ),
+  },
+  {
+    path: 'terminos',
+    redirectTo: '/legal/terminos',
+  },
+  {
+    path: 'privacidad',
+    redirectTo: '/legal/privacidad',
+  },
+
+  {
+    path: 'pedidos',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/pedidos/pedidos.routes').then((m) => m.PEDIDOS_ROUTES),
+  },
+  {
+    path: 'extras',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/extras/extras.routes').then((m) => m.EXTRAS_ROUTES),
   },
 
   // --- 2. RUTAS DE AUTENTICACIÓN ---
   {
     path: 'auth',
+    canActivate: [guestGuard],
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
+  },
+   { 
+    path: 'pedidos-empleado', 
+    redirectTo: '/empleado/pedidos',
+  },
+  {
+    path: 'pedidos-repartidor',
+    redirectTo: '/repartidor/pedidos',
   },
 
   // --- 3. RUTAS CON LAYOUT --
   {
-    path: '',
-    component: MainLayout,
-    children: [
-      { path: '', redirectTo: 'extras', pathMatch: 'full' },
-      {
-        path: 'extras',
-        loadChildren: () => import('./features/extras/extras.routes').then((m) => m.EXTRAS_ROUTES),
-      },
-      {
-        path: 'pedidos',
-        loadChildren: () => import('./features/pedidos/pedidos.routes').then((m) => m.PEDIDOS_ROUTES),
-        canActivate: [authGuard],
-      },
-    ],
+    path: '**',
+    redirectTo: '/menu',
   },
-
-  // --- 4. RUTA COMODÍN ---
-  { path: '**', redirectTo: 'menu-clientes-component' },
 ];

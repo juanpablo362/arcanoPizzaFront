@@ -9,8 +9,23 @@
   --magic-glow: rgba(138, 43, 226, 0.5); 
   --gold-runes: #F2C94C;     /* Dorado elegante de tu diseño */
   --gold-faded: rgba(242, 201, 76, 0.1); /* Fondo para los íconos */
-  --text-light: #EAEAEA;     
-  --text-muted: #9E9E9E;     
+  --text-light: var(--arcano-text);     
+  --text-muted: var(--arcano-text-muted);     
+}
+
+.legal-links {
+  text-align: center;
+  margin: 1rem 0 0.5rem;
+  font-size: 0.88rem;
+}
+
+.legal-links a {
+  color: var(--gold-runes);
+  text-decoration: none;
+}
+
+.legal-links a:hover {
+  text-decoration: underline;
 }
 
 .page-container {

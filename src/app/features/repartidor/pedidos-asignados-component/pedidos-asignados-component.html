@@ -1,0 +1,153 @@
+<div class="dashboard-container">
+  <header class="top-nav">
+    <div class="brand">
+      <div class="logo">Arcano Pizza</div>
+      <div class="subtitle">Panel de Repartidor</div>
+    </div>
+    <div class="nav-actions">
+      <div class="user-chip">
+        <span class="user-name">{{ auth.user()?.nombreUsuario || 'Repartidor' }}</span>
+        <span class="user-role">{{ auth.user()?.rol || 'Repartidor' }}</span>
+      </div>
+      <button
+        class="btn btn-secondary btn-icon"
+        type="button"
+        (click)="theme.toggle()"
+        [attr.aria-label]="theme.isDark() ? 'Cambiar a modo día' : 'Cambiar a modo noche'"
+        [attr.title]="theme.isDark() ? 'Modo día' : 'Modo noche'"
+      >
+        @if (theme.isDark()) {
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm0-14.5a1 1 0 0 1 1 1V6a1 1 0 0 1-2 0V4.5a1 1 0 0 1 1-1Zm0 14a1 1 0 0 1 1 1V20a1 1 0 0 1-2 0v-1.5a1 1 0 0 1 1-1ZM4.5 11a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2h1.5Zm17.5 0a1 1 0 0 1 0 2H20.5a1 1 0 0 1 0-2H22ZM6.2 6.2a1 1 0 0 1 1.4 0l1.1 1.1a1 1 0 1 1-1.4 1.4L6.2 7.6a1 1 0 0 1 0-1.4Zm10.7 10.7a1 1 0 0 1 1.4 0l1.1 1.1a1 1 0 0 1-1.4 1.4l-1.1-1.1a1 1 0 0 1 0-1.4ZM17.8 6.2a1 1 0 0 1 0 1.4l-1.1 1.1a1 1 0 1 1-1.4-1.4l1.1-1.1a1 1 0 0 1 1.4 0ZM7.1 16.9a1 1 0 0 1 0 1.4l-1.1 1.1a1 1 0 0 1-1.4-1.4l1.1-1.1a1 1 0 0 1 1.4 0Z"
+            />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M21 14.6A8.5 8.5 0 0 1 9.4 3a7.5 7.5 0 1 0 11.6 11.6Z" />
+          </svg>
+        }
+      </button>
+      <button class="btn btn-secondary" type="button" (click)="cargarPedidos()" [disabled]="isLoading">
+        @if (isLoading) { Actualizando... } @else { Actualizar }
+      </button>
+      <button class="btn btn-danger" type="button" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  @if (errorMsg) {
+    <div class="alert-error" role="status">
+      <div class="alert-text">{{ errorMsg }}</div>
+      <button class="btn btn-secondary" type="button" (click)="cargarPedidos()">Reintentar</button>
+    </div>
+  }
+
+  <section class="summary-cards">
+    <div class="card">
+      <span class="title">En ruta</span>
+      <div class="card-body">
+        <span class="number">{{ obtenerConteo('En Ruta') }}</span>
+      </div>
+    </div>
+    <div class="card">
+      <span class="title">Entregados</span>
+      <div class="card-body">
+        <span class="number">{{ obtenerConteo('Entregado') }}</span>
+      </div>
+    </div>
+    <div class="card">
+      <span class="title">Total asignados</span>
+      <div class="card-body">
+        <span class="number">{{ obtenerConteo('Todos') }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="header-section">
+    <h1>Mis pedidos asignados</h1>
+    <p>Consultá tu historial y marcá entregas.</p>
+
+    <div class="filters">
+      <button class="filter-pill" [class.active]="filtroActual === 'Todos'" (click)="cambiarFiltro('Todos')">
+        Todos ({{ obtenerConteo('Todos') }})
+      </button>
+      <button class="filter-pill" [class.active]="filtroActual === 'En Ruta'" (click)="cambiarFiltro('En Ruta')">
+        En Ruta ({{ obtenerConteo('En Ruta') }})
+      </button>
+      <button class="filter-pill" [class.active]="filtroActual === 'Entregado'" (click)="cambiarFiltro('Entregado')">
+        Entregados ({{ obtenerConteo('Entregado') }})
+      </button>
+    </div>
+  </section>
+
+  <section class="orders-list">
+    @if (!isLoading && !errorMsg && pedidosFiltrados.length === 0) {
+      <div class="empty-state">
+        <div class="empty-title">No hay pedidos para este filtro.</div>
+        <div class="empty-subtitle">Probá con otro estado o actualizá la lista.</div>
+      </div>
+    }
+
+    @for (pedido of pedidosFiltrados; track pedido.id) {
+      <div class="order-card">
+        <div class="order-header">
+          <h3>Pedido #{{ pedido.id }}</h3>
+          <span class="badge" [ngClass]="'badge--' + getEstadoClass(pedido.estado)">{{ pedido.estado }}</span>
+          @if (pedido.urgente) {
+            <span class="badge badge--urgent">Urgente</span>
+          }
+        </div>
+
+        <div class="order-times">
+          <small>Recibido: {{ pedido.horaRecibido }} · Entrega estimada: {{ pedido.horaEntrega }}</small>
+        </div>
+
+        <div class="order-details">
+          <div class="customer-info">
+            <h4>Cliente:</h4>
+            <p>{{ pedido.cliente.nombre }}</p>
+            <p>{{ pedido.cliente.telefono }}</p>
+            <p>{{ pedido.cliente.direccion }}</p>
+          </div>
+
+          <div class="items-info">
+            <h4>Artículos:</h4>
+            <ul>
+              @for (producto of pedido.productos; track producto.nombre) {
+                <li class="product-item">
+                  <strong>{{ producto.cantidad }}x {{ producto.nombre }}</strong>
+                  @if (producto.ingredientes) {
+                    <div class="ingredients-text">
+                      <small>🍕 {{ producto.ingredientes }}</small>
+                    </div>
+                  }
+                  @if (producto.nota) {
+                    <div class="note">⚠️ Nota: {{ producto.nota }}</div>
+                  }
+                </li>
+              }
+            </ul>
+            <div class="total-row">
+              <strong>Total:</strong>
+              <strong class="price">${{ pedido.total }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="action-btn"
+          [ngClass]="getEstadoClass(pedido.estado)"
+          [disabled]="pedido.estado !== 'En Ruta' || pedido.procesando"
+          (click)="cambiarEstadoPedido(pedido)"
+        >
+          @if (pedido.procesando) {
+            Procesando... <span class="spinner"></span>
+          } @else {
+            {{ getTextoBoton(pedido.estado) }}
+          }
+        </button>
+      </div>
+    }
+  </section>
+</div>
+

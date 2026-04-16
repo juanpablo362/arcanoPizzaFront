@@ -7,6 +7,12 @@ import {
 import express from 'express';
 import { join } from 'node:path';
 
+// SSR usa `fetch` en Node; no confía el certificado de dev de .NET (igual que el navegador
+// hasta hacer trust). Solo en desarrollo. En producción usar HTTPS con CA válida.
+if (process.env['NODE_ENV'] !== 'production') {
+  process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+}
+
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();

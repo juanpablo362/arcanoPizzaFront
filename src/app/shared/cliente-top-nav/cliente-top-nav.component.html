@@ -1,0 +1,32 @@
+<div class="top-nav-stack">
+  <nav class="navbar">
+  <div class="navbar-start">
+    <a routerLink="/menu" class="logo-link" aria-label="Arcano Pizza — ir al menú">
+      <img src="/img/arcano-logo.svg" alt="Arcano Pizza" class="logo-img" width="160" height="48" />
+    </a>
+  </div>
+  <div class="nav-links">
+    <a routerLink="/menu" routerLinkActive="active-link">Menú</a>
+    <a routerLink="/promociones" routerLinkActive="active-link">Promociones</a>
+    <a routerLink="/contacto" routerLinkActive="active-link">Contacto</a>
+    <a routerLink="/carrito" routerLinkActive="active-link">Carrito</a>
+    @if (auth.isAuthenticated()) {
+      <a routerLink="/pedidos" routerLinkActive="active-link">Pedidos</a>
+    }
+  </div>
+  <div class="auth">
+    @if (auth.isAuthenticated()) {
+      <button type="button" class="nav-btn-link" (click)="logout()">Salir</button>
+    } @else {
+      <a routerLink="/auth" routerLinkActive="active-auth" [routerLinkActiveOptions]="{ exact: false }"
+        >Iniciar sesión</a
+      >
+    }
+  </div>
+  </nav>
+  @if (!auth.isAuthenticated()) {
+    <p class="guest-banner" role="status">
+      Estás viendo el menú sin iniciar sesión. Para comprar, iniciá sesión o registrate.
+    </p>
+  }
+</div>

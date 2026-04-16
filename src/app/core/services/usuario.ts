@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiService } from './api';
+import { ApiService, API_BASE_URL } from './api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService extends ApiService {
+  constructor() {
+    super();
+    this.baseUrl = `${API_BASE_URL}/admin`;
+  }
 
   obtenerUsuarios(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/usuarios`);

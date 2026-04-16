@@ -1,2 +1,42 @@
-<h1>Pedidos</h1>
-<p>Gestión de pedidos.</p>
+<div class="page-container">
+  <app-cliente-top-nav />
+  <div class="pedidos-inner">
+    <header class="pedidos-header">
+      <h1>Mis pedidos</h1>
+      <p class="sub">Historial y seguimiento de tus órdenes</p>
+      <div class="actions">
+        <a routerLink="nuevo" class="btn-primary">Hacer un pedido</a>
+      </div>
+    </header>
+
+    @if (loading()) {
+      <p class="muted">Cargando…</p>
+    } @else if (cargaFallida()) {
+      <p class="empty">No pudimos mostrar tu historial en este momento.</p>
+      <button type="button" class="btn-primary" (click)="cargar()">Intentar de nuevo</button>
+    } @else if (pedidos().length === 0) {
+      <p class="empty">Aún no tienes pedidos registrados.</p>
+      <a routerLink="nuevo" class="link">Hacer tu primer pedido →</a>
+    } @else {
+      <ul class="pedido-list">
+        @for (p of pedidos(); track p.idPedido) {
+          <li>
+            <a [routerLink]="['/pedidos', p.idPedido]" class="pedido-card">
+              <span class="pedido-id">#{{ p.idPedido }}</span>
+              <span [class]="'estado-badge estado-badge--' + claseEstado(p.estado)">{{
+                etiquetaEstado(p.estado)
+              }}</span>
+              <span class="fecha">{{ p.creado | date: 'medium' }}</span>
+              <span class="total">{{ p.total | currency: 'MXN' : 'symbol' : '1.2-2' }}</span>
+              <span class="entrega">{{ p.tipoEntrega }}</span>
+              <span class="pago">{{ metodoPagoEtiqueta(p.metodoPago) }}</span>
+              @if (p.promocionTitulo) {
+                <span class="promo">{{ p.promocionTitulo }}</span>
+              }
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</div>

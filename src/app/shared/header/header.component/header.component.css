@@ -1,0 +1,80 @@
+/* --- HEADER MÍSTICO (MODO OSCURO) --- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #120e1a; /* Fondo muy oscuro, casi negro/púrpura */
+  border-bottom: 1px solid #2a223a; /* Línea sutil para separar */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-text {
+  font-size: 22px;
+  font-weight: bold;
+  color: #c9a444; /* Dorado elegante */
+  letter-spacing: 1px;
+}
+
+.nav-links { 
+  display: flex; 
+  gap: 25px; 
+}
+
+.nav-links a { 
+  text-decoration: none; 
+  color: var(--arcano-text-soft, #e4e0f0);
+  font-weight: 500; 
+  font-size: 15px; 
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #ffffff;
+}
+
+.nav-links a.active-link { 
+  color: #c9a444; /* Dorado para la página en la que estás */
+  font-weight: bold; 
+  border-bottom: 2px solid #8A2BE2; /* Subrayado púrpura neón */
+  padding-bottom: 4px; 
+}
+
+.auth a { 
+  color: #ffffff; 
+  font-weight: bold; 
+  background-color: #8A2BE2;
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.auth a:hover {
+  background-color: #6a1b9a;
+}
+
+.auth .nav-btn-link {
+  margin-left: 0.5rem;
+  color: #ffffff;
+  font-weight: bold;
+  background: transparent;
+  border: 1px solid #8a2be2;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.auth .nav-btn-link:hover {
+  background-color: rgba(138, 43, 226, 0.25);
+}

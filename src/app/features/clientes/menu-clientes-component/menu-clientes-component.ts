@@ -1,61 +1,114 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 
-export interface Producto {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  precio: number;
-  imagen: string;
-  categoria: string;
-  ingredientes: string[];
-  tamanos?: { name: string; cm: string; price: number }[];
-}
-
+import { ProductoService } from '../../../core/services/producto.service';
+import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-top-nav.component';
+import { Producto } from '../../../shared/models/producto.model';
 @Component({
   selector: 'app-menu-clientes-component',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ClienteTopNavComponent],
   templateUrl: './menu-clientes-component.html',
   styleUrl: './menu-clientes-component.css',
 })
-export class MenuClientesComponent {
+
+
+export class MenuClientesComponent implements OnInit {
   private router = inject(Router);
+  private productoService = inject(ProductoService);
+  private cdr = inject(ChangeDetectorRef);
 
-  categorias: string[] = ['Pizza Clásica', 'Pizza Especiales', 'Bebidas', 'Extras'];
-  categoriaActiva: string = 'Pizza Clásica';
+  /** Placeholders para filas del skeleton de carga. */
+  readonly skeletonSlots = [0, 1, 2, 3, 4, 5, 6, 7];
 
-  tamanosPizza = [
-    { name: 'Individual', cm: '30 cm', price: 70 },
-    { name: 'Mediana', cm: '35 cm', price: 90 },
-    { name: 'Grande', cm: '40 cm', price: 120 }
-  ];
+  categorias: string[] = [];
+  categoriaActiva: string = '';
+  todosLosProductos: Producto[] = [];
 
-  todosLosProductos: Producto[] = [
-    { id: 1, nombre: 'Conjuntos de cuatro lunas', descripcion: 'Mozzarella, gorgonzola, parmesano envejecido, provolone.', precio: 120.00, imagen: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', categoria: 'Pizza Clásica', ingredientes: ['Mozzarella', 'Gorgonzola', 'Parmesano', 'Provolone', 'Masa clásica'], tamanos: this.tamanosPizza },
-    { id: 2, nombre: 'Ritual de fuego', descripcion: 'Pepperoni premium ahumado, mozzarella, salsa de tomate especiada.', precio: 120.00, imagen: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', categoria: 'Pizza Clásica', ingredientes: ['Pepperoni ahumado', 'Mozzarella', 'Salsa especiada'], tamanos: this.tamanosPizza },
-    { id: 3, nombre: 'Hawaiana Tradicional', descripcion: 'Doble porción de jamón horneado, piña dulce y extra queso.', precio: 115.00, imagen: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', categoria: 'Pizza Clásica', ingredientes: ['Jamón horneado', 'Piña dulce', 'Mozzarella', 'Masa clásica'], tamanos: this.tamanosPizza },
-    { id: 4, nombre: 'Carnívora Extrema', descripcion: 'Salami, tocino crujiente, pepperoni, jamón y salchicha italiana.', precio: 165.00, imagen: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', categoria: 'Pizza Especiales', ingredientes: ['Salami', 'Tocino', 'Pepperoni', 'Jamón', 'Salchicha italiana', 'Mozzarella'], tamanos: this.tamanosPizza },
-    { id: 5, nombre: 'Vegetariana Suprema', descripcion: 'Champiñones, pimientos, cebolla morada, aceitunas negras y espinaca fresca.', precio: 145.00, imagen: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', categoria: 'Pizza Especiales', ingredientes: ['Champiñones', 'Pimientos', 'Cebolla morada', 'Aceitunas negras', 'Espinaca'], tamanos: this.tamanosPizza },
-    { id: 6, nombre: 'Refresco Cola 600ml', descripcion: 'Refresco de cola regular bien frío en envase PET.', precio: 35.00, imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', categoria: 'Bebidas', ingredientes: ['Refresco de cola oscuro'] },
-    { id: 7, nombre: 'Agua de Jamaica', descripcion: 'Agua fresca natural endulzada, vaso de 500ml.', precio: 25.00, imagen: 'https://images.unsplash.com/photo-1499638673689-79a0b5115d87?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', categoria: 'Bebidas', ingredientes: ['Flor de Jamaica', 'Agua purificada', 'Azúcar'] },
-    { id: 8, nombre: 'Cerveza Artesanal', descripcion: 'Cerveza clara u oscura de barril 355ml.', precio: 55.00, imagen: 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', categoria: 'Bebidas', ingredientes: ['Cerveza de barril seleccionada'] },
-    { id: 9, nombre: 'Papas Gajo', descripcion: 'Porción de 250g de papas condimentadas con aderezo a elegir.', precio: 65.00, imagen: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', categoria: 'Extras', ingredientes: ['Papas de corte grueso', 'Pimentón', 'Sal con ajo', 'Aceite vegetal'] },
-    { id: 10, nombre: 'Alitas BBQ', descripcion: '6 piezas de alitas de pollo bañadas en salsa BBQ dulce y un toque picante.', precio: 110.00, imagen: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=800&q=80', categoria: 'Extras', ingredientes: ['Alitas de pollo', 'Salsa BBQ especial', 'Especias', 'Ajonjolí'] }
-  ];
+  // 👉 Bandera maestra para saber si estamos esperando datos
+  cargando: boolean = true;
+
+  /** Texto informativo (editá en un solo lugar). */
+  readonly horarioBannerTexto =
+    'Horario referencial: Lun–Dom 12:00–23:00. Entregas según disponibilidad.';
+
+  protected readonly bannerHorarioVisible = signal(true);
+  protected readonly bannerPromoVisible = signal(true);
+
+  ngOnInit(): void {
+    if (typeof sessionStorage !== 'undefined') {
+      if (sessionStorage.getItem('arcano_dismiss_horario_banner') === '1') {
+        this.bannerHorarioVisible.set(false);
+      }
+      if (sessionStorage.getItem('arcano_dismiss_promo_banner') === '1') {
+        this.bannerPromoVisible.set(false);
+      }
+    }
+    this.cargarProductos();
+  }
+
+  cerrarBannerHorario(): void {
+    sessionStorage.setItem('arcano_dismiss_horario_banner', '1');
+    this.bannerHorarioVisible.set(false);
+  }
+
+  cerrarBannerPromo(): void {
+    sessionStorage.setItem('arcano_dismiss_promo_banner', '1');
+    this.bannerPromoVisible.set(false);
+  }
+
+  get productosFiltrados(): Producto[] {
+    if (!this.categoriaActiva || this.todosLosProductos.length === 0) {
+      return [];
+    }
+    return this.todosLosProductos.filter(p =>
+      p.categoriaNombre.trim().toLowerCase() === this.categoriaActiva.trim().toLowerCase()
+    );
+  }
+
+  cargarProductos() {
+    this.cargando = true;
+
+    this.productoService.obtenerTodos().subscribe({
+      next: (datosDeLaAPI) => {
+        this.todosLosProductos = datosDeLaAPI;
+
+        // 1. Extraemos las categorías únicas
+        const categoriasUnicas = new Set(datosDeLaAPI.map(p => p.categoriaNombre.trim()));
+        const listaCategorias = Array.from(categoriasUnicas);
+
+        // 2. DEFINIMOS TU ORDEN PERSONALIZADO
+        const ordenDeseado = ['Pizzas Clásica', 'Pizzas especiales', 'Bebidas', 'Extras'];
+
+        // 3. ORDENAMOS la lista basándonos en el orden deseado
+        this.categorias = listaCategorias.sort((a, b) => {
+          return ordenDeseado.indexOf(a) - ordenDeseado.indexOf(b);
+        });
+
+        setTimeout(() => {
+          if (this.categorias.length > 0) {
+            // Esto hará que al cargar, lo primero seleccionado sea "Pizzas"
+            this.categoriaActiva = this.categorias[0];
+          }
+          this.cargando = false;
+          this.cdr.detectChanges();
+        }, 100);
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.cargando = false;
+      }
+    });
+  }
 
   seleccionarCategoria(categoria: string) {
     this.categoriaActiva = categoria;
   }
 
-  get productosFiltrados(): Producto[] {
-    return this.todosLosProductos.filter(producto => producto.categoria === this.categoriaActiva);
-  }
-
   abrirDetalle(productoSeleccionado: Producto) {
-    this.router.navigate(['/producto-detalle'], { state: { producto: productoSeleccionado } });
+    this.router.navigate(['/producto'], { state: { producto: productoSeleccionado } });
   }
 }

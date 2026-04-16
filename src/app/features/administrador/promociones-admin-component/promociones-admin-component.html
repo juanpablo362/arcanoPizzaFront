@@ -1,0 +1,215 @@
+<div class="container-fluid p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="logo border p-2 fw-bold">ARCANO PIZZA</div>
+    <div class="user d-flex align-items-center">
+      <i class="bi bi-person-circle me-2 fs-4"></i> Administrador
+      <button class="btn btn-outline-secondary btn-sm ms-3" type="button" (click)="salir()">
+        <i class="bi bi-box-arrow-right"></i> Salir
+      </button>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <button class="btn btn-outline-primary me-2" routerLink="/admin/dashboard">Dashboard</button>
+      <button class="btn btn-outline-primary me-2" routerLink="/admin/productos">Productos</button>
+      <button class="btn btn-outline-primary me-2" routerLink="/admin/usuarios">Usuarios</button>
+      <button class="btn btn-primary" routerLink="/admin/promociones">Promociones</button>
+    </div>
+
+    <div class="search-box">
+      <div class="input-group">
+        <input type="text" class="form-control shadow-none" placeholder="Buscar promoción..." [(ngModel)]="termino" />
+        <button class="btn btn-primary" type="button">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <h4 class="mb-0">Gestión de Promociones</h4>
+      <small class="text-muted">Total: <strong>{{ lista.length }}</strong></small>
+    </div>
+
+    <button class="btn btn-primary d-flex align-items-center" (click)="abrirNueva()">
+      <i class="bi bi-plus-lg me-2"></i> Nueva Promoción
+    </button>
+  </div>
+
+  <div class="card p-0 shadow-sm">
+    <div class="custom-scroll-container">
+      <div
+        *ngFor="let p of filtradas"
+        class="d-flex align-items-center justify-content-between border-top p-3 hover-bg-light"
+      >
+        <div class="d-flex gap-3 align-items-center flex-grow-1">
+          <div class="img-preview" *ngIf="p.imagenURL; else noImg">
+            <img [src]="p.imagenURL" alt="Promo" />
+          </div>
+          <ng-template #noImg>
+            <div class="img-preview img-preview--empty">Sin imagen</div>
+          </ng-template>
+
+          <div class="flex-grow-1">
+            <strong class="fs-5">{{ p.titulo }}</strong>
+            <span class="badge ms-2" [ngClass]="p.activo ? 'bg-success' : 'bg-secondary'">
+              {{ p.activo ? 'Activa' : 'Inactiva' }}
+            </span>
+            <div class="text-muted mt-1 small">
+              {{ p.descripcion || 'Sin descripción' }}
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 pe-2 align-items-center">
+          <button class="btn btn-action btn-icon-only" (click)="abrirEditar(p)" title="Editar">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-action btn-icon-only" (click)="eliminar(p)" title="Eliminar">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="filtradas.length === 0" class="p-5 text-center text-muted border-top">
+        <i class="bi bi-search fs-1 d-block mb-2"></i>
+        No se encontraron resultados.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nueva promoción -->
+<div class="modal fade" id="modalPromoNueva" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nueva promoción</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label fw-semibold">Título</label>
+            <input class="form-control" [(ngModel)]="nueva.titulo" />
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">Descripción</label>
+            <textarea class="form-control" rows="2" [(ngModel)]="nueva.descripcion"></textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">Contenido</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="nueva.contenido"></textarea>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Precio original</label>
+            <input class="form-control" type="number" step="0.01" [(ngModel)]="nueva.precioOriginal" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Precio promocional</label>
+            <input class="form-control" type="number" step="0.01" [(ngModel)]="nueva.precioPromocional" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Tipo vigencia</label>
+            <input class="form-control" type="number" [(ngModel)]="nueva.tipoVigencia" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Activa</label>
+            <select class="form-select" [(ngModel)]="nueva.activo">
+              <option [ngValue]="true">Sí</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-semibold">Imagen</label>
+            <div class="d-flex gap-3 align-items-start flex-wrap">
+              <div class="img-preview" *ngIf="nuevoPreviewUrl || nueva.imagenURL">
+                <img [src]="nuevoPreviewUrl || nueva.imagenURL" alt="Vista previa" />
+              </div>
+              <div class="flex-grow-1">
+                <input class="form-control" type="file" accept="image/*" (change)="onFileNuevo($event)" />
+                <div class="form-text" *ngIf="isUploadingNuevo">Subiendo imagen…</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="crear()" [disabled]="isUploadingNuevo">Crear</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar promoción -->
+<div class="modal fade" id="modalPromoEditar" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar promoción</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" *ngIf="edit as e">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label fw-semibold">Título</label>
+            <input class="form-control" [(ngModel)]="e.titulo" />
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">Descripción</label>
+            <textarea class="form-control" rows="2" [(ngModel)]="e.descripcion"></textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold">Contenido</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="e.contenido"></textarea>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Precio original</label>
+            <input class="form-control" type="number" step="0.01" [(ngModel)]="e.precioOriginal" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Precio promocional</label>
+            <input class="form-control" type="number" step="0.01" [(ngModel)]="e.precioPromocional" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Tipo vigencia</label>
+            <input class="form-control" type="number" [(ngModel)]="e.tipoVigencia" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Activa</label>
+            <select class="form-select" [(ngModel)]="e.activo">
+              <option [ngValue]="true">Sí</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-semibold">Imagen</label>
+            <div class="d-flex gap-3 align-items-start flex-wrap">
+              <div class="img-preview" *ngIf="editPreviewUrl || e.imagenURL">
+                <img [src]="editPreviewUrl || e.imagenURL" alt="Vista previa" />
+              </div>
+              <div class="flex-grow-1">
+                <input class="form-control" type="file" accept="image/*" (change)="onFileEdit($event)" />
+                <div class="form-text" *ngIf="isUploadingEdit">Subiendo imagen…</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardar()" [disabled]="isUploadingEdit">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+

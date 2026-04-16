@@ -14,8 +14,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideHttpClient(
-      withFetch(),
-      withInterceptors([authInterceptor, errorInterceptor])
+      withFetch(), // <-- Soluciona la advertencia de rendimiento y SSR
+      withInterceptors([authInterceptor, errorInterceptor]) // <-- Mantiene tu seguridad y OWASP al 100%
     ),
   ],
 };
+
+//{ provideRouter, withHashLocation }

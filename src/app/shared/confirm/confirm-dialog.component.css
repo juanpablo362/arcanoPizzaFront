@@ -1,0 +1,51 @@
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 40, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+}
+
+.confirm-panel {
+  position: fixed;
+  left: 50%;
+  top: 18%;
+  transform: translateX(-50%);
+  width: min(520px, calc(100vw - 32px));
+  background: var(--surface-1, #fff);
+  color: var(--text-1, #101828);
+  border-radius: 14px;
+  border: 1px solid var(--border-1, rgba(0, 0, 0, 0.08));
+  box-shadow: var(--shadow-3, 0 20px 40px rgba(0, 0, 0, 0.25));
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.confirm-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border-1, rgba(0, 0, 0, 0.08));
+}
+
+.confirm-title {
+  font-weight: 800;
+}
+
+.confirm-body {
+  padding: 14px 16px;
+}
+
+.confirm-message {
+  color: var(--text-2, #344054);
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.confirm-actions {
+  padding: 12px 16px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Reusa estilos de botones del panel empleado si existen; si no, queda bootstrap */
+

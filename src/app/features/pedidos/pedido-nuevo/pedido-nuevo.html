@@ -1,0 +1,234 @@
+<div class="page-container">
+  <app-cliente-top-nav />
+  <div class="nuevo-inner">
+    <a routerLink=".." class="back">← Volver</a>
+    <h1>{{ checkoutConTarjeta() ? 'Pago con tarjeta' : 'Confirmar pedido' }}</h1>
+    <p class="sub">
+      @if (checkoutConTarjeta()) {
+        Elegí el tipo de entrega. Para reparto necesitamos una dirección; para recoger en el local no hace falta.
+      } @else {
+        Mismo criterio: reparto con dirección, recogida en local sin domicilio obligatorio.
+      }
+    </p>
+
+    @if (cargandoDatos()) {
+      <p class="muted">Cargando direcciones…</p>
+    } @else if (carritoVacioBloqueo()) {
+      <div class="alert-error">Tu carrito está vacío. Agregá productos desde el menú y volvé aquí.</div>
+      <a routerLink="/menu" class="link">Ir al menú</a>
+    } @else {
+      <nav class="checkout-steps" aria-label="Progreso del pedido">
+        <ol class="steps-list">
+          <li class="step step--done">
+            <a routerLink="/menu">Menú</a>
+            <span class="step-sep">·</span>
+            <a routerLink="/carrito">Carrito</a>
+          </li>
+          <li class="step step--current">
+            <span>Datos de entrega</span>
+          </li>
+          <li
+            class="step"
+            [class.step--todo]="checkoutConTarjeta()"
+            [class.step--next]="!checkoutConTarjeta()">
+            <span>{{ checkoutConTarjeta() ? 'Pago con tarjeta' : 'Confirmar' }}</span>
+          </li>
+        </ol>
+      </nav>
+
+      @if (aviso(); as texto) {
+        <div class="alert-error">
+          <p>{{ texto }}</p>
+          <div class="alert-actions">
+            @if (ultimoErrorAccion()) {
+              <button type="button" class="btn-retry" (click)="reintentarUltimaAccion()">Reintentar</button>
+            }
+            <a routerLink="/carrito" class="link-carrito">Volver al carrito</a>
+          </div>
+        </div>
+      }
+
+      <div class="checkout-layout">
+        <div class="checkout-main">
+          <form
+            [formGroup]="pedidoForm"
+            (ngSubmit)="checkoutConTarjeta() ? iniciarPagoStripe() : confirmarPedido()"
+            class="card"
+          >
+            <h2>{{ tipoEntregaActual() === 'Recoger' ? 'Entrega' : 'Dirección y entrega' }}</h2>
+
+            <label class="field">
+              <span>Tipo de entrega</span>
+              <select formControlName="tipoEntrega">
+                <option value="Reparto">Reparto a domicilio</option>
+                <option value="Recoger">Recoger en local</option>
+              </select>
+              @if (tipoEntregaActual() === 'Recoger') {
+                <span class="hint">No necesitás cargar domicilio. Si querés, podés agregar uno opcional desde reparto y volver aquí.</span>
+              }
+            </label>
+
+            @if (tipoEntregaActual() !== 'Recoger' && direcciones().length > 0) {
+              <label class="field">
+                <span>Dirección</span>
+                <select formControlName="direccionId">
+                  @for (d of direcciones(); track d.idDireccion) {
+                    <option [ngValue]="d.idDireccion">
+                      {{ d.calle }}, {{ d.colonia }} ({{ d.codigoPostal }})
+                    </option>
+                  }
+                </select>
+              </label>
+              <div class="address-actions">
+                <button type="button" class="btn-secondary" (click)="abrirModalDireccion()">
+                  Agregar dirección nueva
+                </button>
+              </div>
+            }
+
+            @if (tipoEntregaActual() !== 'Recoger' && direcciones().length === 0) {
+              <p class="hint hint-block">
+                Todavía no hay direcciones en tu cuenta. Agregá una nueva para continuar con reparto.
+              </p>
+              <div class="address-actions">
+                <button type="button" class="btn-secondary" (click)="abrirModalDireccion()">
+                  Agregar dirección nueva
+                </button>
+              </div>
+            }
+
+            <label class="field">
+              <span>Código de promoción (opcional)</span>
+              <input type="text" formControlName="promocionId" placeholder="Si tenés uno, escribilo aquí" />
+              @if (pedidoForm.get('promocionId')?.errors?.['invalid']) {
+                <span class="field-error">Revisá el código e intentá de nuevo.</span>
+              }
+            </label>
+
+            @if (!checkoutConTarjeta()) {
+              <label class="field">
+                <span>Forma de pago</span>
+                <select formControlName="metodoPago">
+                  <option value="Efectivo">Efectivo (al entregar o al retirar)</option>
+                  <option value="">Coordinar con la tienda</option>
+                </select>
+                <span class="hint">Si elegís efectivo, abonás en la entrega o cuando pasás a buscar el pedido.</span>
+              </label>
+            }
+
+            @if (checkoutConTarjeta()) {
+              <div class="acciones-pago">
+                <button
+                  type="submit"
+                  class="btn-primary"
+                  [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
+                >
+                  @if (enviando()) {
+                    Redirigiendo al pago…
+                  } @else {
+                    Continuar al pago con tarjeta
+                  }
+                </button>
+                <button
+                  type="button"
+                  class="btn-secondary btn-efectivo-stripe"
+                  [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
+                  (click)="confirmarPagoEfectivo()"
+                >
+                  Pedir y pagar en efectivo
+                </button>
+              </div>
+              <p class="muted opcion-alt">
+                <a [routerLink]="['/pedidos/nuevo']" [queryParams]="{}" queryParamsHandling="merge"
+                  >Volver al pedido sin pasarela</a
+                >
+                — para elegir forma de pago y confirmar en la misma página.
+              </p>
+            } @else {
+              <button
+                type="submit"
+                class="btn-primary"
+                [disabled]="enviando() || pedidoForm.invalid || faltaDireccionReparto()"
+              >
+                @if (enviando()) {
+                  Enviando…
+                } @else {
+                  Confirmar pedido
+                }
+              </button>
+              <p class="muted opcion-alt">
+                <a [routerLink]="['.']" [queryParams]="{ pago: 'stripe' }" queryParamsHandling="merge"
+                  >Prefiero pagar con tarjeta (Stripe)</a
+                >
+              </p>
+            }
+          </form>
+
+          @if (tipoEntregaActual() !== 'Recoger') {
+            <div class="modal fade" id="modalNuevaDireccion" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-arcano">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Agregar dirección</h5>
+                    <button type="button" class="btn-close" (click)="cerrarModalDireccion()" aria-label="Cerrar"></button>
+                  </div>
+                  <div class="modal-body" [formGroup]="nuevaDir">
+                    <p class="hint hint-block">
+                      Completá los datos y guardala. Luego quedará seleccionada automáticamente.
+                    </p>
+                    <div class="grid">
+                      <label>
+                        Calle
+                        <input formControlName="calle" />
+                      </label>
+                      <label>
+                        Colonia
+                        <input formControlName="colonia" />
+                      </label>
+                      <label>
+                        C.P.
+                        <input formControlName="codigoPostal" />
+                      </label>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn-secondary" (click)="cerrarModalDireccion()">Cancelar</button>
+                    <button type="button" class="btn-primary" (click)="agregarDireccion()">
+                      Guardar dirección
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <aside class="checkout-summary" aria-label="Resumen del pedido">
+          <h3 class="summary-title">Tu pedido</h3>
+          <ul class="summary-lines">
+            @for (item of itemsResumen(); track item.lineKey) {
+              <li>
+                <span class="summary-name">{{ item.nombre }} × {{ item.cantidad }}</span>
+                <span class="summary-price">{{ item.precio * item.cantidad | currency: 'MXN' : 'symbol' : '1.2-2' }}</span>
+              </li>
+            }
+          </ul>
+          <div class="summary-totals">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span>{{ subtotalResumen() | currency: 'MXN' : 'symbol' : '1.2-2' }}</span>
+            </div>
+            <div class="summary-row">
+              <span>IVA (16%)</span>
+              <span>{{ ivaResumen() | currency: 'MXN' : 'symbol' : '1.2-2' }}</span>
+            </div>
+            <div class="summary-row summary-total">
+              <span>Total estimado</span>
+              <span>{{ totalResumen() | currency: 'MXN' : 'symbol' : '1.2-2' }}</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    }
+  </div>
+</div>

@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router'; 
 import { UsuarioService } from '../../../core/services/usuario';
+import { AuthService } from '../../../core/services/auth';
+import { ConfirmService } from '../../../shared/confirm/confirm.service';
+import { ToastService } from '../../../shared/toast/toast.service';
+import { ThemeService } from '../../../core/services/theme';
 
 interface UsuarioResponseDto {
   id: number;
@@ -23,10 +27,14 @@ interface UsuarioResponseDto {
 })
 export class UsuariosComponent implements OnInit {
   private usuarioService = inject(UsuarioService);
+  private auth = inject(AuthService);
+  protected readonly theme = inject(ThemeService);
+  private confirm = inject(ConfirmService);
+  private toast = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
 
   usuarios: UsuarioResponseDto[] = [];
-  filtroActual: 'Todos' | 'Empleado' | 'Administrador' | 'Activos' = 'Todos';
+  filtroActual: 'Todos' | 'Empleado' | 'Repartidor' | 'Administrador' | 'Activos' = 'Todos';
   terminoBusqueda: string = '';
 
   nuevoUsuario = { nombre: '', email: '', telefono: '', tipo: 'Empleado', contrasena: '' };
@@ -52,12 +60,21 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
-  get totalUsuarios() { return this.usuarios ? this.usuarios.filter(u => u.tipo === 'Empleado' || u.tipo === 'Administrador').length : 0; }
+  get totalUsuarios() {
+    return this.usuarios
+      ? this.usuarios.filter(u => u.tipo === 'Empleado' || u.tipo === 'Repartidor' || u.tipo === 'Administrador').length
+      : 0;
+  }
   get totalEmpleados() { return this.usuarios ? this.usuarios.filter(u => u.tipo === 'Empleado').length : 0; }
+  get totalRepartidores() { return this.usuarios ? this.usuarios.filter(u => u.tipo === 'Repartidor').length : 0; }
   get totalAdministradores() { return this.usuarios ? this.usuarios.filter(u => u.tipo === 'Administrador').length : 0; }
-  get totalActivos() { return this.usuarios ? this.usuarios.filter(u => u.activo && (u.tipo === 'Empleado' || u.tipo === 'Administrador')).length : 0; }
+  get totalActivos() {
+    return this.usuarios
+      ? this.usuarios.filter(u => u.activo && (u.tipo === 'Empleado' || u.tipo === 'Repartidor' || u.tipo === 'Administrador')).length
+      : 0;
+  }
 
-  setFiltro(nuevoFiltro: 'Todos' | 'Empleado' | 'Administrador' | 'Activos') {
+  setFiltro(nuevoFiltro: 'Todos' | 'Empleado' | 'Repartidor' | 'Administrador' | 'Activos') {
     this.filtroActual = nuevoFiltro;
   }
 
@@ -66,9 +83,9 @@ export class UsuariosComponent implements OnInit {
     let resultado = this.usuarios;
 
     if (this.filtroActual === 'Todos') {
-      resultado = resultado.filter(u => u.tipo === 'Empleado' || u.tipo === 'Administrador');
+      resultado = resultado.filter(u => u.tipo === 'Empleado' || u.tipo === 'Repartidor' || u.tipo === 'Administrador');
     } else if (this.filtroActual === 'Activos') {
-      resultado = resultado.filter(u => u.activo && (u.tipo === 'Empleado' || u.tipo === 'Administrador'));
+      resultado = resultado.filter(u => u.activo && (u.tipo === 'Empleado' || u.tipo === 'Repartidor' || u.tipo === 'Administrador'));
     } else {
       resultado = resultado.filter(u => u.tipo === this.filtroActual);
     }
@@ -236,10 +253,20 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
-  eliminarUsuario(usuario: UsuarioResponseDto) {
-    if (!confirm(`¿Estás seguro de eliminar a ${usuario.nombre}?`)) return;
+  async eliminarUsuario(usuario: UsuarioResponseDto) {
+    const ok = await this.confirm.confirm({
+      title: 'Eliminar usuario',
+      message: `¿Eliminar a "${usuario.nombre}"?\nEsta acción no se puede deshacer.`,
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar',
+    });
+    if (!ok) return;
     this.usuarioService.eliminarUsuario(usuario.id).subscribe({
-      next: () => this.cargarUsuarios()
+      next: () => {
+        this.toast.show('Eliminado correctamente.', 'success');
+        this.cargarUsuarios();
+      },
+      error: (err) => console.error('Error eliminando usuario:', err),
     });
   }
 
@@ -247,5 +274,9 @@ export class UsuariosComponent implements OnInit {
     this.usuarioService.toggleUsuario(usuario.id).subscribe({
       next: () => this.cargarUsuarios()
     });
+  }
+
+  salir(): void {
+    this.auth.logout();
   }
 }

@@ -1,26 +1,14 @@
 <div class="page-container">
-<nav class="navbar">
-  <div class="logo">LOGO</div>
-  <div class="nav-links">
-    <a routerLink="/" style="cursor: pointer;" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
-    <a routerLink="/menu-clientes-component" style="cursor: pointer;" routerLinkActive="active-link">Menú</a>
-    <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
-    <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
-    <a routerLink="/carrito-compra" style="cursor: pointer;" routerLinkActive="active-link">Carrito</a>
-  </div>
-  <div class="auth">
-    <a style="cursor: pointer;">Iniciar sesión</a>
-  </div>
-</nav>
+  <app-cliente-top-nav />
 
   <div class="cart-wrapper">
     <h2 class="cart-title">Carrito de compras</h2>
 
     <div class="cart-items-scroll">
-      @for (item of carritoItems; track item.id) {
+      @for (item of carritoItems; track item.lineKey) {
       <div class="cart-item">
         <div class="item-image-wrapper">
-          <img [src]="item.imagen" [alt]="item.nombre">
+          <img [src]="item.imagen" [alt]="item.nombre" loading="lazy" width="120" height="90" />
         </div>
 
         <div class="item-details">
@@ -36,7 +24,7 @@
           ${{ item.precio | number:'1.2-2' }} MXN
         </div>
 
-        <button class="delete-btn" (click)="eliminarProducto(item.id)">
+        <button class="delete-btn" (click)="eliminarProducto(item.lineKey)">
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
             stroke="#FF3B30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"></polyline>

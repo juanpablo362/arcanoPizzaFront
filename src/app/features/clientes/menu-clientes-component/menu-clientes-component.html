@@ -1,38 +1,89 @@
 <div class="page-container">
-  <nav class="navbar">
-    <div class="logo">LOGO</div>
-    <div class="nav-links">
-      <a routerLink="/" style="cursor: pointer;" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Inicio</a>
-      <a routerLink="/menu-clientes-component" style="cursor: pointer;" routerLinkActive="active-link">Menú</a>
-      <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
-      <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
-      <a routerLink="/carrito-compra" style="cursor: pointer;" routerLinkActive="active-link">Carrito</a>
-    </div>
-    <div class="auth">
-      <a style="cursor: pointer;">Iniciar sesión</a>
-    </div>
-  </nav>
+  <app-cliente-top-nav />
 
-  <div class="category-filters">
-    @for (cat of categorias; track cat) {
-    <button class="filter-btn" [class.active]="categoriaActiva === cat" (click)="seleccionarCategoria(cat)">
-      {{ cat }}
-    </button>
-    }
-  </div>
+  @if (bannerHorarioVisible()) {
+    <div class="menu-banner menu-banner--info" role="status">
+      <span>{{ horarioBannerTexto }}</span>
+      <button
+        type="button"
+        class="menu-banner-close"
+        (click)="cerrarBannerHorario()"
+        aria-label="Cerrar aviso de horario">
+        ×
+      </button>
+    </div>
+  }
+  @if (bannerPromoVisible()) {
+    <div class="menu-banner menu-banner--promo">
+      <a routerLink="/promociones" class="menu-banner-link">Ver promociones de la semana</a>
+      <button
+        type="button"
+        class="menu-banner-close"
+        (click)="cerrarBannerPromo()"
+        aria-label="Cerrar aviso de promociones">
+        ×
+      </button>
+    </div>
+  }
 
-  <div class="products-grid">
-    @for (producto of productosFiltrados; track producto.id) {
-    <div class="product-card" (click)="abrirDetalle(producto)" style="cursor: pointer;">
-      <img [src]="producto.imagen" [alt]="'Pizza ' + producto.nombre">
-      <div class="card-body">
-        <div class="card-header">
-          <h3 class="pizza-title">{{ producto.nombre }}</h3>
-          <span class="pizza-price">${{ producto.precio | number:'1.2-2' }} MXN</span>
+  @if (cargando) {
+    <div class="category-filters skeleton-filters" aria-hidden="true">
+      @for (_ of [1, 2, 3, 4]; track $index) {
+        <span class="skeleton-pill"></span>
+      }
+    </div>
+    <div class="products-grid">
+      @for (s of skeletonSlots; track s) {
+        <div class="product-card skeleton-card">
+          <div class="skeleton-img"></div>
+          <div class="card-body">
+            <div class="skeleton-line skeleton-line--title"></div>
+            <div class="skeleton-line skeleton-line--short"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-btn"></div>
+          </div>
         </div>
-        <p class="pizza-desc">{{ producto.descripcion }}</p>
-      </div>
+      }
     </div>
-    }
-  </div>
+  } @else {
+    <div class="category-filters">
+      @for (cat of categorias; track cat) {
+        <button
+          class="filter-btn"
+          [class.active]="categoriaActiva === cat"
+          (click)="seleccionarCategoria(cat)">
+          {{ cat }}
+        </button>
+      }
+    </div>
+
+    <div class="products-grid">
+      @for (producto of productosFiltrados; track producto.id) {
+        <div class="product-card" (click)="abrirDetalle(producto)" style="cursor: pointer;">
+          <img
+            [src]="producto.imagenURL || 'assets/img/pizza-placeholder.jpg'"
+            [alt]="producto.nombre"
+            loading="lazy"
+            width="400"
+            height="240" />
+
+          <div class="card-body">
+            <div class="card-header">
+              <h3 class="pizza-title">{{ producto.nombre }}</h3>
+              <span class="pizza-price">${{ producto.precio | number:'1.2-2' }}</span>
+            </div>
+            <p class="pizza-desc">{{ producto.descripcion }}</p>
+
+            <div style="margin-top: 20px; text-align: center;">
+              <button class="filter-btn" style="width: 100%; padding: 8px;">Ver detalles</button>
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-menu" style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+          <p>No hay productos en esta categoría.</p>
+        </div>
+      }
+    </div>
+  }
 </div>

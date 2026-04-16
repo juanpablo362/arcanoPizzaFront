@@ -1,0 +1,216 @@
+:host {
+  display: block;
+  --bg-deep: #0b0b12;
+  --bg-mystic: #1a1025;
+  --card-dark: #151522;
+  --magic-purple: #8a2be2;
+  --magic-glow: rgba(138, 43, 226, 0.5);
+  --gold-runes: #ffd700;
+  --text-light: var(--arcano-text);
+  --text-muted: var(--arcano-text-muted);
+}
+
+.page-container {
+  background: radial-gradient(circle at top center, var(--bg-mystic), var(--bg-deep));
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-light);
+  padding-bottom: 3rem;
+}
+
+.detalle-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem;
+}
+
+.detalle-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.back {
+  display: inline-block;
+  color: var(--gold-runes);
+  text-decoration: none;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.btn-refresh {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(138, 43, 226, 0.45);
+  background: rgba(11, 11, 18, 0.6);
+  color: var(--text-light);
+  cursor: pointer;
+  font: inherit;
+}
+
+.btn-refresh:hover {
+  box-shadow: 0 0 12px var(--magic-glow);
+}
+
+.muted {
+  color: #fff;
+}
+
+.alert-error {
+  padding: 0.85rem 1rem;
+  background: rgba(127, 29, 29, 0.35);
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  border-radius: 12px;
+  color: #fecaca;
+}
+
+.detalle-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--gold-runes);
+}
+
+.meta {
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.estado-badge {
+  display: inline-block;
+  width: fit-content;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.estado-badge--pendiente {
+  color: #bfdbfe;
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(96, 165, 250, 0.45);
+}
+
+.estado-badge--preparacion {
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+.estado-badge--listo {
+  color: #bbf7d0;
+  background: rgba(34, 197, 94, 0.18);
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+.estado-badge--ruta {
+  color: #e9d5ff;
+  background: rgba(139, 92, 246, 0.22);
+  border-color: rgba(167, 139, 250, 0.45);
+}
+
+.estado-badge--entregado {
+  color: #d1fae5;
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+.estado-badge--cancelado {
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(248, 113, 113, 0.45);
+}
+
+.estado-badge--default {
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.card {
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(138, 43, 226, 0.25);
+  border-radius: 16px;
+  background: var(--card-dark);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  /* Bootstrap .card fuerza color: var(--bs-body-color); hay que ganar en especificidad (encapsulado) */
+  color: var(--text-light);
+}
+
+.card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  color: var(--gold-runes);
+}
+
+.totales dl {
+  margin: 0;
+}
+
+.totales dl > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.totales dt {
+  font-weight: 500;
+  color: #fff;
+}
+
+.total-row {
+  border-bottom: none;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding-top: 0.75rem;
+}
+
+.promo,
+.entrega,
+.pago {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.lineas table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.lineas th,
+.lineas td {
+  padding: 0.5rem 0.35rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.lineas th {
+  color: #fff;
+  font-weight: 600;
+}
+
+.lineas td {
+  color: #fff;
+}
+
+.lineas th.num,
+.lineas td.num {
+  text-align: right;
+}
