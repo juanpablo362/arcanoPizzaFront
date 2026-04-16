@@ -171,4 +171,40 @@
     }
   </section>
 
+  @if (mostrarModal && pedidoParaAsignar) {
+    <div class="modal-overlay">
+      <div class="modal-box">
+        
+        <div class="modal-header">
+          <h2>🛵 Asignar Repartidor</h2>
+          <button class="close-btn" (click)="cerrarModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+          <p>Selecciona el empleado para entregar el pedido <strong>#{{ pedidoParaAsignar.id }}</strong>:</p>
+
+          <select class="form-select" [(ngModel)]="empleadoSeleccionadoId">
+            <option [ngValue]="null" disabled selected>-- Elige un repartidor --</option>
+            @for (emp of empleados; track emp.idUsuario) {
+              <option [ngValue]="emp.idUsuario">{{ emp.nombreUsuario }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="cerrarModal()" [disabled]="guardandoAsignacion">Cancelar</button>
+          <button class="action-btn preparando" 
+                  [disabled]="!empleadoSeleccionadoId || guardandoAsignacion" 
+                  (click)="confirmarAsignacion()">
+            @if (guardandoAsignacion) {
+              Asignando... <span class="spinner"></span>
+            } @else {
+              Confirmar y Enviar
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
 </div>
