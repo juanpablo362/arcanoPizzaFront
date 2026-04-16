@@ -25,6 +25,7 @@ import { PedidosService } from '../pedidos.service';
 
 @Component({
   selector: 'app-pedido-nuevo',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, ClienteTopNavComponent],
   templateUrl: './pedido-nuevo.html',
   styleUrl: './pedido-nuevo.css',
@@ -41,18 +42,12 @@ export class PedidoNuevo {
   protected readonly direcciones = signal<Direccion[]>([]);
   protected readonly cargandoDatos = signal(true);
   protected readonly enviando = signal(false);
-  /** Solo cuando entrás sin productos en el carrito: pantalla única con enlace al menú. */
   protected readonly carritoVacioBloqueo = signal(false);
-  /** Avisos sobre el formulario (fallo al guardar dirección, al confirmar pedido, etc.). */
   protected readonly aviso = signal<string | null>(null);
-
-  /** Para Reintentar tras error: última acción que falló. */
+  /** Para reintentar tras error: última acción que falló. */
   protected readonly ultimoErrorAccion = signal<'stripe' | 'pedido' | 'efectivo' | null>(null);
 
-  /** Flujo desde carrito: mismo formulario y luego Stripe. */
   protected readonly checkoutConTarjeta = signal(false);
-
-  /** Para mostrar u ocultar campos de dirección (Recoger en local no exige domicilio). */
   protected readonly tipoEntregaActual = signal<string>('Reparto');
 
   protected readonly nuevaDir = this.fb.nonNullable.group({
@@ -65,7 +60,6 @@ export class PedidoNuevo {
     direccionId: [0, [Validators.required, Validators.min(1)]],
     tipoEntrega: ['Reparto', Validators.required],
     promocionId: [''],
-    /** Efectivo = al entregar/retirar; vacío = coordinar con la tienda */
     metodoPago: ['Efectivo'],
   });
 
@@ -100,7 +94,6 @@ export class PedidoNuevo {
       }
       dirCtrl.updateValueAndValidity({ emitEvent: false });
     });
-    this.tipoEntregaActual.set(tipoCtrl?.value ?? 'Reparto');
 
     afterNextRender(() => {
       if (this.carrito.obtenerCarrito().length === 0) {
@@ -118,7 +111,6 @@ export class PedidoNuevo {
           this.cargandoDatos.set(false);
         },
         error: (err) => {
-          console.error('[PedidoNuevo] Error al cargar direcciones', err);
           this.direcciones.set([]);
           this.cargandoDatos.set(false);
         },
@@ -126,7 +118,6 @@ export class PedidoNuevo {
     });
   }
 
-  /** ID de dirección para API: null en recogida sin domicilio. */
   private direccionIdParaApi(): number | null {
     const { tipoEntrega, direccionId } = this.pedidoForm.getRawValue();
     if (tipoEntrega === 'Recoger') {
@@ -136,7 +127,6 @@ export class PedidoNuevo {
     return Number(direccionId);
   }
 
-  /** Deshabilitar envío si falta dirección en reparto. */
   protected faltaDireccionReparto(): boolean {
     return (
       this.tipoEntregaActual() === 'Reparto' &&
@@ -157,30 +147,35 @@ export class PedidoNuevo {
         this.pedidoForm.patchValue({ direccionId: d.idDireccion });
         this.nuevaDir.reset();
       },
-      error: (err) => {
-        console.error('[PedidoNuevo] Error al guardar dirección', err);
-        this.aviso.set('No pudimos guardar la dirección. Revisá los datos e intentá de nuevo.');
-      },
+      error: () => this.aviso.set('No pudimos guardar la dirección.'),
     });
   }
 
+  // ==========================================
+  // 🔥 MÉTODO CORREGIDO PARA STRIPE
+  // ==========================================
   protected iniciarPagoStripe(): void {
     if (this.pedidoForm.invalid) {
       this.pedidoForm.markAllAsTouched();
       return;
     }
-    const items = this.carrito.obtenerCarrito();
-    if (items.length === 0) {
+    
+    const itemsRaw = this.carrito.obtenerCarrito();
+    if (itemsRaw.length === 0) {
       this.aviso.set('Tu carrito está vacío.');
       return;
     }
 
+    // Mapeamos los productos para incluir precio y tamaño real
+    const itemsStripe = itemsRaw.map(item => ({
+      productoId: Number(item.id),
+      cantidad: item.cantidad,
+      tamanoPizzaId: item.tamanoPizzaId,
+      precio: item.precio // <-- Crucial para que Stripe no use el precio base
+    }));
+
     const { tipoEntrega, promocionId } = this.pedidoForm.getRawValue();
     const promoNum = promocionId.trim() === '' ? null : Number(promocionId);
-    if (promocionId.trim() !== '' && !Number.isFinite(promoNum)) {
-      this.pedidoForm.get('promocionId')?.setErrors({ invalid: true });
-      return;
-    }
 
     this.enviando.set(true);
     this.aviso.set(null);
@@ -188,6 +183,7 @@ export class PedidoNuevo {
 
     this.carrito
       .crearSesionStripe$({
+        items: itemsStripe, // <-- Ahora sí enviamos los productos
         direccionId: this.direccionIdParaApi(),
         tipoEntrega,
         promocionId: promoNum,
@@ -240,11 +236,9 @@ export class PedidoNuevo {
 
   protected confirmarPedido(): void {
     const { metodoPago } = this.pedidoForm.getRawValue();
-    const m = metodoPago.trim() === '' ? null : metodoPago.trim();
-    this.enviarPedidoSinStripe(m);
+    this.enviarPedidoSinStripe(metodoPago.trim() || 'Efectivo');
   }
 
-  /** Desde el flujo Stripe: mismo pedido pero cobro en efectivo al entregar o al retirar. */
   protected confirmarPagoEfectivo(): void {
     this.enviarPedidoSinStripe('Efectivo');
   }
@@ -255,26 +249,16 @@ export class PedidoNuevo {
       return;
     }
     const items = this.carrito.obtenerCarrito();
-    if (items.length === 0) {
-      this.aviso.set('Tu carrito está vacío.');
-      return;
-    }
+    if (items.length === 0) return;
+
     const { tipoEntrega, promocionId } = this.pedidoForm.getRawValue();
     const promoNum = promocionId.trim() === '' ? null : Number(promocionId);
-    if (promocionId.trim() !== '' && !Number.isFinite(promoNum)) {
-      console.warn('[PedidoNuevo] Código de promoción no válido:', promocionId);
-      this.pedidoForm.get('promocionId')?.setErrors({ invalid: true });
-      return;
-    }
 
-    const lineas = items.map((item) => {
-      const id = Number(item.id);
-      return {
-        productoId: id,
-        cantidad: item.cantidad,
-        tamanoPizzaId: item.tamanoPizzaId,
-      };
-    });
+    const lineas = items.map((item) => ({
+      productoId: Number(item.id),
+      cantidad: item.cantidad,
+      tamanoPizzaId: item.tamanoPizzaId,
+    }));
 
     this.enviando.set(true);
     this.aviso.set(null);

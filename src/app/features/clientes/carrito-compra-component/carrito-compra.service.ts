@@ -6,6 +6,7 @@ import { API_BASE_URL } from '../../../core/services/api';
 
 /** Opciones elegidas en checkout (misma pantalla que pedido nuevo). */
 export interface OpcionesCheckoutStripe {
+  items?: any[]; // 🔥 Añadido para que el componente pueda pasar los items mapeados
   direccionId: number | null;
   tipoEntrega: string;
   promocionId: number | null;
@@ -24,9 +25,8 @@ export interface ItemCarrito {
 }
 
 @Injectable({
-  providedIn: 'root' // 👈 ¡ESTO ES VITAL! Hace que la memoria sea global
+  providedIn: 'root'
 })
-
 export class CarritoService {
   private items: ItemCarrito[] = [];
   private http = inject(HttpClient);
@@ -48,8 +48,13 @@ export class CarritoService {
     if (this.isBrowser()) {
       const memoria = localStorage.getItem(this.STORAGE_KEY);
       if (memoria) {
-        const parsed: unknown[] = JSON.parse(memoria);
-        this.items = parsed.map((raw: any) => this.migrarItemCarrito(raw));
+        try {
+          const parsed: unknown[] = JSON.parse(memoria);
+          this.items = parsed.map((raw: any) => this.migrarItemCarrito(raw));
+        } catch (e) {
+          console.error('Error al parsear carrito', e);
+          this.items = [];
+        }
       }
     }
   }
@@ -57,13 +62,14 @@ export class CarritoService {
   private migrarItemCarrito(raw: any): ItemCarrito {
     const id = raw.id ?? raw.idProducto ?? raw.IdProducto;
     const tamanoPizzaId =
-      raw.tamanoPizzaId !== undefined && raw.tamanoPizzaId !== ''
+      raw.tamanoPizzaId !== undefined && raw.tamanoPizzaId !== '' && raw.tamanoPizzaId !== null
         ? Number(raw.tamanoPizzaId)
         : null;
     const tid = Number.isFinite(tamanoPizzaId as number) ? (tamanoPizzaId as number) : null;
     const lineKey =
       raw.lineKey ??
       `${id}__${tid === null ? 'sintamano' : tid}`;
+
     return {
       lineKey,
       id,
@@ -111,16 +117,24 @@ export class CarritoService {
    * POST /api/pagos/crear-sesion con ítems del carrito y datos de entrega elegidos en UI.
    */
   crearSesionStripe$(opciones: OpcionesCheckoutStripe): Observable<{ url: string }> {
-    const datosParaLaApi = this.items.map((item) => {
+    // 🔥 Si el componente ya nos envía los items mapeados, los usamos. 
+    // Si no (por seguridad), los mapeamos aquí incluyendo el PRECIO.
+    const datosParaLaApi = opciones.items ? opciones.items : this.items.map((item) => {
       const idReal = item.id || (item as any).idProducto || (item as any).IdProducto;
       return {
         productoId: Number(idReal),
         cantidad: item.cantidad,
         tamanoPizzaId: item.tamanoPizzaId,
+        precio: item.precio // 👈 ESTO ES LO QUE LE FALTABA A STRIPE
       };
     });
 
-    console.log('Checkout Stripe: ítems', datosParaLaApi, opciones);
+    console.log('Enviando a Stripe:', {
+      items: datosParaLaApi,
+      direccionId: opciones.direccionId,
+      tipoEntrega: opciones.tipoEntrega,
+      promocionId: opciones.promocionId,
+    });
 
     return this.http.post<{ url: string }>(`${API_BASE_URL}/pagos/crear-sesion`, {
       items: datosParaLaApi,
