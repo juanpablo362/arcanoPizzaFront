@@ -86,6 +86,10 @@
       <div class="text-muted small text-uppercase fw-bold">Administradores</div>
       <div class="fs-3 fw-bold">{{ totalAdministradores }}</div>
     </div>
+    <div class="card p-3 flex-fill text-center text-secondary card-filter shadow-sm" [class.card-active]="filtroActual === 'Tecnico'" (click)="setFiltro('Tecnico')">
+      <div class="text-muted small text-uppercase fw-bold">Técnicos</div>
+      <div class="fs-3 fw-bold">{{ totalTecnicos }}</div>
+    </div>
     <div class="card p-3 flex-fill text-center text-purple card-filter shadow-sm" [class.card-active]="filtroActual === 'Activos'" (click)="setFiltro('Activos')">
       <div class="text-muted small text-uppercase fw-bold">Activos</div>
       <div class="fs-3 fw-bold">{{ totalActivos }}</div>
@@ -103,6 +107,7 @@
           <span class="badge bg-success ms-2" *ngIf="usuario.tipo==='Empleado'">Empleado</span>
           <span class="badge bg-primary ms-2" *ngIf="usuario.tipo==='Repartidor'">Repartidor</span>
           <span class="badge bg-danger ms-2" *ngIf="usuario.tipo==='Administrador'">Admin</span>
+          <span class="badge bg-secondary ms-2" *ngIf="usuario.tipo==='Tecnico'">Técnico</span>
           
           <span class="badge ms-2" [ngClass]="usuario.activo ? 'bg-primary' : 'bg-secondary'">{{ usuario.activo ? 'Activo' : 'Inactivo' }}</span>
           
@@ -168,6 +173,7 @@
               <option value="Empleado">Empleado</option>
               <option value="Repartidor">Repartidor</option>
               <option value="Administrador">Administrador</option>
+              <option value="Tecnico">Técnico</option>
             </select>
           </div>
 
@@ -221,6 +227,7 @@
               <option value="Empleado">Empleado</option>
               <option value="Repartidor">Repartidor</option>
               <option value="Administrador">Administrador</option>
+              <option value="Tecnico">Técnico</option>
             </select>
           </div>
 

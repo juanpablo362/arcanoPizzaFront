@@ -104,6 +104,14 @@ export const routes: Routes = [
         (m) => m.PedidosAsignadosComponent,
       ),
   },
+  {
+    path: 'tecnico/logs',
+    canActivate: [authGuard, roleGuard(['Tecnico'])],
+    loadComponent: () =>
+      import('./features/tecnico/audit-logs-component/audit-logs-component').then(
+        (m) => m.AuditLogsComponent,
+      ),
+  },
 
   // Redirects desde rutas antiguas (compatibilidad)
   {

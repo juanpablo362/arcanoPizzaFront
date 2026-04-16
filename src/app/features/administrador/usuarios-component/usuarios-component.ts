@@ -34,7 +34,22 @@ export class UsuariosComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   usuarios: UsuarioResponseDto[] = [];
-  filtroActual: 'Todos' | 'Empleado' | 'Repartidor' | 'Administrador' | 'Activos' = 'Todos';
+  filtroActual:
+    | 'Todos'
+    | 'Empleado'
+    | 'Repartidor'
+    | 'Administrador'
+    | 'Tecnico'
+    | 'Activos' = 'Todos';
+
+  private esPersonalInterno(tipo: string): boolean {
+    return (
+      tipo === 'Empleado' ||
+      tipo === 'Repartidor' ||
+      tipo === 'Administrador' ||
+      tipo === 'Tecnico'
+    );
+  }
   terminoBusqueda: string = '';
 
   nuevoUsuario = { nombre: '', email: '', telefono: '', tipo: 'Empleado', contrasena: '' };
@@ -61,20 +76,29 @@ export class UsuariosComponent implements OnInit {
   }
 
   get totalUsuarios() {
-    return this.usuarios
-      ? this.usuarios.filter(u => u.tipo === 'Empleado' || u.tipo === 'Repartidor' || u.tipo === 'Administrador').length
-      : 0;
+    return this.usuarios ? this.usuarios.filter((u) => this.esPersonalInterno(u.tipo)).length : 0;
   }
-  get totalEmpleados() { return this.usuarios ? this.usuarios.filter(u => u.tipo === 'Empleado').length : 0; }
-  get totalRepartidores() { return this.usuarios ? this.usuarios.filter(u => u.tipo === 'Repartidor').length : 0; }
-  get totalAdministradores() { return this.usuarios ? this.usuarios.filter(u => u.tipo === 'Administrador').length : 0; }
+  get totalEmpleados() {
+    return this.usuarios ? this.usuarios.filter((u) => u.tipo === 'Empleado').length : 0;
+  }
+  get totalRepartidores() {
+    return this.usuarios ? this.usuarios.filter((u) => u.tipo === 'Repartidor').length : 0;
+  }
+  get totalAdministradores() {
+    return this.usuarios ? this.usuarios.filter((u) => u.tipo === 'Administrador').length : 0;
+  }
+  get totalTecnicos() {
+    return this.usuarios ? this.usuarios.filter((u) => u.tipo === 'Tecnico').length : 0;
+  }
   get totalActivos() {
     return this.usuarios
-      ? this.usuarios.filter(u => u.activo && (u.tipo === 'Empleado' || u.tipo === 'Repartidor' || u.tipo === 'Administrador')).length
+      ? this.usuarios.filter((u) => u.activo && this.esPersonalInterno(u.tipo)).length
       : 0;
   }
 
-  setFiltro(nuevoFiltro: 'Todos' | 'Empleado' | 'Repartidor' | 'Administrador' | 'Activos') {
+  setFiltro(
+    nuevoFiltro: 'Todos' | 'Empleado' | 'Repartidor' | 'Administrador' | 'Tecnico' | 'Activos',
+  ) {
     this.filtroActual = nuevoFiltro;
   }
 
@@ -83,19 +107,20 @@ export class UsuariosComponent implements OnInit {
     let resultado = this.usuarios;
 
     if (this.filtroActual === 'Todos') {
-      resultado = resultado.filter(u => u.tipo === 'Empleado' || u.tipo === 'Repartidor' || u.tipo === 'Administrador');
+      resultado = resultado.filter((u) => this.esPersonalInterno(u.tipo));
     } else if (this.filtroActual === 'Activos') {
-      resultado = resultado.filter(u => u.activo && (u.tipo === 'Empleado' || u.tipo === 'Repartidor' || u.tipo === 'Administrador'));
+      resultado = resultado.filter((u) => u.activo && this.esPersonalInterno(u.tipo));
     } else {
-      resultado = resultado.filter(u => u.tipo === this.filtroActual);
+      resultado = resultado.filter((u) => u.tipo === this.filtroActual);
     }
 
     if (this.terminoBusqueda && this.terminoBusqueda.trim() !== '') {
       const termino = this.terminoBusqueda.toLowerCase();
-      resultado = this.usuarios.filter(u => 
-        (u.nombre && u.nombre.toLowerCase().includes(termino)) || 
-        (u.email && u.email.toLowerCase().includes(termino)) || 
-        (u.telefono && u.telefono.includes(termino))
+      resultado = resultado.filter(
+        (u) =>
+          (u.nombre && u.nombre.toLowerCase().includes(termino)) ||
+          (u.email && u.email.toLowerCase().includes(termino)) ||
+          (u.telefono && u.telefono.includes(termino)),
       );
     }
     return resultado;

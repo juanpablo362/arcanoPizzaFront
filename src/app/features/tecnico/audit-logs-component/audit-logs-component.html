@@ -1,0 +1,150 @@
+<div class="dashboard-container">
+  <header class="top-nav">
+    <div class="brand">
+      <div class="logo">Arcano Pizza</div>
+      <div class="subtitle">Auditoría de actividad (API)</div>
+    </div>
+    <div class="nav-actions">
+      <div class="user-chip">
+        <span class="user-name">{{ auth.user()?.nombreUsuario || 'Técnico' }}</span>
+        <span class="user-role">{{ auth.user()?.rol || 'Tecnico' }}</span>
+      </div>
+      <button
+        class="btn btn-secondary btn-icon"
+        type="button"
+        (click)="theme.toggle()"
+        [attr.aria-label]="theme.isDark() ? 'Cambiar a modo día' : 'Cambiar a modo noche'"
+        [attr.title]="theme.isDark() ? 'Modo día' : 'Modo noche'"
+      >
+        @if (theme.isDark()) {
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12Zm0-14.5a1 1 0 0 1 1 1V6a1 1 0 0 1-2 0V4.5a1 1 0 0 1 1-1Zm0 14a1 1 0 0 1 1 1V20a1 1 0 0 1-2 0v-1.5a1 1 0 0 1 1-1ZM4.5 11a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2h1.5Zm17.5 0a1 1 0 0 1 0 2H20.5a1 1 0 0 1 0-2H22ZM6.2 6.2a1 1 0 0 1 1.4 0l1.1 1.1a1 1 0 1 1-1.4 1.4L6.2 7.6a1 1 0 0 1 0-1.4Zm10.7 10.7a1 1 0 0 1 1.4 0l1.1 1.1a1 1 0 0 1-1.4 1.4l-1.1-1.1a1 1 0 0 1 0-1.4ZM17.8 6.2a1 1 0 0 1 0 1.4l-1.1 1.1a1 1 0 1 1-1.4-1.4l1.1-1.1a1 1 0 0 1 1.4 0ZM7.1 16.9a1 1 0 0 1 0 1.4l-1.1 1.1a1 1 0 0 1-1.4-1.4l1.1-1.1a1 1 0 0 1 1.4 0Z"
+            />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M21 14.6A8.5 8.5 0 0 1 9.4 3a7.5 7.5 0 1 0 11.6 11.6Z" />
+          </svg>
+        }
+      </button>
+      <button class="btn btn-secondary" type="button" (click)="cargar()" [disabled]="isLoading">
+        @if (isLoading) {
+          Actualizando...
+        } @else {
+          Actualizar
+        }
+      </button>
+      <button class="btn btn-danger" type="button" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  @if (errorMsg) {
+    <div class="alert-error" role="status">
+      <div class="alert-text">{{ errorMsg }}</div>
+      <button class="btn btn-secondary" type="button" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+
+  <section class="filters card-panel">
+    <div class="filters-grid">
+      <label class="field">
+        <span class="field-label">Desde (UTC)</span>
+        <input class="field-input" type="datetime-local" [(ngModel)]="desde" name="desde" />
+      </label>
+      <label class="field">
+        <span class="field-label">Hasta (UTC)</span>
+        <input class="field-input" type="datetime-local" [(ngModel)]="hasta" name="hasta" />
+      </label>
+      <label class="field">
+        <span class="field-label">Categoría</span>
+        <input
+          class="field-input"
+          type="text"
+          [(ngModel)]="categoria"
+          name="categoria"
+          placeholder="p. ej. Http"
+          autocomplete="off"
+        />
+      </label>
+      <div class="field field-actions">
+        <button class="btn btn-primary" type="button" (click)="aplicarFiltros()" [disabled]="isLoading">
+          Aplicar filtros
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card-panel table-wrap">
+    <div class="table-toolbar">
+      <div class="muted">
+        Total: <strong>{{ total }}</strong> · Página {{ page }} / {{ totalPaginas() }}
+      </div>
+      <div class="pager">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="irPrimera()" [disabled]="isLoading || page <= 1">
+          « Primera
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="irAnterior()" [disabled]="isLoading || page <= 1">
+          Anterior
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          (click)="irSiguiente()"
+          [disabled]="isLoading || page >= totalPaginas()"
+        >
+          Siguiente
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          (click)="irUltima()"
+          [disabled]="isLoading || page >= totalPaginas()"
+        >
+          Última »
+        </button>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fecha (UTC)</th>
+            <th>Nivel</th>
+            <th>Categoría</th>
+            <th>Mensaje</th>
+            <th>Usuario</th>
+            <th>IP</th>
+            <th>HTTP</th>
+            <th>Código</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of items; track row.id) {
+            <tr>
+              <td class="nowrap">{{ row.ocurrioEn | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+              <td><span class="badge" [ngClass]="nivelClass(row.nivel)">{{ row.nivel }}</span></td>
+              <td>{{ row.categoria }}</td>
+              <td class="msg-cell" [title]="row.mensaje">{{ row.mensaje }}</td>
+              <td class="small">{{ row.correoUsuario || (row.idUsuario != null ? '#' + row.idUsuario : '—') }}</td>
+              <td class="small">{{ row.ip || '—' }}</td>
+              <td class="nowrap small">{{ row.metodoHttp || '—' }}</td>
+              <td>{{ row.codigoEstado ?? '—' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="empty-cell">
+                @if (isLoading) {
+                  Cargando…
+                } @else {
+                  No hay registros para los filtros actuales.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

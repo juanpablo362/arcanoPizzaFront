@@ -1,9 +1,15 @@
 import type { AuthUser } from '../services/auth';
 
-export type AppRole = 'Cliente' | 'Empleado' | 'Administrador' | 'Repartidor';
+export type AppRole = 'Cliente' | 'Empleado' | 'Administrador' | 'Repartidor' | 'Tecnico';
 
 export function isAppRole(value: unknown): value is AppRole {
-  return value === 'Cliente' || value === 'Empleado' || value === 'Administrador' || value === 'Repartidor';
+  return (
+    value === 'Cliente' ||
+    value === 'Empleado' ||
+    value === 'Administrador' ||
+    value === 'Repartidor' ||
+    value === 'Tecnico'
+  );
 }
 
 export function getRoleHomeUrl(role: unknown): string {
@@ -15,6 +21,8 @@ export function getRoleHomeUrl(role: unknown): string {
       return '/empleado/pedidos';
     case 'Repartidor':
       return '/repartidor/pedidos';
+    case 'Tecnico':
+      return '/tecnico/logs';
     case 'Cliente':
     default:
       return '/menu';
