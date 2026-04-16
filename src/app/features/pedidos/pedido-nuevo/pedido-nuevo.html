@@ -15,14 +15,14 @@
       <p class="muted">Cargando direcciones…</p>
     } @else if (carritoVacioBloqueo()) {
       <div class="alert-error">Tu carrito está vacío. Agregá productos desde el menú y volvé aquí.</div>
-      <a routerLink="/menu-clientes-component" class="link">Ir al menú</a>
+      <a routerLink="/menu" class="link">Ir al menú</a>
     } @else {
       <nav class="checkout-steps" aria-label="Progreso del pedido">
         <ol class="steps-list">
           <li class="step step--done">
-            <a routerLink="/menu-clientes-component">Menú</a>
+            <a routerLink="/menu">Menú</a>
             <span class="step-sep">·</span>
-            <a routerLink="/carrito-compra">Carrito</a>
+            <a routerLink="/carrito">Carrito</a>
           </li>
           <li class="step step--current">
             <span>Datos de entrega</span>
@@ -43,7 +43,7 @@
             @if (ultimoErrorAccion()) {
               <button type="button" class="btn-retry" (click)="reintentarUltimaAccion()">Reintentar</button>
             }
-            <a routerLink="/carrito-compra" class="link-carrito">Volver al carrito</a>
+            <a routerLink="/carrito" class="link-carrito">Volver al carrito</a>
           </div>
         </div>
       }

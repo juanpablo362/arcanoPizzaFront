@@ -34,7 +34,7 @@ export class ProductoDetalleComponent implements OnInit {
     this.producto = history.state.producto;
 
     if (!this.producto) {
-      this.router.navigate(['/menu-clientes-component']);
+      this.router.navigate(['/menu']);
       return;
     }
 
@@ -77,11 +77,11 @@ export class ProductoDetalleComponent implements OnInit {
   agregarAlCarrito(): void {
     if (!this.auth.isAuthenticated()) {
       savePostLoginPayload({
-        path: '/producto-detalle',
+        path: '/producto',
         state: { producto: this.producto },
       });
       this.toast.show('Iniciá sesión para agregar productos al carrito.', 'info');
-      void this.router.navigate(['/auth'], { queryParams: { returnUrl: '/producto-detalle' } });
+      void this.router.navigate(['/auth'], { queryParams: { returnUrl: '/producto' } });
       return;
     }
 
@@ -113,7 +113,7 @@ export class ProductoDetalleComponent implements OnInit {
     this.mostrarToast = true;
     this.toastTimeoutId = setTimeout(() => {
       this.mostrarToast = false;
-      this.router.navigate(['/menu-clientes-component']);
+      this.router.navigate(['/menu']);
     }, 1500);
   }
 

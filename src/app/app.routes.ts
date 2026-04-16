@@ -8,24 +8,111 @@ export const routes: Routes = [
   // 👇 Entrada: menú público (sin cuenta). Login al intentar carrito / pedido / pago, etc.
   {
     path: '',
-    redirectTo: '/menu-clientes-component',
+    redirectTo: '/menu',
     pathMatch: 'full',
   },
 
   // --- 1. RUTAS ESPECÍFICAS PRIMERO ---
+  // URLs limpias (preferidas)
   {
-    path: 'menu-clientes-component',
+    path: 'menu',
     loadChildren: () =>
       import('./features/clientes/menu-clientes-component/menu-clientes-component.routes').then(
         (m) => m.MENU_CLIENTES_ROUTES,
       ),
   },
   {
-    path: 'producto-detalle',
+    path: 'producto',
     loadComponent: () =>
       import('./features/clientes/producto-detalle-component/producto-detalle-component').then(
         (m) => m.ProductoDetalleComponent,
       ),
+  },
+  {
+    path: 'carrito',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/clientes/carrito-compra-component/carrito-compra-component').then(
+        (m) => m.CarritoCompraComponent,
+      ),
+  },
+  {
+    path: 'pago/exito',
+    loadChildren: () =>
+      import('./features/clientes/pago-exito/pago-exito.routes').then((m) => m.PAGO_EXITO_ROUTES),
+  },
+  {
+    path: 'pago/cancelado',
+    loadChildren: () =>
+      import('./features/clientes/pago-cancelado/pago-cancelado.routes').then(
+        (m) => m.PAGO_CANCELADO_ROUTES,
+      ),
+  },
+  {
+    path: 'legal/terminos',
+    loadComponent: () =>
+      import('./features/clientes/legal/terminos-component').then((m) => m.TerminosComponent),
+  },
+  {
+    path: 'legal/privacidad',
+    loadComponent: () =>
+      import('./features/clientes/legal/privacidad-component').then((m) => m.PrivacidadComponent),
+  },
+  {
+    path: 'admin/dashboard',
+    canActivate: [authGuard, roleGuard(['Administrador'])],
+    loadComponent: () =>
+      import('./features/administrador/dashboard-component/dashboard-component').then(
+        (m) => m.DashboardComponent,
+      ),
+  },
+  {
+    path: 'admin/productos',
+    canActivate: [authGuard, roleGuard(['Administrador'])],
+    loadComponent: () =>
+      import('./features/administrador/producto-component/producto-component').then(
+        (m) => m.ProductoComponent,
+      ),
+  },
+  {
+    path: 'admin/usuarios',
+    canActivate: [authGuard, roleGuard(['Administrador'])],
+    loadComponent: () =>
+      import('./features/administrador/usuarios-component/usuarios-component').then(
+        (m) => m.UsuariosComponent,
+      ),
+  },
+  {
+    path: 'admin/promociones',
+    canActivate: [authGuard, roleGuard(['Administrador'])],
+    loadComponent: () =>
+      import('./features/administrador/promociones-admin-component/promociones-admin-component').then(
+        (m) => m.PromocionesAdminComponent,
+      ),
+  },
+  {
+    path: 'empleado/pedidos',
+    canActivate: [authGuard, roleGuard(['Empleado', 'Administrador'])],
+    loadComponent: () =>
+      import('./features/empleado/pedidos-component/pedidos-component').then((m) => m.PedidosComponent),
+  },
+  {
+    path: 'repartidor/pedidos',
+    canActivate: [authGuard, roleGuard(['Repartidor'])],
+    loadComponent: () =>
+      import('./features/repartidor/pedidos-asignados-component/pedidos-asignados-component').then(
+        (m) => m.PedidosAsignadosComponent,
+      ),
+  },
+
+  // Redirects desde rutas antiguas (compatibilidad)
+  {
+    path: 'menu-clientes-component',
+    redirectTo: '/menu',
+  },
+  {
+    path: 'producto-detalle',
+    redirectTo: '/producto',
   },
   {
     path: 'promociones',
@@ -34,52 +121,23 @@ export const routes: Routes = [
         (m) => m.PromocionesComponent,
       ),
   },
-  {
-    path: 'dashboard', 
-    canActivate: [authGuard, roleGuard(['Administrador'])],
-    loadComponent: () => import('./features/administrador/dashboard-component/dashboard-component').then(m => m.DashboardComponent)
-  },
-  {
-    path: 'productos',
-    canActivate: [authGuard, roleGuard(['Administrador'])],
-    loadComponent: () => import('./features/administrador/producto-component/producto-component').then(m => m.ProductoComponent)
-  },
-  
-  // 🔥 AQUÍ ESTÁ EL CAMBIO: Ahora carga UsuariosComponent correctamente
-  {
-    path: 'admin',
-    canActivate: [authGuard, roleGuard(['Administrador'])],
-    loadComponent: () => import('./features/administrador/usuarios-component/usuarios-component').then(m => m.UsuariosComponent)
-  },
-  {
-    path: 'promociones-admin',
-    canActivate: [authGuard, roleGuard(['Administrador'])],
-    loadComponent: () =>
-      import('./features/administrador/promociones-admin-component/promociones-admin-component').then(
-        (m) => m.PromocionesAdminComponent,
-      ),
-  },
+  { path: 'dashboard', redirectTo: '/admin/dashboard' },
+  { path: 'productos', redirectTo: '/admin/productos' },
+  { path: 'admin', redirectTo: '/admin/usuarios' },
+  { path: 'promociones-admin', redirectTo: '/admin/promociones' },
 
   {
     path: 'carrito-compra',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/clientes/carrito-compra-component/carrito-compra-component').then(
-        (m) => m.CarritoCompraComponent,
-      ),
+    redirectTo: '/carrito',
   },
   /** Sin authGuard: el retorno desde Stripe es navegación externa; en SSR no hay sesión y se redirigía a /auth antes de vaciar el carrito. */
   {
     path: 'pago-exito',
-    loadChildren: () =>
-      import('./features/clientes/pago-exito/pago-exito.routes').then((m) => m.PAGO_EXITO_ROUTES),
+    redirectTo: '/pago/exito',
   },
   {
     path: 'pago-cancelado',
-    loadChildren: () =>
-      import('./features/clientes/pago-cancelado/pago-cancelado.routes').then(
-        (m) => m.PAGO_CANCELADO_ROUTES,
-      ),
+    redirectTo: '/pago/cancelado',
   },
   {
     path: 'contacto',
@@ -90,13 +148,11 @@ export const routes: Routes = [
   },
   {
     path: 'terminos',
-    loadComponent: () =>
-      import('./features/clientes/legal/terminos-component').then((m) => m.TerminosComponent),
+    redirectTo: '/legal/terminos',
   },
   {
     path: 'privacidad',
-    loadComponent: () =>
-      import('./features/clientes/legal/privacidad-component').then((m) => m.PrivacidadComponent),
+    redirectTo: '/legal/privacidad',
   },
 
   {
@@ -118,21 +174,16 @@ export const routes: Routes = [
   },
    { 
     path: 'pedidos-empleado', 
-    canActivate: [authGuard, roleGuard(['Empleado', 'Administrador'])],
-    loadComponent: () => import('./features/empleado/pedidos-component/pedidos-component').then(m => m.PedidosComponent)
+    redirectTo: '/empleado/pedidos',
   },
   {
     path: 'pedidos-repartidor',
-    canActivate: [authGuard, roleGuard(['Repartidor'])],
-    loadComponent: () =>
-      import('./features/repartidor/pedidos-asignados-component/pedidos-asignados-component').then(
-        (m) => m.PedidosAsignadosComponent,
-      ),
+    redirectTo: '/repartidor/pedidos',
   },
 
   // --- 3. RUTAS CON LAYOUT --
   {
     path: '**',
-    redirectTo: '/menu-clientes-component',
+    redirectTo: '/menu',
   },
 ];

@@ -10,7 +10,7 @@ import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-
     <div class="page-container">
       <app-cliente-top-nav />
       <main class="legal-inner">
-        <a routerLink="/menu-clientes-component" class="back">← Volver al menú</a>
+        <a routerLink="/menu" class="back">← Volver al menú</a>
         <h1>Términos y condiciones</h1>
         <p class="lead">
           Texto orientativo. Reemplazá este contenido por los términos legales revisados por un asesor antes de

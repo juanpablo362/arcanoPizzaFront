@@ -1,15 +1,15 @@
 <div class="top-nav-stack">
   <nav class="navbar">
   <div class="navbar-start">
-    <a routerLink="/menu-clientes-component" class="logo-link" aria-label="Arcano Pizza — ir al menú">
+    <a routerLink="/menu" class="logo-link" aria-label="Arcano Pizza — ir al menú">
       <img src="/img/arcano-logo.svg" alt="Arcano Pizza" class="logo-img" width="160" height="48" />
     </a>
   </div>
   <div class="nav-links">
-    <a routerLink="/menu-clientes-component" routerLinkActive="active-link">Menú</a>
+    <a routerLink="/menu" routerLinkActive="active-link">Menú</a>
     <a routerLink="/promociones" routerLinkActive="active-link">Promociones</a>
     <a routerLink="/contacto" routerLinkActive="active-link">Contacto</a>
-    <a routerLink="/carrito-compra" routerLinkActive="active-link">Carrito</a>
+    <a routerLink="/carrito" routerLinkActive="active-link">Carrito</a>
     @if (auth.isAuthenticated()) {
       <a routerLink="/pedidos" routerLinkActive="active-link">Pedidos</a>
     }

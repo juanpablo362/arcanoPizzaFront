@@ -7,17 +7,17 @@ export function isAppRole(value: unknown): value is AppRole {
 }
 
 export function getRoleHomeUrl(role: unknown): string {
-  if (!isAppRole(role)) return '/menu-clientes-component';
+  if (!isAppRole(role)) return '/menu';
   switch (role) {
     case 'Administrador':
-      return '/dashboard';
+      return '/admin/dashboard';
     case 'Empleado':
-      return '/pedidos-empleado';
+      return '/empleado/pedidos';
     case 'Repartidor':
-      return '/pedidos-repartidor';
+      return '/repartidor/pedidos';
     case 'Cliente':
     default:
-      return '/menu-clientes-component';
+      return '/menu';
   }
 }
 

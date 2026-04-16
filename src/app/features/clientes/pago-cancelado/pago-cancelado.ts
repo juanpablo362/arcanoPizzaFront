@@ -18,7 +18,7 @@ export class PagoCancelado implements OnDestroy {
   constructor() {
     afterNextRender(() => {
       this.timeoutId = setTimeout(() => {
-        void this.router.navigate(['/carrito-compra']);
+        void this.router.navigate(['/carrito']);
       }, 4000);
     });
   }

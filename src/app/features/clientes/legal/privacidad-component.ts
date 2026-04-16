@@ -10,7 +10,7 @@ import { ClienteTopNavComponent } from '../../../shared/cliente-top-nav/cliente-
     <div class="page-container">
       <app-cliente-top-nav />
       <main class="legal-inner">
-        <a routerLink="/menu-clientes-component" class="back">← Volver al menú</a>
+        <a routerLink="/menu" class="back">← Volver al menú</a>
         <h1>Privacidad</h1>
         <p class="lead">
           Texto orientativo. Ajustá esta política a tu operación y normativa local (INAI / GDPR, etc.).

@@ -41,7 +41,7 @@ export class PagoExito implements OnDestroy {
         this.carritoService.vaciarCarrito();
         const delay = opts?.delayMs ?? 4000;
         this.timeoutId = setTimeout(() => {
-          void this.router.navigate(['/menu-clientes-component']);
+          void this.router.navigate(['/menu']);
         }, delay);
       };
 

@@ -109,6 +109,6 @@ export class MenuClientesComponent implements OnInit {
   }
 
   abrirDetalle(productoSeleccionado: Producto) {
-    this.router.navigate(['/producto-detalle'], { state: { producto: productoSeleccionado } });
+    this.router.navigate(['/producto'], { state: { producto: productoSeleccionado } });
   }
 }

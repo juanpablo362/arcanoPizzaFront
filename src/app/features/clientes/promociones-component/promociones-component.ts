@@ -38,7 +38,7 @@ export class PromocionesComponent implements OnInit {
   }
 
   irAlMenu() {
-    this.router.navigate(['/menu-clientes-component']);
+    this.router.navigate(['/menu']);
   }
 
   abrirDetalle(promo: Promocion) {
@@ -57,6 +57,6 @@ export class PromocionesComponent implements OnInit {
       ingredientes: listaContenido
     };
 
-    this.router.navigate(['/producto-detalle'], { state: { producto: promoAdaptada } });
+    this.router.navigate(['/producto'], { state: { producto: promoAdaptada } });
   }
 }
