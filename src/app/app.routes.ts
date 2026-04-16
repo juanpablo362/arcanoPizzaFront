@@ -98,14 +98,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/clientes/legal/privacidad-component').then((m) => m.PrivacidadComponent),
   },
-  {
-    path: 'pago',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/clientes/payment-component/payment-component').then(
-        (m) => m.PaymentComponent,
-      ),
-  },
+
   {
     path: 'pedidos',
     canActivate: [authGuard],
@@ -116,6 +109,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/extras/extras.routes').then((m) => m.EXTRAS_ROUTES),
   },
+
+  // --- 2. RUTAS DE AUTENTICACIÓN ---
   {
     path: 'auth',
     canActivate: [guestGuard],
