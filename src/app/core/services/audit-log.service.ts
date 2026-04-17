@@ -12,9 +12,13 @@ export interface AuditLogItem {
   idUsuario: number | null;
   correoUsuario: string | null;
   ip: string | null;
+  userAgent: string | null;
   metodoHttp: string | null;
   ruta: string | null;
   codigoEstado: number | null;
+  duracionMs: number | null;
+  traceId: string | null;
+  detalle: string | null;
 }
 
 export interface PagedAuditLogsResponse {
@@ -36,7 +40,16 @@ export class AuditLogService extends ApiService {
   listar(
     page: number,
     pageSize: number,
-    opciones?: { desde?: string; hasta?: string; categoria?: string },
+    opciones?: {
+      desde?: string;
+      hasta?: string;
+      categoria?: string;
+      nivel?: string;
+      statusCode?: number;
+      metodoHttp?: string;
+      usuario?: string;
+      q?: string;
+    },
   ): Observable<PagedAuditLogsResponse> {
     let params = new HttpParams()
       .set('page', String(page))
@@ -44,6 +57,11 @@ export class AuditLogService extends ApiService {
     if (opciones?.desde) params = params.set('desde', opciones.desde);
     if (opciones?.hasta) params = params.set('hasta', opciones.hasta);
     if (opciones?.categoria) params = params.set('categoria', opciones.categoria);
+    if (opciones?.nivel) params = params.set('nivel', opciones.nivel);
+    if (opciones?.statusCode != null) params = params.set('statusCode', String(opciones.statusCode));
+    if (opciones?.metodoHttp) params = params.set('metodoHttp', opciones.metodoHttp);
+    if (opciones?.usuario) params = params.set('usuario', opciones.usuario);
+    if (opciones?.q) params = params.set('q', opciones.q);
 
     return this.http.get<PagedAuditLogsResponse>(this.baseUrl, { params });
   }

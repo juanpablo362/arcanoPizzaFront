@@ -33,6 +33,13 @@ export class AuditLogsComponent implements OnInit {
   desde: string | null = null;
   hasta: string | null = null;
   categoria: string = '';
+  nivel: string = '';
+  statusCode: number | null = null;
+  metodoHttp: string = '';
+  usuario: string = '';
+  q: string = '';
+
+  expandedDetalle = new Set<number>();
 
   ngOnInit(): void {
     this.cargar();
@@ -44,12 +51,21 @@ export class AuditLogsComponent implements OnInit {
     const desdeIso = this.desde ? new Date(this.desde).toISOString() : undefined;
     const hastaIso = this.hasta ? new Date(this.hasta).toISOString() : undefined;
     const cat = this.categoria.trim() || undefined;
+    const nivel = this.nivel.trim() || undefined;
+    const metodoHttp = this.metodoHttp.trim() || undefined;
+    const usuario = this.usuario.trim() || undefined;
+    const q = this.q.trim() || undefined;
 
     this.auditLogService
       .listar(this.page, this.pageSize, {
         desde: desdeIso,
         hasta: hastaIso,
         categoria: cat,
+        nivel,
+        statusCode: this.statusCode ?? undefined,
+        metodoHttp,
+        usuario,
+        q,
       })
       .pipe(
         finalize(() => {
@@ -112,6 +128,21 @@ export class AuditLogsComponent implements OnInit {
 
   logout(): void {
     this.auth.logout();
+  }
+
+  toggleDetalle(id: number): void {
+    if (this.expandedDetalle.has(id)) this.expandedDetalle.delete(id);
+    else this.expandedDetalle.add(id);
+  }
+
+  isDetalleOpen(id: number): boolean {
+    return this.expandedDetalle.has(id);
+  }
+
+  copy(text: string | null | undefined): void {
+    const value = (text ?? '').trim();
+    if (!value) return;
+    navigator.clipboard?.writeText(value).catch(() => {});
   }
 
   nivelClass(nivel: string): string {

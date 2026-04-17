@@ -67,6 +67,39 @@
           autocomplete="off"
         />
       </label>
+      <label class="field">
+        <span class="field-label">Nivel</span>
+        <select class="field-input" [(ngModel)]="nivel" name="nivel">
+          <option value="">(Todos)</option>
+          <option value="Info">Info</option>
+          <option value="Warning">Warning</option>
+          <option value="Error">Error</option>
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Status</span>
+        <input
+          class="field-input"
+          type="number"
+          [(ngModel)]="statusCode"
+          name="statusCode"
+          placeholder="p. ej. 500"
+          min="100"
+          max="599"
+        />
+      </label>
+      <label class="field">
+        <span class="field-label">Método</span>
+        <input class="field-input" type="text" [(ngModel)]="metodoHttp" name="metodoHttp" placeholder="p. ej. GET" />
+      </label>
+      <label class="field">
+        <span class="field-label">Usuario</span>
+        <input class="field-input" type="text" [(ngModel)]="usuario" name="usuario" placeholder="id o correo" />
+      </label>
+      <label class="field">
+        <span class="field-label">Buscar</span>
+        <input class="field-input" type="text" [(ngModel)]="q" name="q" placeholder="mensaje / ruta / detalle" />
+      </label>
       <div class="field field-actions">
         <button class="btn btn-primary" type="button" (click)="aplicarFiltros()" [disabled]="isLoading">
           Aplicar filtros
@@ -113,11 +146,15 @@
             <th>Fecha (UTC)</th>
             <th>Nivel</th>
             <th>Categoría</th>
+            <th>Ruta</th>
             <th>Mensaje</th>
             <th>Usuario</th>
             <th>IP</th>
             <th>HTTP</th>
             <th>Código</th>
+            <th>ms</th>
+            <th>Trace</th>
+            <th>Detalle</th>
           </tr>
         </thead>
         <tbody>
@@ -126,15 +163,52 @@
               <td class="nowrap">{{ row.ocurrioEn | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
               <td><span class="badge" [ngClass]="nivelClass(row.nivel)">{{ row.nivel }}</span></td>
               <td>{{ row.categoria }}</td>
+              <td class="msg-cell" [title]="row.ruta || ''">{{ row.ruta || '—' }}</td>
               <td class="msg-cell" [title]="row.mensaje">{{ row.mensaje }}</td>
               <td class="small">{{ row.correoUsuario || (row.idUsuario != null ? '#' + row.idUsuario : '—') }}</td>
               <td class="small">{{ row.ip || '—' }}</td>
               <td class="nowrap small">{{ row.metodoHttp || '—' }}</td>
               <td>{{ row.codigoEstado ?? '—' }}</td>
+              <td class="small nowrap">{{ row.duracionMs ?? '—' }}</td>
+              <td class="small nowrap">
+                @if (row.traceId) {
+                  <button type="button" class="btn btn-secondary btn-sm" (click)="copy(row.traceId)" [title]="row.traceId">
+                    Copiar
+                  </button>
+                } @else {
+                  —
+                }
+              </td>
+              <td class="small nowrap">
+                @if (row.detalle) {
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    (click)="toggleDetalle(row.id)"
+                    [attr.aria-expanded]="isDetalleOpen(row.id)"
+                    [attr.title]="isDetalleOpen(row.id) ? 'Ocultar detalle' : 'Ver detalle'"
+                  >
+                    @if (isDetalleOpen(row.id)) {
+                      Ocultar
+                    } @else {
+                      Ver
+                    }
+                  </button>
+                } @else {
+                  —
+                }
+              </td>
             </tr>
+            @if (row.detalle && isDetalleOpen(row.id)) {
+              <tr>
+                <td colspan="12" class="small">
+                  <strong>Detalle:</strong> {{ row.detalle }}
+                </td>
+              </tr>
+            }
           } @empty {
             <tr>
-              <td colspan="8" class="empty-cell">
+              <td colspan="12" class="empty-cell">
                 @if (isLoading) {
                   Cargando…
                 } @else {
