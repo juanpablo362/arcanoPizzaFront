@@ -84,7 +84,7 @@ export function tamanosFallbackArcano(precioBase: number): TamanoPizzaOpcion[] {
   return [
     {
       tamanoPizzaId: 1,
-      name: 'Personal',
+      name: 'Chica',
       cm: '6 reb.',
       price: r(b * 0.72),
       detalle: '1 persona · 6 rebanadas · circular',
@@ -105,10 +105,17 @@ export function tamanosFallbackArcano(precioBase: number): TamanoPizzaOpcion[] {
     },
     {
       tamanoPizzaId: 4,
-      name: 'XL Familiar',
+      name: 'Familiar',
       cm: '12 reb.',
       price: r(b * 1.15),
       detalle: '5 personas · 12 rebanadas · circular',
+    },
+    {
+      tamanoPizzaId: 5,
+      name: 'Extra grande',
+      cm: '16 reb.',
+      price: r(b * 1.35),
+      detalle: '16 rebanadas · circular',
     },
   ];
 }
