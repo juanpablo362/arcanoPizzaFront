@@ -7,6 +7,7 @@ import { AuthService } from '../../../core/services/auth';
 import { ConfirmService } from '../../../shared/confirm/confirm.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { ThemeService } from '../../../core/services/theme';
+import { TecnicoAdminNavComponent } from '../../../shared/tecnico-admin-nav/tecnico-admin-nav.component';
 
 interface UsuarioResponseDto {
   id: number;
@@ -21,7 +22,7 @@ interface UsuarioResponseDto {
 @Component({
   selector: 'app-usuarios-component',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TecnicoAdminNavComponent],
   templateUrl: './usuarios-component.html',
   styleUrls: ['./usuarios-component.css'],
 })

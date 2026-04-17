@@ -13,11 +13,12 @@ import {
   type PromocionCreatePayload,
   type PromocionUpdatePayload,
 } from '../../../core/services/promociones.service';
+import { TecnicoAdminNavComponent } from '../../../shared/tecnico-admin-nav/tecnico-admin-nav.component';
 
 @Component({
   selector: 'app-promociones-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TecnicoAdminNavComponent],
   templateUrl: './promociones-admin-component.html',
   styleUrls: ['./promociones-admin-component.css'],
 })

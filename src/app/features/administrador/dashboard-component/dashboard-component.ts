@@ -8,6 +8,7 @@ import { ProductoService } from '../../../core/services/producto';
 import { API_BASE_URL } from '../../../core/services/api';
 import { AuthService } from '../../../core/services/auth';
 import { ThemeService } from '../../../core/services/theme';
+import { TecnicoAdminNavComponent } from '../../../shared/tecnico-admin-nav/tecnico-admin-nav.component';
 
 interface ProductoVendido { nombre: string; vendidos: number; total: number; }
 interface PedidosHora { hora: string; cantidad: number; }
@@ -21,7 +22,7 @@ interface DashboardData {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TecnicoAdminNavComponent],
   templateUrl: './dashboard-component.html',
   styleUrls: ['./dashboard-component.css'],
 })

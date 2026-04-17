@@ -9,6 +9,7 @@ import { ConfirmService } from '../../../shared/confirm/confirm.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { AuthService } from '../../../core/services/auth';
 import { ThemeService } from '../../../core/services/theme';
+import { TecnicoAdminNavComponent } from '../../../shared/tecnico-admin-nav/tecnico-admin-nav.component';
 
 interface ProductoResponseDto {
   id: number;
@@ -24,7 +25,7 @@ interface ProductoResponseDto {
 @Component({
   selector: 'app-producto-component',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TecnicoAdminNavComponent],
   templateUrl: './producto-component.html',
   styleUrls: ['./producto-component.css'],
 })

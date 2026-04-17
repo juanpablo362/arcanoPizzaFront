@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../../core/services/auth';
 import { ThemeService } from '../../../core/services/theme';
+import { TecnicoAdminNavComponent } from '../../../shared/tecnico-admin-nav/tecnico-admin-nav.component';
 import {
   AuditLogService,
   type AuditLogItem,
@@ -13,7 +14,7 @@ import {
 @Component({
   selector: 'app-audit-logs',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TecnicoAdminNavComponent],
   templateUrl: './audit-logs-component.html',
   styleUrl: './audit-logs-component.css',
 })
