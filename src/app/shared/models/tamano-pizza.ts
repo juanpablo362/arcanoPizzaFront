@@ -110,13 +110,6 @@ export function tamanosFallbackArcano(precioBase: number): TamanoPizzaOpcion[] {
       price: r(b * 1.15),
       detalle: '5 personas · 12 rebanadas · circular',
     },
-    {
-      tamanoPizzaId: 5,
-      name: 'ToogiRex',
-      cm: '16 reb.',
-      price: r(b * 1.35),
-      detalle: '16 rebanadas · rectangular',
-    },
   ];
 }
 
