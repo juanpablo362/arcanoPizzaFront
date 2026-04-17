@@ -36,6 +36,7 @@ export class AuditLogsComponent implements OnInit {
   nivel: string = '';
   statusCode: number | null = null;
   metodoHttp: string = '';
+  ip: string = '';
   usuario: string = '';
   q: string = '';
 
@@ -53,6 +54,7 @@ export class AuditLogsComponent implements OnInit {
     const cat = this.categoria.trim() || undefined;
     const nivel = this.nivel.trim() || undefined;
     const metodoHttp = this.metodoHttp.trim() || undefined;
+    const ip = this.ip.trim() || undefined;
     const usuario = this.usuario.trim() || undefined;
     const q = this.q.trim() || undefined;
 
@@ -64,6 +66,7 @@ export class AuditLogsComponent implements OnInit {
         nivel,
         statusCode: this.statusCode ?? undefined,
         metodoHttp,
+        ip,
         usuario,
         q,
       })

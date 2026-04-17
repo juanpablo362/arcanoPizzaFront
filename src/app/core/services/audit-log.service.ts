@@ -47,6 +47,7 @@ export class AuditLogService extends ApiService {
       nivel?: string;
       statusCode?: number;
       metodoHttp?: string;
+      ip?: string;
       usuario?: string;
       q?: string;
     },
@@ -60,6 +61,7 @@ export class AuditLogService extends ApiService {
     if (opciones?.nivel) params = params.set('nivel', opciones.nivel);
     if (opciones?.statusCode != null) params = params.set('statusCode', String(opciones.statusCode));
     if (opciones?.metodoHttp) params = params.set('metodoHttp', opciones.metodoHttp);
+    if (opciones?.ip) params = params.set('ip', opciones.ip);
     if (opciones?.usuario) params = params.set('usuario', opciones.usuario);
     if (opciones?.q) params = params.set('q', opciones.q);
 
