@@ -17,6 +17,21 @@
     <a routerLink="/promociones" style="cursor: pointer;" routerLinkActive="active-link">Promociones</a>
     <a routerLink="/contacto" style="cursor: pointer;" routerLinkActive="active-link">Contacto</a>
     <a routerLink="/carrito" style="cursor: pointer;" routerLinkActive="active-link">Carrito</a>
+
+    @if (auth.isAuthenticated() && canVerAdmin()) {
+      <span class="nav-sep" aria-hidden="true">|</span>
+      <a routerLink="/admin/dashboard" style="cursor: pointer;" routerLinkActive="active-link">Admin</a>
+      <a routerLink="/admin/productos" style="cursor: pointer;" routerLinkActive="active-link">Productos</a>
+      <a routerLink="/admin/usuarios" style="cursor: pointer;" routerLinkActive="active-link">Usuarios</a>
+      <a routerLink="/admin/promociones" style="cursor: pointer;" routerLinkActive="active-link"
+        >Promociones</a
+      >
+    }
+
+    @if (auth.isAuthenticated() && esTecnico()) {
+      <span class="nav-sep" aria-hidden="true">|</span>
+      <a routerLink="/tecnico/logs" style="cursor: pointer;" routerLinkActive="active-link">Logs</a>
+    }
   </div>
 
   <div class="auth">

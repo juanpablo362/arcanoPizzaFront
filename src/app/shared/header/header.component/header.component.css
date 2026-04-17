@@ -28,6 +28,8 @@
 .nav-links { 
   display: flex; 
   gap: 25px; 
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .nav-links a { 
@@ -77,4 +79,9 @@
 
 .auth .nav-btn-link:hover {
   background-color: rgba(138, 43, 226, 0.25);
+}
+
+.nav-sep {
+  color: rgba(201, 164, 68, 0.7);
+  user-select: none;
 }

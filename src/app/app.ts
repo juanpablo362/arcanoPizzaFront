@@ -5,11 +5,19 @@ import { filter } from 'rxjs';
 import { CarritoService } from './features/clientes/carrito-compra-component/carrito-compra.service';
 import { ToastStackComponent } from './shared/toast/toast-stack.component';
 import { ConfirmDialogComponent } from './shared/confirm/confirm-dialog.component';
+import { HeaderComponent } from './shared/header/header.component/header.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule, ToastStackComponent, ConfirmDialogComponent],
+  imports: [
+    RouterOutlet,
+    RouterModule,
+    CommonModule,
+    ToastStackComponent,
+    ConfirmDialogComponent,
+    HeaderComponent,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -38,6 +46,12 @@ export class App {
   /** Oculto en login y en cualquier subruta de /auth. */
   get mostrarCarritoFlotante(): boolean {
     if (this.cantidadEnCarrito <= 0) return false;
+    const path = this.rutaActual.split('?')[0];
+    return path !== '/auth' && !path.startsWith('/auth/');
+  }
+
+  /** Header global: oculto en login y subrutas de /auth. */
+  get mostrarHeader(): boolean {
     const path = this.rutaActual.split('?')[0];
     return path !== '/auth' && !path.startsWith('/auth/');
   }

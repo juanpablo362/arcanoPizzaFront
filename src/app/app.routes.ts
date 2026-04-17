@@ -60,7 +60,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin/dashboard',
-    canActivate: [authGuard, roleGuard(['Administrador'])],
+    canActivate: [authGuard, roleGuard(['Administrador', 'Tecnico'])],
     loadComponent: () =>
       import('./features/administrador/dashboard-component/dashboard-component').then(
         (m) => m.DashboardComponent,
@@ -68,7 +68,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin/productos',
-    canActivate: [authGuard, roleGuard(['Administrador'])],
+    canActivate: [authGuard, roleGuard(['Administrador', 'Tecnico'])],
     loadComponent: () =>
       import('./features/administrador/producto-component/producto-component').then(
         (m) => m.ProductoComponent,
@@ -76,7 +76,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin/usuarios',
-    canActivate: [authGuard, roleGuard(['Administrador'])],
+    canActivate: [authGuard, roleGuard(['Administrador', 'Tecnico'])],
     loadComponent: () =>
       import('./features/administrador/usuarios-component/usuarios-component').then(
         (m) => m.UsuariosComponent,
@@ -84,7 +84,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin/promociones',
-    canActivate: [authGuard, roleGuard(['Administrador'])],
+    canActivate: [authGuard, roleGuard(['Administrador', 'Tecnico'])],
     loadComponent: () =>
       import('./features/administrador/promociones-admin-component/promociones-admin-component').then(
         (m) => m.PromocionesAdminComponent,
