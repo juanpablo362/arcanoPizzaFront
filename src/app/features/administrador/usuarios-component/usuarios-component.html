@@ -36,7 +36,8 @@
     <div>
       <button class="btn btn-outline-primary me-2" routerLink="/admin/dashboard">Dashboard</button>
       <button class="btn btn-outline-primary me-2" routerLink="/admin/productos">Productos</button>
-      <button class="btn btn-primary" routerLink="/admin/usuarios">Usuarios</button>
+      <button class="btn btn-primary" routerLink="/admin/usuarios">Empleados</button>
+      <button class="btn btn-outline-primary" routerLink="/admin/promociones">Promociones</button>
     </div>
     
     <div class="search-box">
@@ -47,9 +48,9 @@
           <input type="password" autocomplete="current-password" tabindex="-1">
         </div>
 
-        <input type="search" 
+        <input type="search"
                class="form-control shadow-none" 
-               placeholder="Buscar usuario..."
+               placeholder="Buscar empleado..."
                [(ngModel)]="terminoBusqueda" 
                name="busqueda_real_secreta" 
                autocomplete="off">
@@ -61,14 +62,14 @@
 
   <div class="d-flex justify-content-between align-items-end mb-4">
     <div>
-      <h4 class="mb-0">Gestión de Usuarios</h4>
+      <h4 class="mb-0">Gestión de Empleados</h4>
       <small class="text-muted">
         Filtrando por: <strong>{{ filtroActual }}</strong>
         <span *ngIf="terminoBusqueda"> | Búsqueda: "<strong>{{terminoBusqueda}}</strong>"</span>
       </small>
     </div>
     <button class="btn btn-primary d-flex align-items-center" (click)="abrirModalUsuario()">
-      <i class="bi bi-plus-lg me-2"></i> Nuevo Usuario
+      <i class="bi bi-plus-lg me-2"></i> Nuevo Empleado
     </button>
   </div>
 

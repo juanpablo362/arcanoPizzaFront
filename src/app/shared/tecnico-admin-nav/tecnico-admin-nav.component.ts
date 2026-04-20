@@ -13,6 +13,9 @@ import { AuthService } from '../../core/services/auth';
 export class TecnicoAdminNavComponent {
   private readonly auth = inject(AuthService);
 
-  readonly visible = computed(() => this.auth.user()?.rol === 'Tecnico');
+  readonly visible = computed(() => {
+    const rol = this.auth.user()?.rol;
+    return rol === 'Tecnico' || rol === 'Administrador';
+  });
 }
 
