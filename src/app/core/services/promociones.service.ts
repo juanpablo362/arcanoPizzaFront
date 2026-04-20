@@ -5,6 +5,7 @@ import { API_BASE_URL } from './api';
 
 export interface Promocion {
   idPromocion: number;
+  productoComboId: number | null;
   titulo: string;
   descripcion?: string;
   contenido?: string;

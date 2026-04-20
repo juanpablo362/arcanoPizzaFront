@@ -118,7 +118,10 @@
 
           <div class="col-md-6">
             <label class="form-label fw-semibold">Tipo vigencia</label>
-            <input class="form-control" type="number" [(ngModel)]="nueva.tipoVigencia" />
+            <select class="form-select" [(ngModel)]="nueva.tipoVigencia">
+              <option [ngValue]="0">Hasta fecha</option>
+              <option [ngValue]="1">Recurrente por día</option>
+            </select>
           </div>
           <div class="col-md-6">
             <label class="form-label fw-semibold">Activa</label>
@@ -126,6 +129,18 @@
               <option [ngValue]="true">Sí</option>
               <option [ngValue]="false">No</option>
             </select>
+          </div>
+
+          <div class="col-md-6" *ngIf="nueva.tipoVigencia === 0">
+            <label class="form-label fw-semibold">Válida hasta</label>
+            <input class="form-control" type="datetime-local" [(ngModel)]="nueva.fechaValidaHasta" />
+            <div class="form-text">Requerida cuando la vigencia es “Hasta fecha”.</div>
+          </div>
+
+          <div class="col-md-6" *ngIf="nueva.tipoVigencia === 1">
+            <label class="form-label fw-semibold">Día de la semana (0–6)</label>
+            <input class="form-control" type="number" min="0" max="6" [(ngModel)]="nueva.diaSemanaRecurrente" />
+            <div class="form-text">0=Domingo, 1=Lunes, 2=Martes, …, 6=Sábado.</div>
           </div>
 
           <div class="col-12">
@@ -184,7 +199,10 @@
 
           <div class="col-md-6">
             <label class="form-label fw-semibold">Tipo vigencia</label>
-            <input class="form-control" type="number" [(ngModel)]="e.tipoVigencia" />
+            <select class="form-select" [(ngModel)]="e.tipoVigencia">
+              <option [ngValue]="0">Hasta fecha</option>
+              <option [ngValue]="1">Recurrente por día</option>
+            </select>
           </div>
           <div class="col-md-6">
             <label class="form-label fw-semibold">Activa</label>
@@ -192,6 +210,16 @@
               <option [ngValue]="true">Sí</option>
               <option [ngValue]="false">No</option>
             </select>
+          </div>
+
+          <div class="col-md-6" *ngIf="e.tipoVigencia === 0">
+            <label class="form-label fw-semibold">Válida hasta</label>
+            <input class="form-control" type="datetime-local" [(ngModel)]="e.fechaValidaHasta" />
+          </div>
+
+          <div class="col-md-6" *ngIf="e.tipoVigencia === 1">
+            <label class="form-label fw-semibold">Día de la semana (0–6)</label>
+            <input class="form-control" type="number" min="0" max="6" [(ngModel)]="e.diaSemanaRecurrente" />
           </div>
 
           <div class="col-12">

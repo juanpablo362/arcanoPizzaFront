@@ -42,13 +42,17 @@ export class PromocionesComponent implements OnInit {
   }
 
   abrirDetalle(promo: Promocion) {
+    if (!promo.productoComboId) {
+      console.warn('Promoción sin producto combo asociado:', promo);
+      return;
+    }
     let listaContenido: string[] = [];
     if (promo.contenido) {
       listaContenido = promo.contenido.split(',').map((item: string) => item.trim());
     }
 
     const promoAdaptada = {
-      id: promo.idPromocion,
+      id: promo.productoComboId,
       nombre: promo.titulo,
       precio: promo.precioPromocional,
       descripcion: promo.descripcion,

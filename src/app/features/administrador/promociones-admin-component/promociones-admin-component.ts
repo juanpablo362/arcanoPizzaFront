@@ -59,6 +59,77 @@ export class PromocionesAdminComponent implements OnInit {
     this.cargar();
   }
 
+  private normalizeCreatePayload(raw: PromocionCreatePayload): PromocionCreatePayload | null {
+    const tipo = Number(raw.tipoVigencia);
+    if (tipo === 0) {
+      const fecha = (raw.fechaValidaHasta ?? '').toString().trim();
+      if (!fecha) {
+        this.toast.show('FechaValidaHasta es requerida para vigencia por fecha.', 'info');
+        return null;
+      }
+      return {
+        ...raw,
+        tipoVigencia: 0,
+        fechaValidaHasta: fecha,
+        diaSemanaRecurrente: null,
+      };
+    }
+    if (tipo === 1) {
+      const dia = raw.diaSemanaRecurrente;
+      const diaNum = dia === null || dia === undefined || dia === ('' as any) ? NaN : Number(dia);
+      if (!Number.isFinite(diaNum) || diaNum < 0 || diaNum > 6) {
+        this.toast.show('DiaSemanaRecurrente debe ser un número entre 0 y 6.', 'info');
+        return null;
+      }
+      return {
+        ...raw,
+        tipoVigencia: 1,
+        fechaValidaHasta: null,
+        diaSemanaRecurrente: diaNum,
+      };
+    }
+
+    this.toast.show('TipoVigencia no válido. Usa 0 (Hasta fecha) o 1 (Recurrente por día).', 'info');
+    return null;
+  }
+
+  private normalizeUpdatePayload(raw: PromocionUpdatePayload): PromocionUpdatePayload | null {
+    const tipo = raw.tipoVigencia;
+    if (tipo === null || tipo === undefined) return raw;
+
+    const tipoNum = Number(tipo);
+    if (tipoNum === 0) {
+      const fecha = (raw.fechaValidaHasta ?? '').toString().trim();
+      if (!fecha) {
+        this.toast.show('FechaValidaHasta es requerida para vigencia por fecha.', 'info');
+        return null;
+      }
+      return {
+        ...raw,
+        tipoVigencia: 0,
+        fechaValidaHasta: fecha,
+        diaSemanaRecurrente: null,
+      };
+    }
+    if (tipoNum === 1) {
+      const dia = raw.diaSemanaRecurrente;
+      const diaNum = dia === null || dia === undefined || dia === ('' as any) ? NaN : Number(dia);
+      if (!Number.isFinite(diaNum) || diaNum < 0 || diaNum > 6) {
+        this.toast.show('DiaSemanaRecurrente debe ser un número entre 0 y 6.', 'info');
+        return null;
+      }
+      return {
+        ...raw,
+        tipoVigencia: 1,
+        fechaValidaHasta: null,
+        diaSemanaRecurrente: diaNum,
+      };
+    }
+
+    this.toast.show('TipoVigencia no válido. Usa 0 (Hasta fecha) o 1 (Recurrente por día).', 'info');
+    return null;
+  }
+
   cargar(): void {
     this.promociones.obtenerPromocionesAdmin().subscribe({
       next: (data) => {
@@ -102,10 +173,13 @@ export class PromocionesAdminComponent implements OnInit {
   }
 
   crear(): void {
+    const normalized = this.normalizeCreatePayload(this.nueva);
+    if (!normalized) return;
+
     const upload$ = this.fileNuevo
       ? this.cloudinary.uploadImage(this.fileNuevo, { folder: 'arcanoPizza/promociones' }).pipe(
           switchMap((res) => {
-            this.nueva.imagenURL = res.secure_url;
+            normalized.imagenURL = res.secure_url;
             this.toast.show('Imagen subida correctamente.', 'success');
             return of(null);
           }),
@@ -115,7 +189,7 @@ export class PromocionesAdminComponent implements OnInit {
     this.isUploadingNuevo = true;
     upload$
       .pipe(
-        switchMap(() => this.promociones.crearPromocion(this.nueva)),
+        switchMap(() => this.promociones.crearPromocion(normalized)),
         finalize(() => {
           this.isUploadingNuevo = false;
           this.cdr.detectChanges();
@@ -149,10 +223,12 @@ export class PromocionesAdminComponent implements OnInit {
     if (!this.edit) return;
     const id = this.edit.idPromocion;
     const { idPromocion, ...payload } = this.edit;
+    const normalized = this.normalizeUpdatePayload(payload);
+    if (!normalized) return;
     const upload$ = this.fileEdit
       ? this.cloudinary.uploadImage(this.fileEdit, { folder: 'arcanoPizza/promociones' }).pipe(
           switchMap((res) => {
-            payload.imagenURL = res.secure_url;
+            normalized.imagenURL = res.secure_url;
             if (this.edit) this.edit.imagenURL = res.secure_url;
             this.toast.show('Imagen subida correctamente.', 'success');
             return of(null);
@@ -163,7 +239,7 @@ export class PromocionesAdminComponent implements OnInit {
     this.isUploadingEdit = true;
     upload$
       .pipe(
-        switchMap(() => this.promociones.actualizarPromocion(id, payload)),
+        switchMap(() => this.promociones.actualizarPromocion(id, normalized)),
         finalize(() => {
           this.isUploadingEdit = false;
           this.cdr.detectChanges();
