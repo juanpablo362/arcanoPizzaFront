@@ -30,7 +30,7 @@ export const routes: Routes = [
   },
   {
     path: 'carrito',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard(['Cliente'])],
     loadComponent: () =>
       import('./features/clientes/carrito-compra-component/carrito-compra-component').then(
         (m) => m.CarritoCompraComponent,
@@ -172,12 +172,12 @@ export const routes: Routes = [
 
   {
     path: 'pedidos',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard(['Cliente'])],
     loadChildren: () => import('./features/pedidos/pedidos.routes').then((m) => m.PEDIDOS_ROUTES),
   },
   {
     path: 'extras',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard(['Cliente'])],
     loadChildren: () => import('./features/extras/extras.routes').then((m) => m.EXTRAS_ROUTES),
   },
 

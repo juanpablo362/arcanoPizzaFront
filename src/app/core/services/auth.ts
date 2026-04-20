@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { API_BASE_URL } from './api';
+import { CarritoService } from '../../features/clientes/carrito-compra-component/carrito-compra.service';
 
 const AUTH_STORAGE_KEY = 'arcano_auth';
 
@@ -35,6 +36,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly carrito = inject(CarritoService);
 
   readonly accessToken = signal<string | null>(null);
   readonly user = signal<AuthUser | null>(null);
@@ -63,6 +65,7 @@ export class AuthService {
       })
       .pipe(
         tap((res) => {
+          const prevUserId = this.user()?.idUsuario ?? null;
           this.accessToken.set(res.accessToken);
           this.user.set(res.usuario);
           if (isPlatformBrowser(this.platformId)) {
@@ -70,6 +73,11 @@ export class AuthService {
               AUTH_STORAGE_KEY,
               JSON.stringify({ accessToken: res.accessToken, usuario: res.usuario }),
             );
+          }
+
+          // Evitar heredar carrito al cambiar de cuenta/rol.
+          if (prevUserId !== null && prevUserId !== res.usuario.idUsuario) {
+            this.carrito.vaciarCarrito();
           }
         }),
       );
@@ -104,6 +112,7 @@ export class AuthService {
   logout(): void {
     this.accessToken.set(null);
     this.user.set(null);
+    this.carrito.vaciarCarrito();
     if (isPlatformBrowser(this.platformId)) {
       sessionStorage.removeItem(AUTH_STORAGE_KEY);
     }

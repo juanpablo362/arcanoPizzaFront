@@ -1,16 +1,16 @@
 .hover-bg-light { transition: background-color 0.2s ease-in-out; }
-.hover-bg-light:hover { background-color: #f8f9fa; }
+.hover-bg-light:hover { background-color: var(--surface-2); }
 
 /* Tarjetas Filtro */
 .card-filter { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
 .card-filter:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.1) !important; }
-.card-active { border: 2px solid #0d6efd !important; background-color: #f0f7ff !important; }
+.card-active { border: 2px solid #0d6efd !important; background-color: rgba(13, 110, 253, 0.12) !important; }
 
 /* Contenedor Scroll */
 .custom-scroll-container { max-height: 55vh; overflow-y: auto; scrollbar-gutter: stable; }
 .custom-scroll-container::-webkit-scrollbar { width: 8px; }
 .custom-scroll-container::-webkit-scrollbar-track { background: transparent; margin: 10px 0; }
-.custom-scroll-container::-webkit-scrollbar-thumb { background-color: #dee2e6; border-radius: 10px; }
+.custom-scroll-container::-webkit-scrollbar-thumb { background-color: rgba(148, 163, 184, 0.35); border-radius: 10px; }
 .custom-scroll-container::-webkit-scrollbar-thumb:hover { background-color: #adb5bd; }
 
 /* Buscador */
@@ -21,17 +21,8 @@
 .search-box .btn { border-top-left-radius: 0; border-bottom-left-radius: 0; padding-left: 1rem; padding-right: 1rem; }
 
 /* Botones de Acción Minimalistas */
-.btn-action {
-  background-color: #ffffff;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-.btn-action:hover {
-  background-color: #f8f9fa;
-  border-color: #cdd3d8;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-}
+.btn-action { border-radius: 8px; transition: all 0.2s ease; }
+.btn-action:hover { box-shadow: var(--shadow-1); }
 .btn-text { height: 34px; padding: 0 12px; line-height: 32px; }
 .btn-icon-only {
   width: 34px !important;
@@ -50,8 +41,37 @@
 .card { border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); }
 .border-top { border-color: #f0f0f0 !important; }
 .text-purple { color: #6f42c1 !important; }
-h4.mb-0 { font-weight: 700; color: #212529; }
+h4.mb-0 { font-weight: 700; color: var(--text-1); }
 .badge { font-size: 0.8rem; padding: 0.4em 0.6em; font-weight: 500; }
+
+/* ==========================
+   Modo noche: botones como Productos
+   ========================== */
+:host-context(html[data-theme='dark']) .btn-action {
+  background: var(--surface-1);
+  border: 1px solid rgba(182, 194, 211, 0.35);
+}
+
+:host-context(html[data-theme='dark']) .btn-action.btn-text {
+  color: var(--text-1);
+}
+
+:host-context(html[data-theme='dark']) .btn-action:hover {
+  background: var(--surface-2);
+  border-color: rgba(182, 194, 211, 0.55);
+}
+
+:host-context(html[data-theme='dark']) .btn-icon-only i {
+  color: var(--text-2);
+}
+
+:host-context(html[data-theme='dark']) .text-action-blue { color: #93c5fd !important; }
+:host-context(html[data-theme='dark']) .text-action-green { color: #34d399 !important; }
+
+/* Evitar highlights claros en filtros seleccionados */
+:host-context(html[data-theme='dark']) .card-active {
+  background-color: rgba(17, 28, 51, 0.65) !important;
+}
 
 /* ==========================================
    Diseño Moderno de Modales (Inputs Grises)

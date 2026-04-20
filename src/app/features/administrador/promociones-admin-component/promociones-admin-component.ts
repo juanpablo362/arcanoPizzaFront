@@ -7,6 +7,7 @@ import { finalize, of, switchMap } from 'rxjs';
 import { ConfirmService } from '../../../shared/confirm/confirm.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { AuthService } from '../../../core/services/auth';
+import { ThemeService } from '../../../core/services/theme';
 import {
   PromocionesService,
   type Promocion,
@@ -28,6 +29,7 @@ export class PromocionesAdminComponent implements OnInit {
   private readonly confirm = inject(ConfirmService);
   private readonly toast = inject(ToastService);
   private readonly auth = inject(AuthService);
+  protected readonly theme = inject(ThemeService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   lista: Promocion[] = [];

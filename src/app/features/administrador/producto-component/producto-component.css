@@ -20,6 +20,11 @@
   background-color: #f0f7ff !important; 
 }
 
+/* Modo noche: evitar fondo blanco/clarito en la tarjeta seleccionada */
+:host-context(html[data-theme='dark']) .card-active {
+  background-color: rgba(17, 28, 51, 0.65) !important; /* similar a --surface-2 */
+}
+
 /* Scroll */
 .custom-scroll-container { 
   max-height: 55vh; 
@@ -41,16 +46,12 @@
 
 /* BOTONES (IGUAL A USUARIOS) */
 .btn-action {
-  background-color: #ffffff;
-  border: 1px solid #dee2e6;
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .btn-action:hover {
-  background-color: #f8f9fa;
-  border-color: #cdd3d8;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: var(--shadow-1);
 }
 
 /* Botón texto */
@@ -78,6 +79,29 @@
 /* Colores */
 .text-action-blue { color: #0d4b85 !important; }
 .text-action-green { color: #198754 !important; }
+
+/* Modo noche: subir contraste de botones
+   Nota: en CSS encapsulado Angular, usar :host-context para leer data-theme del <html>. */
+:host-context(html[data-theme='dark']) .btn-action {
+  background: var(--surface-1);
+  border: 1px solid rgba(182, 194, 211, 0.35);
+}
+
+:host-context(html[data-theme='dark']) .btn-action.btn-text {
+  color: var(--text-1);
+}
+
+:host-context(html[data-theme='dark']) .btn-action:hover {
+  background: var(--surface-2);
+  border-color: rgba(182, 194, 211, 0.55);
+}
+
+:host-context(html[data-theme='dark']) .btn-icon-only {
+  color: var(--text-2);
+}
+
+:host-context(html[data-theme='dark']) .text-action-blue { color: #93c5fd !important; }
+:host-context(html[data-theme='dark']) .text-action-green { color: #34d399 !important; }
 
 
 /* ==========================================
