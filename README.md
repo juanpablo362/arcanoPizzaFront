@@ -122,6 +122,23 @@ Para tests e2e (requiere configuración previa):
 ng e2e
 ```
 
+## CI/CD (Azure Pipelines)
+
+El pipeline está en [`azure-pipelines.yml`](azure-pipelines.yml). El código sigue en GitHub; Azure DevOps solo ejecuta CI/CD.
+
+| Disparo | Qué hace |
+|---------|----------|
+| Push o PR a `Develop` | `npm ci` + `npm run test:ci` |
+| Push a `Develop` | Tras tests OK, deploy a Azure Static Web Apps |
+
+### Variable de pipeline (secreto)
+
+| Nombre | Origen | Uso |
+|--------|--------|-----|
+| `AZURE_STATIC_WEB_APPS_API_TOKEN` | Deployment token de la Static Web App (antes en GitHub Secrets) | Task `AzureStaticWebApp@0` |
+
+En Azure DevOps: **Pipelines → tu pipeline → Edit → Variables** (marcar como secret), o un Variable Group enlazado al pipeline.
+
 ## Enlaces útiles
 
 - [Documentación de Angular](https://angular.dev)

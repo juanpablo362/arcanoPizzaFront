@@ -1,0 +1,66 @@
+# CI/CD front — Azure Pipelines (repo en GitHub)
+# Trigger: push/PR a Develop. Deploy solo en push (no en PR).
+# Variable secreta requerida: AZURE_STATIC_WEB_APPS_API_TOKEN
+
+trigger:
+  branches:
+    include:
+      - Develop
+
+pr:
+  branches:
+    include:
+      - Develop
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Test
+    displayName: Unit tests
+    jobs:
+      - job: UnitTests
+        displayName: npm test
+        steps:
+          - checkout: self
+            submodules: true
+            lfs: false
+
+          - task: NodeTool@0
+            displayName: Setup Node 22
+            inputs:
+              versionSpec: "22.x"
+
+          - task: Cache@2
+            displayName: Cache npm
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+              path: $(Pipeline.Workspace)/.npm
+
+          - script: npm ci --cache $(Pipeline.Workspace)/.npm
+            displayName: Install dependencies
+
+          - script: npm run test:ci
+            displayName: Run unit tests
+
+  - stage: Deploy
+    displayName: Deploy Static Web App
+    dependsOn: Test
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+      - job: DeploySWA
+        displayName: Azure Static Web Apps
+        steps:
+          - checkout: self
+            submodules: true
+            lfs: false
+
+          - task: AzureStaticWebApp@0
+            displayName: Build and deploy
+            inputs:
+              app_location: "."
+              api_location: ""
+              output_location: "dist/arcanoPizzaFront/browser"
+              azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN)
